@@ -1,6 +1,6 @@
 {
   "name": "mi2b2",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "homepage": "https://github.com/FNNDSC/mi2b2",
   "authors": [
     "Jorge <jbernal0019@yahoo.es>"
@@ -17,6 +17,7 @@
     "**/.*",
     "node_modules",
     "bower_components",
+    "src/components",
     "test",
     "tests"
   ],
