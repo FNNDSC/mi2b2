@@ -10,7 +10,9 @@ module.exports = function(grunt) {
       '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
       '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
       ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
-    srcFiles: ['src/'],
+    srcFiles: ['src/js/*.js'],
+    lib: ['src/js/lib/*.js'],
+    components: ['src/js/components/**/*.min.js'], //exclude requirejs.js
     // Task configuration.
     jshint: {
       options: {
@@ -53,8 +55,8 @@ module.exports = function(grunt) {
         stripBanners: true
       },
       dist: {
-        src: '<%= jshint.source.src %>',,
-        dest: 'dist/<%= pkg.name %>.js'
+        src: ['<%= jshint.source.src %>', '<%= lib %>', '<%= components %>'],
+        dest: 'dist/js/<%= pkg.name %>.js'
       }
     },
     uglify: {
@@ -63,8 +65,24 @@ module.exports = function(grunt) {
       },
       dist: {
         src: '<%= concat.dist.dest %>',
-        dest: 'dist/<%= pkg.name %>.min.js'
+        dest: 'dist/js/<%= pkg.name %>.min.js'
       }
+    },
+    copy: {
+      html: {
+        src: 'src/index.html',
+        dest: 'dist/index.html',
+      },
+      styles: {
+        files: [{expand: true, cwd: 'src/', src: ['styles/**'], dest: 'dist/'}]
+      },
+      config: {
+        src: 'src/config_production.js',
+        dest: 'dist/config.js',
+      },
+      requirejs: {
+        files: [{expand: true, cwd: 'src/js/', src: ['components/requirejs/require.js'], dest: 'dist/js/'}]
+      },
     },
     watch: {
       source: {
@@ -85,6 +103,7 @@ module.exports = function(grunt) {
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
@@ -93,7 +112,7 @@ module.exports = function(grunt) {
   // grunt.registerTask('test', ['jshint', 'jasmine']);
   grunt.registerTask('test', ['jshint']);
   // Default task.
-  // grunt.registerTask('default', ['jshint', 'jasmine', 'concat', 'uglify']);
-  grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
+  // grunt.registerTask('default', ['jshint', 'jasmine', 'concat', 'uglify', 'copy']);
+  grunt.registerTask('default', ['concat', 'uglify', 'copy']);
 
 };
