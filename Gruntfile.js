@@ -10,9 +10,9 @@ module.exports = function(grunt) {
       '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
       '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
       ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
-    srcFiles: ['src/js/*.js'],
-    lib: ['src/js/lib/*.js'],
-    components: ['src/js/components/**/*.min.js'], //exclude requirejs.js
+    srcFiles: ['src/js/*.js'], // source files
+    libDir: 'src/js/lib', // libraries that cannot be installed through bower
+    componentsDir: 'src/js/components', // bower components
     // Task configuration.
     jshint: {
       options: {
@@ -29,7 +29,9 @@ module.exports = function(grunt) {
         eqnull: true,
         browser: true,
         globals: {
-          jQuery: true
+          jQuery: true,
+          viewer: true,
+          X: true
         }
       },
       source: {
@@ -38,9 +40,9 @@ module.exports = function(grunt) {
       gruntfile: {
         src: 'Gruntfile.js'
       },
-      test: {
-        files: ['test/**/*.js']
-      }
+      //test: {
+      //  files: ['test/**/*.js']
+      //}
     },
     jasmine: {
       src: '<%= jshint.source.src %>',
@@ -55,7 +57,7 @@ module.exports = function(grunt) {
         stripBanners: true
       },
       dist: {
-        src: ['<%= jshint.source.src %>', '<%= lib %>', '<%= components %>'],
+        src: ['<%= jshint.source.src %>', '<%= libDir %>/**/.js'], // no bower component is concatenated
         dest: 'dist/js/<%= pkg.name %>.js'
       }
     },
@@ -80,8 +82,16 @@ module.exports = function(grunt) {
         src: 'src/config_production.js',
         dest: 'dist/config.js',
       },
-      requirejs: {
-        files: [{expand: true, cwd: 'src/js/', src: ['components/requirejs/require.js'], dest: 'dist/js/'}]
+      libs: { // copy requiered libs which were not concatenated
+
+      },
+      components: { // copy requiered bower components which were not concatenated
+        files: [
+          { expand: true,
+            cwd: '<%= componentsDir %>',
+            src: ['requirejs/require.js', 'jquery/dist/jquery.min.js',
+              'jquery-ui/jquery-ui.min.js', 'jquery-ui/themes/smoothness/**'],
+            dest: 'dist/js/components' }]
       },
     },
     watch: {
@@ -111,8 +121,11 @@ module.exports = function(grunt) {
   // Test task.
   // grunt.registerTask('test', ['jshint', 'jasmine']);
   grunt.registerTask('test', ['jshint']);
+  // Build task.
+  // grunt.registerTask('build', ['jshint', 'jasmine', 'concat', 'uglify', 'copy']);
+  grunt.registerTask('build', ['jshint', 'concat', 'uglify', 'copy']);
   // Default task.
   // grunt.registerTask('default', ['jshint', 'jasmine', 'concat', 'uglify', 'copy']);
-  grunt.registerTask('default', ['concat', 'uglify', 'copy']);
+  grunt.registerTask('default', ['build']);
 
 };
