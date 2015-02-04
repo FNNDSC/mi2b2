@@ -2,15 +2,25 @@
 <html>
   <head>
   	<meta charset="utf-8" >
-     	<title>mi2b2</title>
-      <!--Include viewer styles -->
-      <link rel="stylesheet"  href="styles/main.css">
+    <title>mi2b2</title>
+    <link rel="stylesheet"  href="styles/main.css">
+    <!--Include viewer styles -->
+    <link rel="stylesheet"  href="styles/viewer.css">
   </head>
 
   <body>
 
     <div id="wholecontainer">
-     New project
+
+      <h1>Visualization of neuroimages</h1>
+
+      <div id="directoryselection">
+        <label for="dirbtn" class="directory-btn">Drop Directory (or click)</label>
+        <input id="dirbtn" type="file" style="display: none;" webkitdirectory="" mozdirectory="" directory="">
+      </div>
+
+      <div id="viewercontainer"></div>
+
     </div>
 
       <!-- Load viewer scripts -->

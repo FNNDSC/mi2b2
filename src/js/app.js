@@ -11,6 +11,6 @@ var app = app || {};
 
     this.version = 0.0;
     // viewer object
-    this.view = new viewer.Viewer();
+    this.view = new viewer.Viewer([], 'viewercontainer');
 
   };

@@ -1,0 +1,6 @@
+@import url("/js/components/jquery-ui/themes/smoothness/jquery-ui.min.css");
+
+div#viewercontainer{
+  height: 100%;
+  background-color: #353535;
+}

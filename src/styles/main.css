@@ -1,1 +1,9 @@
-@import url("js/jquery-ui/themes/smoothness/jquery-ui.min.css");
+.directory-btn{
+  background-color: #414141;
+  color: #FFF;
+  padding: 5px;
+  font-size: 20px;
+  border-radius: 5px;
+  border-style: solid;
+  border-with: 1px;
+}
