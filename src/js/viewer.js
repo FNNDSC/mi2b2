@@ -1,31 +1,86 @@
 /**
  * This module takes care of all image visualization and user interface.
  *
- * An object of the Viewer class expects an array of objects where each object
- * contains the following properties:
+ * An object of the Viewer class expects an array of image file objects where
+ * each object contains the following properties:
  * -id: String unique identifier
- * -thumbnail: File object (for a thumbnail image)
- * -files: Array of File objects (it contains a single file for formats other
- *  than DICOM)
+ * -baseUrl: String ‘directory/containing/the/files’
+ * -thumbnail: HTML5 File object (for a thumbnail image)
+ * -imgType: String neuroimage type. Any of the possible values returned by viewer.Viewer.imgType
+ * -files: Array of HTML5 File objects (it contains a single file for formats
+ *  other than DICOM)
  */
 
 // Provide a namespace
 var viewer = viewer || {};
 
-  viewer.Viewer = function(source, containerID) {
+  viewer.Viewer = function(imgFileArr, containerID) {
 
     this.version = 0.0;
-    // data source
-    this.source = source;
-    // set the viewer container object
-    this.wholeContainer = document.getElementById(containerID);
-    $(this.wholeContainer).css({ position: "relative" });
-    // insert the Viewer html interface
+    // array of image file objects
+    this.imgFileArr = imgFileArr;
+    // viewer container's ID
+    this.wholeContID = containerID;
+    // insert initial html
     this._initInterface();
     this.thumbnailBar = null;
-    // 2D render
-    this.rendrs2D = [];
+    // 2D renderers
+    this.renders2D = [];
 
+
+  };
+
+  /**
+   * Create and insert initial html
+   */
+  viewer.Viewer.prototype._initInterface = function() {
+
+    $('#' + this.wholeContID).css({ position: "relative" }).append(
+      '<div id="viewrenders"></div>' );
+    // set the renderers container's ID
+    this.rendersContID = 'viewrenders';
+  };
+
+  /**
+   * Create and add 2D renderer to the UI.
+   *
+   * @param {String} X, Y or Z orientation.
+   */
+  viewer.Viewer.prototype.add2DRender = function(orientation) {
+    var render = new X.renderer2D();
+    var renderID = 'viewrender2D' + this.renders2D.length;
+
+    $('#' + this.rendersContID).append('<div id="' + renderID + '"></div>');
+    render.container = renderID;
+    render.bgColor = [0.2, 0.2, 0.2];
+    render.orientation = orientation;
+    render.init();
+    this.position2DRender(render.container);
+    this.renders2D.push(render);
+  };
+
+  /**
+   * Create and add thumbnail bar to the UI.
+   */
+  viewer.Viewer.prototype.addThumbnailBar = function() {
+
+    if (!this.thumbnailBar) {
+
+      $('#' + this.wholeContID).append(
+        '<div id="viewthumbnail">' +
+          '<ul> </ul>' +
+        '</div>'
+      );
+      this.thumbnailBar = document.getElementById("viewthumbnail");
+      var jqUl = $(this.thumbnailBar).children("ul");
+      for (var imgFile in this.imgFileArr) {
+        jqUl.append(
+          '<li>' +
+            '<span>' + imgFile.thumbnail.name + '</span>' +
+          '</li>'
+        );
+      }
+    }
 
   };
 
@@ -34,28 +89,83 @@ var viewer = viewer || {};
    *
    * @param {String} X, Y or Z orientation.
    */
-  viewer.Viewer.prototype.add2DRenderer = function(orientation) {
-    var rendr = new X.renderer2D();
-    var rendrID = 'viewerrender2D' + this.renderers2D.length
+  viewer.Viewer.prototype.add2DRender = function(orientation) {
+    var render = new X.renderer2D();
+    var renderID = 'viewrender2D' + this.renders2D.length;
 
-    $(this.wholeContainer).append('<div id="' + rendrID + '"></div>');
-
-    rendr.container = rendrID;
-    rendr.bgColor = [0.2, 0.2, 0.2];
-    rendr.orientation = orientation;
-    rendr.init();
-    this.position2DRendr(rendr.container);
-    this.rendrs.push(rendr);
+    $('#' + this.rendersContID).append('<div id="' + renderID + '"></div>');
+    render.container = renderID;
+    render.bgColor = [0.2, 0.2, 0.2];
+    render.orientation = orientation;
+    render.init();
+    this.position2DRender(render.container);
+    this.renders2D.push(render);
   };
 
   /**
-   * Create and add thumbnail bar to the UI.
+   * Destroy all objects and remove html interface
+   *
+   * @param {String} X, Y or Z orientation.
    */
-  viewer.Viewer.prototype.addThumbnailBar = function() {
-    if (!this.thumbnailBar) {
-      $(this.wholeContainer).append(
-        '<div id="viewerthumbnail"></div>'
-      );
-      this.thumbnailBar = document.getElementById("viewerthumbnail");
+  viewer.Viewer.prototype.destroy = function() {
+
+    // destroy XTK renderers
+    for (var render in this.renders2D) {
+      render.destroy();
     }
+    this.renders2D = [];
+
+    // remove html
+    $('#' + this.wholeContID).empty();
+  };
+
+
+  /**
+   * Static method to determine if a File object is a supported neuroimage type.
+   * Return the type of the image: 'dicom', 'vol', 'fibers', 'mesh', 'unsupported'
+   *
+   * @param {Object} HTML5 File object
+   */
+  viewer.Viewer.imgType = function(fileObj) {
+    var imgType = {};
+
+    // dicom extensions
+    imgType.DICOM = ['.dcm', '.ima', '.DCM', '.IMA'];
+    // volume extensions
+    imgType.VOL = ['.mgh', '.mgz', '.nrrd', '.nii', '.nii.gz'];
+    // fibers extension is .trk
+    imgType.FIBERS = ['.trk'];
+    // geometric model extensions
+    imgType.MESH = ['obj', 'vtk', 'stl'];
+
+    if (viewer.strEndsWith(fileObj.name, imgType.DICOM)) {
+      return 'dicom';
+    } else if (viewer.strEndsWith(fileObj.name, imgType.VOL)) {
+      return 'vol';
+    } else if (viewer.strEndsWith(fileObj.name, imgType.FIBERS)) {
+      return 'fibers';
+    } else if (viewer.strEndsWith(fileObj.name, imgType.MESH)) {
+      return 'mesh';
+    } else {
+      return 'unsupported';
+    }
+  };
+
+  /**
+   * Module utility function. Return true if the string str ends with any of the
+   * specified suffixes in arrayOfStr otherwise return false
+   *
+   * @param {String} input string
+   * @param {Array} array of string suffixes
+   */
+  viewer.strEndsWith = function(str, arrayOfStr) {
+    var index;
+
+    for (var i=0; i<arrayOfStr.length; i++) {
+      index = str.lastIndexOf(arrayOfStr[i]);
+      if ((index !== -1) && ((str.length-index) === arrayOfStr[i].length)) {
+        return true;
+      }
+    }
+    return false;
   };

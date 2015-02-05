@@ -4,3 +4,11 @@ div#viewercontainer{
   height: 100%;
   background-color: #353535;
 }
+
+img {
+    display: block;
+}
+
+li {
+    margin-bottom: 2em;
+}
