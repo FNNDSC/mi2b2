@@ -1,7 +1,11 @@
 /**
- *
  * mi2b2 app
  *
+ * This app reads a directory tree from a directory picker/dropzone button (chrome)
+ * or a single neuroimage file from a file picker/dropzone (other browsers) and
+ * pass it to a Viewer object for visualization and collaboration. DICOM files are
+ * previously sorted by patientID, studyInstanceUID, seriesInstanceUID using
+ * chafey's dicomParser: https://github.com/chafey/dicomParser.
  */
 
 // Provide a namespace
@@ -9,7 +13,7 @@ var app = app || {};
 
   app.App = function() {
 
-    // Multidimensional associative array with ordered DICOM file names
+    // Multidimensional associative array with ordered DICOM files
     this._dcmData = {};
     // Number of DICOM files
     this._numDicoms = 0;
@@ -19,6 +23,8 @@ var app = app || {};
     this._imgFileArr = [];
     // Total number of files
     this._numFiles = 0;
+    // Associative array of thumbnail image files
+    this._thumbnails = {};
     // Viewer object
     this.view = null;
 
@@ -61,43 +67,50 @@ var app = app || {};
     };
 
     dropzone.ondrop = function(e) {
+      var files = [];
+      var fileObj;
+      var i;
+
       e.preventDefault();
-
       if (!e.dataTransfer.items) {
-          if(e.dataTransfer.files){
-            var files = e.dataTransfer.files;
-            var fileObj;
 
-            self._numFiles = files.length;
-            if (self._numFiles && !(('fullPath' in files[0]) || ('mozFullPath' in files[0]))) {
-              alert('Unsuported browser');
-              return;
-            }
-            for (var i=0; i<self._numFiles; i++) {
-              fileObj = files[i];
-              fileObj.fullPath = fileObj.mozFullPath;
-              self.add(fileObj);
-            }
-          } else {
+        // browser is not chrome
+
+        if(e.dataTransfer.files){
+          files = e.dataTransfer.files;
+          self._numFiles = files.length;
+          if (self._numFiles && !(('fullPath' in files[0]) || ('mozFullPath' in files[0]))) {
             alert('Unsuported browser');
+            return;
           }
-          return;
+          for (i=0; i<self._numFiles; i++) {
+            fileObj = files[i];
+            fileObj.fullPath = fileObj.mozFullPath;
+            self.add(fileObj);
+          }
+        } else {
+          alert('Unsuported browser');
+        }
+        return;
       }
+
+      // chrome browser
 
       var length = e.dataTransfer.items.length;
       // array to control when the entire tree has been read. This happens when
       // all it's entries are different from zero
       var hasBeenRead = [];
-      var files = [];
 
       function readFiles(entry) {
         var pos = hasBeenRead.length;
         hasBeenRead[pos] = 0;
 
         function readingDone() {
+          var i;
+
           hasBeenRead[pos] = 1;
-          for (var i=0; i<hasBeenRead.length; i++) {
-            if (hasBeenRead[i] == 0) {
+          for (i=0; i<hasBeenRead.length; i++) {
+            if (hasBeenRead[i] === 0) {
               break;
             }
           }
@@ -127,11 +140,12 @@ var app = app || {};
         }
       }
 
-      for (var i = 0; i<length; i++) {
+      for (i = 0; i<length; i++) {
         readFiles(e.dataTransfer.items[i].webkitGetAsEntry());
       }
 
-    }
+    };
+
 
   };
 
@@ -142,24 +156,28 @@ var app = app || {};
    */
   app.App.prototype.add = function(fileObj) {
     var path = fileObj.fullPath;
-    var baseUrl = path.substring(0, path.lastIndexOf('/') + 1);
     var imgType = viewer.Viewer.imgType(fileObj);
 
     if (imgType !== 'unsupported') {
+
       if (imgType === 'dicom') {
+        // parse the dicom file
         this.parseDicom(fileObj);
+      } else if (imgType === 'thumbnail') {
+        // save thumbnail file in an associative array
+        // array keys are the full path with the extension trimmed
+        this._thumbnails[path.substring(0, path.lastIndexOf('.'))] = fileObj;
       } else {
         // push fibers, meshes and volumes into this._imgFileArr
         this._imgFileArr.push({
-          'baseUrl': baseUrl,
-          'thumbnail': fileObj.name,
+          'baseUrl': path.substring(0, path.lastIndexOf('/') + 1),
           'imgType': imgType,
           'files': [fileObj]
         });
       }
       ++this._numNotDicoms;
       // if all files have been added then create view
-      if (this._numDicoms + this._numNotDicoms == this._numFiles) {
+      if (this._numDicoms + this._numNotDicoms === this._numFiles) {
         this.createView();
       }
     }
@@ -176,7 +194,7 @@ var app = app || {};
     var reader = new FileReader();
     var self = this;
 
-    reader.onload = function(ev) {
+    reader.onload = function() {
       var arrayBuffer = reader.result;
       // Here we have the file data as an ArrayBuffer.  dicomParser requires as input a
       // Uint8Array so we create that here
@@ -211,7 +229,7 @@ var app = app || {};
         }
         ++self._numDicoms;
         // if all files have been added then create view
-        if (self._numDicoms + self._numNotDicoms == self._numFiles) {
+        if (self._numDicoms + self._numNotDicoms === self._numFiles) {
           self.createView();
         }
       } catch(err) {
@@ -225,18 +243,26 @@ var app = app || {};
    * Create Viewer object
    */
   app.App.prototype.createView = function() {
+    var path;
+
     // Push ordered DICOMs into this._imgFileArr
     for (var patient in this._dcmData) {
       for (var study in this._dcmData[patient]) {
         for (var series in this._dcmData[patient][study]) {
           this._imgFileArr['volume'].push({
             'baseUrl': this._dcmData[patient][study][series]['baseUrl'],
-            'thumbnail': this._dcmData[patient][study][series]['files'][0].name,
             'imgType': 'dicom',
             'files': this._dcmData[patient][study][series]['files']
           });
         }
       }
+    }
+
+    // Add thumbnail images
+    // For DICOM we assume the thumbnail has the same name as the first DICOM file
+    for (var i = 0; i < this._imgFileArr.length; i++) {
+      path = this._imgFileArr[i].files[0].fullPath;
+      this._imgFileArr[i].thumbnail = this._thumbnails[path.substring(0, path.lastIndexOf('.'))];
     }
 
     // Instantiate a new Viewer object

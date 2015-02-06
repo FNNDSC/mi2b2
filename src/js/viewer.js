@@ -122,33 +122,41 @@ var viewer = viewer || {};
 
   /**
    * Static method to determine if a File object is a supported neuroimage type.
-   * Return the type of the image: 'dicom', 'vol', 'fibers', 'mesh', 'unsupported'
+   * Return the type of the image: 'dicom', 'vol', 'fibers', 'mesh', 'thumbnail'
+   * or 'unsupported'
    *
    * @param {Object} HTML5 File object
    */
   viewer.Viewer.imgType = function(fileObj) {
-    var imgType = {};
+    var ext = {};
+    var type;
 
     // dicom extensions
-    imgType.DICOM = ['.dcm', '.ima', '.DCM', '.IMA'];
+    ext.DICOM = ['.dcm', '.ima', '.DCM', '.IMA'];
     // volume extensions
-    imgType.VOL = ['.mgh', '.mgz', '.nrrd', '.nii', '.nii.gz'];
+    ext.VOL = ['.mgh', '.mgz', '.nrrd', '.nii', '.nii.gz'];
     // fibers extension is .trk
-    imgType.FIBERS = ['.trk'];
+    ext.FIBERS = ['.trk'];
     // geometric model extensions
-    imgType.MESH = ['obj', 'vtk', 'stl'];
+    ext.MESH = ['obj', 'vtk', 'stl'];
+    // thumbnail extensions
+    ext.THUMBNAIL = ['png', 'gif'];
 
-    if (viewer.strEndsWith(fileObj.name, imgType.DICOM)) {
-      return 'dicom';
-    } else if (viewer.strEndsWith(fileObj.name, imgType.VOL)) {
-      return 'vol';
-    } else if (viewer.strEndsWith(fileObj.name, imgType.FIBERS)) {
-      return 'fibers';
-    } else if (viewer.strEndsWith(fileObj.name, imgType.MESH)) {
-      return 'mesh';
+    if (viewer.strEndsWith(fileObj.name, ext.DICOM)) {
+      type = 'dicom';
+    } else if (viewer.strEndsWith(fileObj.name, ext.VOL)) {
+      type = 'vol';
+    } else if (viewer.strEndsWith(fileObj.name, ext.FIBERS)) {
+      type = 'fibers';
+    } else if (viewer.strEndsWith(fileObj.name, ext.MESH)) {
+      type = 'mesh';
+    } else if (viewer.strEndsWith(fileObj.name, ext.MESH)) {
+      type = 'thumbnail';
     } else {
-      return 'unsupported';
+      type = 'unsupported';
     }
+
+    return type;
   };
 
   /**

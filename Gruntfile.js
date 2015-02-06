@@ -29,7 +29,8 @@ module.exports = function(grunt) {
         eqnull: true,
         browser: true,
         globals: {
-          jQuery: true, $: true, viewer: true, X: true
+          jQuery: true, $: true, viewer: true, X: true, dicomParser: true,
+          alert: true
         }
       },
       source: {
