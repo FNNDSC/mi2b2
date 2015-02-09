@@ -1,9 +1,47 @@
+body {
+  font-family: calibri;
+  margin: 0;
+}
+
+div#tabs{
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 100vh;
+}
+
+h1{
+  color: #848484;
+  text-align:center;
+  font-size: 2.5em;
+  margin: 2em;
+}
+
 .directory-btn{
-  background-color: #414141;
+  display: block;
+  background-color: #DDD;
   color: #FFF;
-  padding: 5px;
-  font-size: 20px;
+  font-size: 2em;
+  text-align: center;
+  padding: 1em;
+  margin: 60px auto 30px auto;
+  width: 200px;
+  border: 1.5px dashed #BBB;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
   border-radius: 5px;
-  border-style: solid;
-  border-with: 1px;
+  -webkit-box-shadow: 2px 2px 2px #666;
+  -moz-box-shadow: 2px 2px 2px #666;
+  box-shadow: 2px 2px 2px #666;
+  cursor:pointer;
+}
+
+.directory-btn:active{
+  -webkit-box-shadow: inset 6px 6px 5px #666;
+  -moz-box-shadow: inset 6px 6px 5px #666;
+  box-shadow: inset 6px 6px 5px #666;
+}
+
+.directory-btn:hover{
+  background-color: #D5D5D5;
 }

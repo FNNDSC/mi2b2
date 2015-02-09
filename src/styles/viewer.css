@@ -1,8 +1,13 @@
 @import url("/js/components/jquery-ui/themes/smoothness/jquery-ui.min.css");
 
+
 div#viewercontainer{
-  height: 100%;
+  position: relative;
+  margin: 0;
   background-color: #353535;
+  border-style: solid;
+  border-with: 1px;
+  min-height: 275px;
 }
 
 img {

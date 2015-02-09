@@ -10,18 +10,28 @@
 
   <body>
 
-    <div id="wholecontainer">
+      <div id=tabs>
+        <ul>
+          <li><a href=#tabload>Load files</a></li>
+          <li><a href=#tabviewer>Viewer</a></li>
+        </ul>
+      <div>
 
-      <h1>Visualization of neuroimages</h1>
+      <div id=tabload>
+        <h1>Visualization of neuroimages</h1>
 
-      <div id="directoryselection">
-        <label for="dirbtn" class="directory-btn">Drop Directory (or click)</label>
-        <input id="dirbtn" type="file" style="display: none;" webkitdirectory="" mozdirectory="" directory="">
+        <div id="directoryselection">
+          <label for="dirbtn" class="directory-btn">Drop Directory (or click)</label>
+          <input id="dirbtn" type="file" style="display: none;" webkitdirectory="" mozdirectory="" directory="">
+        </div>
       </div>
 
-      <div id="viewercontainer"></div>
+      <div id=tabviewer>
 
-    </div>
+        <div id="viewercontainer">
+
+        </div>
+      </div>
 
       <!-- Load viewer scripts -->
       <script data-main="config" src="js/components/requirejs/require.js"></script>
