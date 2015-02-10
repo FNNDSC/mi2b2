@@ -3,33 +3,40 @@
   <head>
   	<meta charset="utf-8" >
     <title>mi2b2</title>
-    <link rel="stylesheet"  href="styles/main.css">
     <!--Include viewer styles -->
     <link rel="stylesheet"  href="styles/viewer.css">
+    <link rel="stylesheet"  href="styles/main.css">
   </head>
 
   <body>
 
-      <div id=tabs>
+      <div id="tabs">
         <ul>
-          <li><a href=#tabload>Load files</a></li>
-          <li><a href=#tabviewer>Viewer</a></li>
+          <li><a href="#tabload">Load files</a></li>
+          <li><a href="#tabviewer">Viewer</a></li>
         </ul>
-      <div>
 
-      <div id=tabload>
-        <h1>Visualization of neuroimages</h1>
+        <div id="tabload">
 
-        <div id="directoryselection">
-          <label for="dirbtn" class="directory-btn">Drop Directory (or click)</label>
-          <input id="dirbtn" type="file" style="display: none;" webkitdirectory="" mozdirectory="" directory="">
+          <div id="inputcontainer" class="tabcontent">
+
+            <h1>Visualization of neuroimages</h1>
+
+            <div id="directoryselection">
+              <label for="dirbtn" class="directory-btn">Drop a folder (or click)</label>
+              <input id="dirbtn" type="file" style="display: none;" webkitdirectory="" mozdirectory="" directory="">
+            </div>
+
+            <h2>Your data stays on your computer. No upload required!</h2>
+
+          </div>
         </div>
-      </div>
 
-      <div id=tabviewer>
+        <div id="tabviewer">
 
-        <div id="viewercontainer">
+          <div id="viewercontainer" class="tabcontent">
 
+          </div>
         </div>
       </div>
 

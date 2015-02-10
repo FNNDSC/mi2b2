@@ -13,9 +13,9 @@ var app = app || {};
 
   app.App = function() {
 
-    // Init jQuery UI tab object
+    // Init jQuery UI tabs
     $('#tabs').tabs();
-
+    
     // Multidimensional associative array with ordered DICOM files
     this._dcmData = {};
     // Number of DICOM files

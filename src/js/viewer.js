@@ -23,23 +23,19 @@ var viewer = viewer || {};
     this.wholeContID = containerID;
     // insert initial html
     this._initInterface();
-    this.thumbnailBar = null;
+    // thumbnail container's ID
+    this.thumbnailContID = 'viewthumbnail';
+    // renderers container's ID
+    this.rendersContID =  'viewrenders';
+    // Initially the interface only contains the renderers container
+    $('#' + this.wholeContID).css({ position: "relative" }).append(
+      '<div id="viewrenders"></div>' );
     // 2D renderers
     this.renders2D = [];
 
 
   };
 
-  /**
-   * Create and insert initial html
-   */
-  viewer.Viewer.prototype._initInterface = function() {
-
-    $('#' + this.wholeContID).css({ position: "relative" }).append(
-      '<div id="viewrenders"></div>' );
-    // set the renderers container's ID
-    this.rendersContID = 'viewrenders';
-  };
 
   /**
    * Create and add 2D renderer to the UI.
@@ -64,42 +60,41 @@ var viewer = viewer || {};
    */
   viewer.Viewer.prototype.addThumbnailBar = function() {
 
-    if (!this.thumbnailBar) {
-
-      $('#' + this.wholeContID).append(
-        '<div id="viewthumbnail">' +
-          '<ul> </ul>' +
-        '</div>'
-      );
-      this.thumbnailBar = document.getElementById("viewthumbnail");
-      var jqUl = $(this.thumbnailBar).children("ul");
-      for (var imgFile in this.imgFileArr) {
-        jqUl.append(
-          '<li>' +
-            '<span>' + imgFile.thumbnail.name + '</span>' +
-          '</li>'
-        );
-      }
+    if ($('#' + this.thumbnailContID).length) {
+      return; // thumbnailbar already exists
     }
 
-  };
+    // read the thumbnail url so it can be assigned to the src attribute of <img>
+    function readThumbnailUrl(fileObj, callback) {
+      var reader = new FileReader();
 
-  /**
-   * Create and add 2D renderer to the UI.
-   *
-   * @param {String} X, Y or Z orientation.
-   */
-  viewer.Viewer.prototype.add2DRender = function(orientation) {
-    var render = new X.renderer2D();
-    var renderID = 'viewrender2D' + this.renders2D.length;
+      reader.onload = function() {
+        callback(reader.result);
+      };
 
-    $('#' + this.rendersContID).append('<div id="' + renderID + '"></div>');
-    render.container = renderID;
-    render.bgColor = [0.2, 0.2, 0.2];
-    render.orientation = orientation;
-    render.init();
-    this.position2DRender(render.container);
-    this.renders2D.push(render);
+      reader.readAsDataURL(fileObj);
+    }
+
+    $('#' + this.wholeContID).append(
+      '<div id="' + this.thumbnailContID + '">' +
+        '<ul> </ul>' +
+      '</div>'
+    );
+
+    var jqUl = $('#' + this.thumbnailContID).css({ width: "10%" }).draggable().
+    droppable().resizable().children("ul");
+
+    function createImgElm(url) {
+      jqUl.append(
+        '<li>' +
+          '<img src=>"' + url + '" alt=' + imgFile.thumbnail.name + '>' +
+        '</li>' );
+    }
+
+    for (var imgFile in this.imgFileArr) {
+      readThumbnailUrl(imgFile.thumbnail, createImgElm);
+    }
+
   };
 
   /**

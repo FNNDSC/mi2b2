@@ -3,28 +3,44 @@ body {
   margin: 0;
 }
 
-div#tabs{
+.ui-widget-content {
+  border: none;
+}
+
+div.tabcontent{
+  position: relative;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  height: 100vh;
+  height: -webkit-calc(100vh - 90px);
+  height: -moz-calc(100vh - 90px);
+  height: calc(100vh - 90px);
+  overflow: hidden;
 }
 
-h1{
+div#inputcontainer  h1{
   color: #848484;
   text-align:center;
-  font-size: 2.5em;
-  margin: 2em;
+  font-size: 2.2em;
+  margin: 30px;
+}
+
+div#inputcontainer h2 {
+  color: #848484;
+  text-align:center;
+  font-size: 1em;
+  font-weight: bold;
+  margin: 10px;
 }
 
 .directory-btn{
   display: block;
   background-color: #DDD;
   color: #FFF;
-  font-size: 2em;
+  font-size: 1.7em;
   text-align: center;
   padding: 1em;
-  margin: 60px auto 30px auto;
+  margin: 60px auto 20px auto;
   width: 200px;
   border: 1.5px dashed #BBB;
   -webkit-border-radius: 5px;

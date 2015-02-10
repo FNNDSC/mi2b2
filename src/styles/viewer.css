@@ -2,18 +2,12 @@
 
 
 div#viewercontainer{
-  position: relative;
   margin: 0;
   background-color: #353535;
   border-style: solid;
   border-with: 1px;
-  min-height: 275px;
 }
 
 img {
     display: block;
-}
-
-li {
-    margin-bottom: 2em;
 }
