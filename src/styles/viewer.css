@@ -5,9 +5,45 @@ div#viewercontainer{
   margin: 0;
   background-color: #353535;
   border-style: solid;
-  border-with: 1px;
+  border-width: 1px;
 }
 
-img {
-    display: block;
+div#viewthumbnail{
+  position: absolute;
+  top: 0;
+  left: 5px;
+  margin: 0;
+  height: -webkit-calc(100% - 2px);
+  height: -moz-calc(100% - 2px);
+  height: calc(100% - 2px);
+  width: 98px;
+  border-style: solid;
+  border-width: 1px;
+  overflow: auto;
+}
+
+div#viewthumbnail img{
+    height: 98px;
+    border-style: solid;
+    border-width: 1px;
+    width: 80px;
+}
+
+div#viewthumbnail img:hover{
+  border-color: red;
+}
+
+div#viewrenders{
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  height: -webkit-calc(100% - 2px);
+  height: -moz-calc(100% - 2px);
+  height: calc(100% - 2px);
+  width: -webkit-calc(100% - 2px);
+  width: -moz-calc(100% - 2px);
+  width: calc(100% - 2px);
+  border-style: solid;
+  border-width: 1px;
 }

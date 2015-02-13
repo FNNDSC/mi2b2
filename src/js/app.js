@@ -15,7 +15,8 @@ var app = app || {};
 
     // Init jQuery UI tabs
     $('#tabs').tabs();
-    
+    $('#tabs').tabs("disable", 1);
+
     // Multidimensional associative array with ordered DICOM files
     this._dcmData = {};
     // Number of DICOM files
@@ -40,19 +41,13 @@ var app = app || {};
       var fileObj;
 
       self._numFiles = files.length;
-      if (self._numFiles && !(('fullPath' in files[0]) ||
-        ('webkitRelativePath' in files[0]) || ('mozFullPath' in files[0]))) {
-
-        alert('Unsuported browser');
-        return;
-      }
 
       for (var i=0; i<self._numFiles; i++) {
         fileObj = files[i];
         if ('webkitRelativePath' in fileObj) {
           fileObj.fullPath = fileObj.webkitRelativePath;
-        } else if ('mozFullPath' in fileObj) {
-          fileObj.fullPath = fileObj.mozFullPath;
+        } else if (!('fullPath' in fileObj)) {
+          fileObj.fullPath = fileObj.name;
         }
         self.add(fileObj);
       }
@@ -82,13 +77,11 @@ var app = app || {};
         if(e.dataTransfer.files){
           files = e.dataTransfer.files;
           self._numFiles = files.length;
-          if (self._numFiles && !(('fullPath' in files[0]) || ('mozFullPath' in files[0]))) {
-            alert('Unsuported browser');
-            return;
-          }
           for (i=0; i<self._numFiles; i++) {
             fileObj = files[i];
-            fileObj.fullPath = fileObj.mozFullPath;
+            if (!('fullPath' in fileObj)) {
+              fileObj.fullPath = fileObj.name;
+            }
             self.add(fileObj);
           }
         } else {
@@ -161,16 +154,15 @@ var app = app || {};
     var path = fileObj.fullPath;
     var imgType = viewer.Viewer.imgType(fileObj);
 
-    if (imgType !== 'unsupported') {
-
-      if (imgType === 'dicom') {
-        // parse the dicom file
-        this.parseDicom(fileObj);
-      } else if (imgType === 'thumbnail') {
+    if (imgType === 'dicom') {
+      // parse the dicom file
+      this.parseDicom(fileObj);
+    } else {
+      if (imgType === 'thumbnail') {
         // save thumbnail file in an associative array
         // array keys are the full path with the extension trimmed
         this._thumbnails[path.substring(0, path.lastIndexOf('.'))] = fileObj;
-      } else {
+      } else if (imgType !== 'unsupported') {
         // push fibers, meshes and volumes into this._imgFileArr
         this._imgFileArr.push({
           'baseUrl': path.substring(0, path.lastIndexOf('/') + 1),
@@ -252,7 +244,7 @@ var app = app || {};
     for (var patient in this._dcmData) {
       for (var study in this._dcmData[patient]) {
         for (var series in this._dcmData[patient][study]) {
-          this._imgFileArr['volume'].push({
+          this._imgFileArr.push({
             'baseUrl': this._dcmData[patient][study][series]['baseUrl'],
             'imgType': 'dicom',
             'files': this._dcmData[patient][study][series]['files']
@@ -267,12 +259,13 @@ var app = app || {};
       path = this._imgFileArr[i].files[0].fullPath;
       this._imgFileArr[i].thumbnail = this._thumbnails[path.substring(0, path.lastIndexOf('.'))];
     }
-
     // Instantiate a new Viewer object
     if (this.view) {
-      //this.view.destroy();
+      this.view.destroy();
       this.view = null;
     }
     this.view = new viewer.Viewer(this._imgFileArr, 'viewercontainer');
+    this.view.addThumbnailBar();
+    $('#tabs').tabs("enable", 1).tabs("option", "active", 1);
     //app.view.connect(feedID);
   };
