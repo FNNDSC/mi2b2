@@ -2,8 +2,8 @@
  * mi2b2 app
  *
  * This app reads a directory tree from a directory picker/dropzone button (chrome)
- * or a single neuroimage file from a file picker/dropzone (other browsers) and
- * pass it to a Viewer object for visualization and collaboration. DICOM files are
+ * or multiple neuroimage files in the same directory (other browsers) and pass
+ * them to a Viewer object for visualization and collaboration. DICOM files are
  * previously sorted by patientID, studyInstanceUID, seriesInstanceUID using
  * chafey's dicomParser: https://github.com/chafey/dicomParser.
  */

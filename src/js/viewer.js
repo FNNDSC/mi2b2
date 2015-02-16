@@ -3,7 +3,6 @@
  *
  * An object of the Viewer class expects an array of image file objects where
  * each object contains the following properties:
- * -id: String unique identifier
  * -baseUrl: String ‘directory/containing/the/files’
  * -thumbnail: HTML5 File object (for a thumbnail image)
  * -imgType: String neuroimage type. Any of the possible values returned by viewer.Viewer.imgType
@@ -18,6 +17,10 @@ var viewer = viewer || {};
     this.version = 0.0;
     // array of image file objects
     this.imgFileArr = imgFileArr;
+    // assign an id to each array elem
+    for (var i=0; i<this.imgFileArr.length; i++) {
+      this.imgFileArr[i].id = i;
+    }
     // viewer container's ID
     this.wholeContID = containerID;
     // thumbnail container's ID
@@ -26,6 +29,8 @@ var viewer = viewer || {};
     this.rendersContID =  'viewrenders';
     // 2D renderers
     this.renders2D = [];
+    // maximum number of renderers
+    this.maxNumOfRenders = 4;
     // insert initial html
     this._initInterface();
 
@@ -38,7 +43,9 @@ var viewer = viewer || {};
   viewer.Viewer.prototype._initInterface = function() {
     var self = this;
 
-    // Initially the interface only contains the renderers container
+    // Initially the interface only contains the renderers container which in turn contains a
+    // renderer that loads and displays the first volume in this.imgFileArr
+
     $('#' + this.wholeContID).css({ position: "relative" }).append(
       '<div id="' + this.rendersContID + '"></div>' );
 
@@ -47,17 +54,44 @@ var viewer = viewer || {};
     var drop_opts = {
       scope: self.rendersContID, // restrict dropping only for draggable items that have the same scope str
       // hoverClass: string representing one or more CSS classes to be added  when an accepted
-      // element moves into it
+      // elem moves into it
 
       //event handlers
       // ui.helper is the jQuery obj of the dropped elem
       // ui.draggable is the jQuery object of the clicked elem (but not necessarily the elem that moves)
       drop: function(evt, ui) {
+        // a dropped thumbnail returns to its initial pos and disappears from thumbnail bar
         $(ui.draggable).css({ display:"none", left: 0 });
       }
     };
     // make the renderers container droppable and sortable
     $('#' + this.rendersContID).droppable(drop_opts).sortable();
+
+    // jQuery UI options object for draggable elems
+    // ui-draggable CSS class is added to movable elems and ui-draggable-dragging is
+    // added to the elem being moved
+    var drag_opts = {
+      cursor: 'pointer',
+      scope: self.thumbnailContID, // restrict drop only on items that have the same scope str
+      revert: 'invalid', // returns if dropped on an element that does not accept it
+      axis: 'x', // displacement only possible in x (horizontal) direction
+      containment: self.wholeContID, // within which elem the displacement takes place
+    };
+    // make div elems within the renderers container draggable
+    $('#' + this.rendersContID + ' div').draggable(drag_opts);
+
+    // load and render the first volume in the list
+    for (var i=0; i<this.imgFileArr.length; i++) {
+      if (this.imgFileArr[i].imgType==='vol' || this.imgFileArr[i].imgType==='dicom') {
+        this.add2DRender(this.imgFileArr[i], 'Y');
+        var jqThObj = $('#viewth' + this.imgFileArr[i].id);
+        // if there is a thumbnail for this vol then hide it from the thumbnail bar
+        if (jqThObj.length) {
+          jqThObj.css({ display:"none"});
+        }
+      }
+      break;
+    }
 
   };
 
@@ -71,21 +105,25 @@ var viewer = viewer || {};
       return; // thumbnailbar already exists
     }
 
-    // function to read the thumbnails'url so it can be assigned to the src of <img>
-    function readThumbnailUrl(fileObj, callback) {
+    // define function to read the thumbnails' url so it can be assigned to the src of <img>
+    function readThumbnailUrl(imgFileObj, callback) {
+      var fileObj = imgFileObj.thumbnail;
       var reader = new FileReader();
 
       reader.onload = function() {
-        callback(reader.result, fileObj.name);
+        callback(imgFileObj.id, fileObj.name, reader.result);
       };
 
       reader.readAsDataURL(fileObj);
     }
 
     // callback to append new img elem
-    function createImgElm(url, altText) {
+    function createImgElm(id, altText, url) {
+      if (url === undefined) {
+        url = ' ';
+      }
       $('#' + self.thumbnailContID).append(
-          '<img src="' + url + '" alt="' + altText.substr(-8) + '" title="' + altText + '">'
+          '<img id="viewth' + id + '" src="' + url + '" alt="' + altText.substr(-8) + '" title="' + altText + '">'
       );
     }
 
@@ -94,7 +132,6 @@ var viewer = viewer || {};
       '<div id="' + this.thumbnailContID + '"></div>'
     );
 
-    // jQuery UI options object for droppable elems
     var drop_opts = {
       scope: self.thumbnailContID,
       /*drop: function(evt, ui) {
@@ -104,15 +141,12 @@ var viewer = viewer || {};
     // make the thumbnails container droppable and sortable
     $('#' + this.thumbnailContID).droppable(drop_opts).sortable();
 
-    // jQuery UI options object for draggable elems
-    // ui-draggable CSS class is added to movable elems and ui-draggable-dragging is
-    // added to elem being moved
     var drag_opts = {
       cursor: 'pointer',
-      scope: self.rendersContID, // restrict drop only on items that have the same scope str
-      revert: 'invalid', // returns if dropped on an element that does not accept it
-      axis: 'x', // displacement only possible in x (horizontal) direction
-      containment: self.wholeContID, // within which the displacement takes place
+      scope: self.rendersContID,
+      revert: 'invalid',
+      axis: 'x',
+      containment: self.wholeContID,
     };
     // make img elems within the thumbnails container draggable
     $('#' + this.thumbnailContID + ' img').draggable(drag_opts);
@@ -121,9 +155,9 @@ var viewer = viewer || {};
     for (var i=0; i<this.imgFileArr.length; i++) {
       imgFileObj = this.imgFileArr[i];
       if (imgFileObj.thumbnail) {
-        readThumbnailUrl(imgFileObj.thumbnail, createImgElm);
+        readThumbnailUrl(imgFileObj, createImgElm);
       } else {
-        createImgElm(' ', imgFileObj.files[0].name);
+        createImgElm(imgFileObj.id, imgFileObj.files[0].name);
       }
     }
 
@@ -133,21 +167,74 @@ var viewer = viewer || {};
   };
 
   /**
-   * Create and add 2D renderer to the UI.
+   * Create and add 2D renderer with a loaded volume to the UI.
    *
    * @param {String} X, Y or Z orientation.
    */
-  viewer.Viewer.prototype.add2DRender = function(orientation) {
-    var render = new X.renderer2D();
-    var renderID = 'viewrender2D' + this.renders2D.length;
+  viewer.Viewer.prototype.add2DRender = function(imgFileObj, orientation) {
+    var render, containerID;
+    var filedata = [];
+    var numFiles = 0;
 
-    $('#' + this.rendersContID).append('<div id="' + renderID + '"></div>');
-    render.container = renderID;
-    render.bgColor = [0.2, 0.2, 0.2];
-    render.orientation = orientation;
-    render.init();
-    this.position2DRender(render.container);
-    this.renders2D.push(render);
+    // define function to read a file into filedata array
+    function readFile(fileObj, pos) {
+      var reader = new FileReader();
+
+      reader.onload = function() {
+        filedata[pos] = reader.result;
+        ++numFiles;
+        if (numFiles===imgFileObj.files.length) {
+          render.volume.filedata = filedata;
+          render.add(render.volume);
+          // start the rendering
+          render.render();
+
+        }
+      };
+      reader.readAsArrayBuffer(fileObj);
+    }
+
+    if (this.renders2D.length < this.maxNumOfRenders) {
+      render = new X.renderer2D();
+      containerID = 'viewrender2D' + imgFileObj.id;
+
+      $('#' + this.rendersContID).append('<div id="' + containerID + '"></div>');
+      this.positionRenders();
+      render.container = containerID;
+      render.bgColor = [0.2, 0.2, 0.2];
+      render.orientation = orientation;
+      render.init();
+      render.volume = new X.volume();
+      render.volume.reslicing = 'false';
+
+      // read all neuroimage files in imgFileObj.files
+      for (var i=0; i<imgFileObj.files.length; i++) {
+        readFile(imgFileObj.files[i], i);
+      }
+      // add 2D renderer to the list of current UI renders
+      this.renders2D.push(render);
+    }
+
+  };
+
+  /**
+   * Remove 2D renderer from the UI.
+   *
+   * @param {String} renderer's container.
+   */
+  viewer.Viewer.prototype.remove2DRender = function(containerID) {
+
+    for (var i=0; i<this.renders2D.length; i++) {
+      if (this.renders2D[i].container === containerID) {
+        this.renders2D[i].remove(this.renders2D[i].volume);
+        this.renders2D[i].destroy();
+        this.renders2D.splice(i, 1);
+        $('#' + containerID).remove();
+        this.positionRenders();
+        break;
+      }
+    }
+
   };
 
 
@@ -159,8 +246,8 @@ var viewer = viewer || {};
   viewer.Viewer.prototype.destroy = function() {
 
     // destroy XTK renderers
-    for (var render in this.renders2D) {
-      render.destroy();
+    for (var i=0; i<this.renders2D.length; i++) {
+      this.renders2D[i].destroy();
     }
     this.renders2D = [];
 
