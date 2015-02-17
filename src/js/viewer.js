@@ -31,6 +31,8 @@ var viewer = viewer || {};
     this.renders2D = [];
     // maximum number of renderers
     this.maxNumOfRenders = 4;
+    // current number of renderers
+    this.numOfRenders = 0;
     // insert initial html
     this._initInterface();
 
@@ -43,56 +45,202 @@ var viewer = viewer || {};
   viewer.Viewer.prototype._initInterface = function() {
     var self = this;
 
-    // Initially the interface only contains the renderers container which in turn contains a
-    // renderer that loads and displays the first volume in this.imgFileArr
+    // Initially the interface only contains the renderers' container which in turn contains a
+    // single renderer that loads and displays the first volume in this.imgFileArr
 
     $('#' + this.wholeContID).css({ position: "relative" }).append(
       '<div id="' + this.rendersContID + '"></div>' );
 
     // jQuery UI options object for droppable elems
-    // ui-droppable CSS class is by default added to the element
+    // ui-droppable CSS class is by default added to the elem
     var drop_opts = {
-      scope: self.rendersContID, // restrict dropping only for draggable items that have the same scope str
+      scope: this.rendersContID, // restrict dropping only for draggable items that have the same scope
       // hoverClass: string representing one or more CSS classes to be added  when an accepted
       // elem moves into it
 
       //event handlers
       // ui.helper is the jQuery obj of the dropped elem
-      // ui.draggable is the jQuery object of the clicked elem (but not necessarily the elem that moves)
+      // ui.draggable is the jQuery object of the clicked elem (but not the elem that moves)
       drop: function(evt, ui) {
-        // a dropped thumbnail returns to its initial pos and disappears from thumbnail bar
-        $(ui.draggable).css({ display:"none", left: 0 });
+
+        if (self.numOfRenders < self.maxNumOfRenders) {
+          // a dropped thumbnail image disappears from thumbnail bar
+          var id = parseInt($(ui.draggable).css({ display:"none" }).attr("id").replace("viewth",""));
+          // add a renderer to the UI
+          self.add2DRender(self.getImgFileObject(id), 'Y');
+        } else {
+          alert('Reached maximum number of renders allow which is 4. You must drag a render out ' +
+           'of the viewer window and drop it into the thumbnails bar to make a render available');
+        }
+
       }
     };
-    // make the renderers container droppable and sortable
-    $('#' + this.rendersContID).droppable(drop_opts).sortable();
+
+    // make the renderers container droppable and float it so it can contain floated elems
+    $('#' + this.rendersContID).droppable(drop_opts).css({ float: "left" });
+
+    // load and render the first volume in the list
+    for (var i=0; i<this.imgFileArr.length; i++) {
+      if (this.imgFileArr[i].imgType==='vol' || this.imgFileArr[i].imgType==='dicom') {
+        this.add2DRender(this.imgFileArr[i], 'Y');
+      }
+      break;
+    }
+
+  };
+
+  /**
+   * Create and add 2D renderer with a loaded volume to the UI.
+   *
+   * @param {String} X, Y or Z orientation.
+   */
+  viewer.Viewer.prototype.add2DRender = function(imgFileObj, orientation) {
+    var render, containerID;
+    var filedata = [];
+    var numFiles = 0;
+
+    // append render div to the renderers container
+    containerID = 'viewrender2D' + imgFileObj.id;
+    $('#' + this.rendersContID).append('<div id="' + containerID + '"></div>');
+
+    // render div is floated within the renderers' container
+    $('#' + containerID).css({
+      "border-style": "solid",
+      "box-sizing": "border-box",
+      "float": "left"
+    });
+
+    ++this.numOfRenders;
 
     // jQuery UI options object for draggable elems
     // ui-draggable CSS class is added to movable elems and ui-draggable-dragging is
     // added to the elem being moved
     var drag_opts = {
       cursor: 'pointer',
-      scope: self.thumbnailContID, // restrict drop only on items that have the same scope str
+      scope: this.thumbnailContID, // restrict drop only on items that have the same scope str
       revert: 'invalid', // returns if dropped on an element that does not accept it
       axis: 'x', // displacement only possible in x (horizontal) direction
-      containment: self.wholeContID, // within which elem the displacement takes place
-    };
-    // make div elems within the renderers container draggable
-    $('#' + this.rendersContID + ' div').draggable(drag_opts);
+      containment: '#' + this.wholeContID, // CSS selector within which elem the displacement is restricted
+      helper: 'clone', // We actually move a clone of the elem rather than the elem itself
+      appendTo: '#' + this.thumbnailContID, // CSS selector given the receiver container for the moved clone
 
-    // load and render the first volume in the list
-    for (var i=0; i<this.imgFileArr.length; i++) {
-      if (this.imgFileArr[i].imgType==='vol' || this.imgFileArr[i].imgType==='dicom') {
-        this.add2DRender(this.imgFileArr[i], 'Y');
-        var jqThObj = $('#viewth' + this.imgFileArr[i].id);
-        // if there is a thumbnail for this vol then hide it from the thumbnail bar
-        if (jqThObj.length) {
-          jqThObj.css({ display:"none"});
-        }
+      //event handlers
+      // ui.helper is the jQuery obj of the dragged elem
+      start: function(evt, ui) {
+
+        // make dimensions of the moving clone the same as the corresponding thumbnail img
+        var jqTh = $('#' + containerID.replace("viewrender2D", "viewth"));
+        var h = jqTh.css("height");
+        var w = jqTh.css("width");
+        ui.helper.css( {height: h, width: w} );
       }
-      break;
+    };
+
+    // make div elem draggable
+    $('#' + containerID).draggable(drag_opts);
+
+    // rearrange layout
+    this.positionRenders();
+
+    // create xtk objects
+    render = new X.renderer2D();
+    render.container = containerID;
+    render.bgColor = [0.2, 0.2, 0.2];
+    render.orientation = orientation;
+    render.init();
+    render.volume = new X.volume();
+    render.volume.reslicing = 'false';
+
+    // add xtk 2D renderer to the list of current UI renders
+    this.renders2D.push(render);
+
+    // define function to read a file into filedata array
+    function readFile(fileObj, pos) {
+      var reader = new FileReader();
+
+      reader.onload = function() {
+        filedata[pos] = reader.result;
+        ++numFiles;
+
+        if (numFiles===imgFileObj.files.length) {
+          render.volume.filedata = filedata;
+          render.add(render.volume);
+          // start the rendering
+          render.render();
+
+        }
+      };
+
+      reader.readAsArrayBuffer(fileObj);
     }
 
+    // read all neuroimage files in imgFileObj.files
+    for (var i=0; i<imgFileObj.files.length; i++) {
+      readFile(imgFileObj.files[i], i);
+    }
+
+  };
+
+  /**
+   * Remove 2D renderer from the UI.
+   *
+   * @param {String} renderer's container.
+   */
+  viewer.Viewer.prototype.remove2DRender = function(containerID) {
+
+    // find and destroy xtk objects and remove the renderer's div from the UI
+    for (var i=0; i<this.renders2D.length; i++) {
+      if (this.renders2D[i].container === containerID) {
+        this.renders2D[i].remove(this.renders2D[i].volume);
+        this.renders2D[i].destroy();
+        this.renders2D.splice(i, 1);
+        $('#' + containerID).remove();
+        --this.numOfRenders;
+        this.positionRenders();
+        break;
+      }
+    }
+
+  };
+
+  /**
+   * Rearrange renderers in the UI layout.
+   */
+  viewer.Viewer.prototype.positionRenders = function() {
+    var jqRenders = $('#' + this.rendersContID + ' div');
+    var numRenders = this.renders2D.length;
+
+    switch(numRenders) {
+      case 1:
+        jqRenders.css({
+          width: "100%",
+          height: "100%",
+        });
+      break;
+
+      case 2:
+        jqRenders.css({
+          width: "50%",
+          height: "100%",
+        });
+      break;
+
+      case 3:
+        jqRenders.css({
+          width: "50%",
+          height: "50%",
+        });
+
+        jqRenders[2].style.width = "100%";
+      break;
+
+      case 4:
+        jqRenders.css({
+          width: "50%",
+          height: "50%",
+        });
+      break;
+    }
   };
 
   /**
@@ -132,25 +280,26 @@ var viewer = viewer || {};
       '<div id="' + this.thumbnailContID + '"></div>'
     );
 
-    var drop_opts = {
-      scope: self.thumbnailContID,
-      /*drop: function(evt, ui) {
-
-      }*/
-    };
     // make the thumbnails container droppable and sortable
+    var drop_opts = {
+      scope: this.thumbnailContID,
+
+      //event handlers
+      // ui.helper is the jQuery obj of the dropped elem
+      // ui.draggable is the jQuery object of the clicked elem (but not the elem that moves)
+      drop: function(evt, ui) {
+
+        var id = $(ui.draggable).attr("id");
+        // display the dropped renderer's thumbnail
+        $('#' + id.replace("viewrender2D", "viewth")).css({ display:"block" });
+        self.remove2DRender(id);
+
+      }
+    };
+
     $('#' + this.thumbnailContID).droppable(drop_opts).sortable();
 
-    var drag_opts = {
-      cursor: 'pointer',
-      scope: self.rendersContID,
-      revert: 'invalid',
-      axis: 'x',
-      containment: self.wholeContID,
-    };
-    // make img elems within the thumbnails container draggable
-    $('#' + this.thumbnailContID + ' img').draggable(drag_opts);
-
+    // load thumbnail images
     var imgFileObj;
     for (var i=0; i<this.imgFileArr.length; i++) {
       imgFileObj = this.imgFileArr[i];
@@ -161,79 +310,36 @@ var viewer = viewer || {};
       }
     }
 
+    // make img elems within the thumbnails container draggable
+    var drag_opts = {
+      cursor: 'pointer',
+      scope: this.rendersContID,
+      revert: 'invalid',
+      axis: 'x',
+      containment: '#' + this.wholeContID,
+      helper: 'clone',
+      appendTo: '#' + this.rendersContID,
+
+      //event handlers
+      // ui.helper is the jQuery obj of the dragged elem
+      start: function(evt, ui) {
+
+        // make the moving clone with the same dimensions as the original
+        var jqTh = $(this);
+        var h = jqTh.css("height");
+        var w = jqTh.css("width");
+        ui.helper.css( {height: h, width: w} );
+      }
+    };
+
+    $('#' + this.thumbnailContID + ' img').draggable(drag_opts);
+
+    // if there is a renderer already loaded in the UI then hide its thumbnail image
+    var thID = $('#' + this.rendersContID + ' div').attr("id").replace("viewrender2D", "viewth");
+    $('#' + thID).css({ display:"none" });
+
     // make space for the thumbnail window
     $('#' + this.rendersContID).css({ width: "calc(100% - 112px)" });
-
-  };
-
-  /**
-   * Create and add 2D renderer with a loaded volume to the UI.
-   *
-   * @param {String} X, Y or Z orientation.
-   */
-  viewer.Viewer.prototype.add2DRender = function(imgFileObj, orientation) {
-    var render, containerID;
-    var filedata = [];
-    var numFiles = 0;
-
-    // define function to read a file into filedata array
-    function readFile(fileObj, pos) {
-      var reader = new FileReader();
-
-      reader.onload = function() {
-        filedata[pos] = reader.result;
-        ++numFiles;
-        if (numFiles===imgFileObj.files.length) {
-          render.volume.filedata = filedata;
-          render.add(render.volume);
-          // start the rendering
-          render.render();
-
-        }
-      };
-      reader.readAsArrayBuffer(fileObj);
-    }
-
-    if (this.renders2D.length < this.maxNumOfRenders) {
-      render = new X.renderer2D();
-      containerID = 'viewrender2D' + imgFileObj.id;
-
-      $('#' + this.rendersContID).append('<div id="' + containerID + '"></div>');
-      this.positionRenders();
-      render.container = containerID;
-      render.bgColor = [0.2, 0.2, 0.2];
-      render.orientation = orientation;
-      render.init();
-      render.volume = new X.volume();
-      render.volume.reslicing = 'false';
-
-      // read all neuroimage files in imgFileObj.files
-      for (var i=0; i<imgFileObj.files.length; i++) {
-        readFile(imgFileObj.files[i], i);
-      }
-      // add 2D renderer to the list of current UI renders
-      this.renders2D.push(render);
-    }
-
-  };
-
-  /**
-   * Remove 2D renderer from the UI.
-   *
-   * @param {String} renderer's container.
-   */
-  viewer.Viewer.prototype.remove2DRender = function(containerID) {
-
-    for (var i=0; i<this.renders2D.length; i++) {
-      if (this.renders2D[i].container === containerID) {
-        this.renders2D[i].remove(this.renders2D[i].volume);
-        this.renders2D[i].destroy();
-        this.renders2D.splice(i, 1);
-        $('#' + containerID).remove();
-        this.positionRenders();
-        break;
-      }
-    }
 
   };
 
@@ -253,6 +359,15 @@ var viewer = viewer || {};
 
     // remove html
     $('#' + this.wholeContID).empty();
+  };
+
+  /**
+   * Return image file object given its id
+   *
+   * @param {Number} Integer number between 0 and this.imgFileArr.length-1.
+   */
+  viewer.Viewer.prototype.getImgFileObject = function(id) {
+    return this.imgFileArr[id];
   };
 
 
