@@ -1,4 +1,4 @@
-@import url("components/jquery-ui/themes/smoothness/jquery-ui.min.css");
+@import url("../components/jquery-ui/themes/smoothness/jquery-ui.min.css");
 
 div#viewercontainer{
   position: relative;
