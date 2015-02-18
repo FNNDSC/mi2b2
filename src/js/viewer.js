@@ -95,9 +95,10 @@ var viewer = viewer || {};
    * @param {String} X, Y or Z orientation.
    */
   viewer.Viewer.prototype.add2DRender = function(imgFileObj, orientation) {
-    var render, containerID;
+    var render, vol, containerID;
     var filedata = [];
     var numFiles = 0;
+    var fileNames = [];
 
     // append render div to the renderers container
     containerID = 'viewrender2D' + imgFileObj.id;
@@ -109,8 +110,6 @@ var viewer = viewer || {};
       "box-sizing": "border-box",
       "float": "left"
     });
-
-    ++this.numOfRenders;
 
     // jQuery UI options object for draggable elems
     // ui-draggable CSS class is added to movable elems and ui-draggable-dragging is
@@ -140,6 +139,7 @@ var viewer = viewer || {};
     $('#' + containerID).draggable(drag_opts);
 
     // rearrange layout
+    ++this.numOfRenders;
     this.positionRenders();
 
     // create xtk objects
@@ -148,8 +148,14 @@ var viewer = viewer || {};
     render.bgColor = [0.2, 0.2, 0.2];
     render.orientation = orientation;
     render.init();
-    render.volume = new X.volume();
-    render.volume.reslicing = 'false';
+
+    for (var i=0; i<imgFileObj.files.length; i++) {
+      fileNames[i] = imgFileObj.files[i].name;
+    }
+    vol = new X.volume();
+    vol.reslicing = 'false';
+    vol.file = fileNames.sort().map(function(str) {
+      return imgFileObj.baseUrl + str;});
 
     // add xtk 2D renderer to the list of current UI renders
     this.renders2D.push(render);
@@ -163,8 +169,9 @@ var viewer = viewer || {};
         ++numFiles;
 
         if (numFiles===imgFileObj.files.length) {
-          render.volume.filedata = filedata;
-          render.add(render.volume);
+          vol.filedata = filedata;
+          viewer.documentRepaint();
+          render.add(vol);
           // start the rendering
           render.render();
 
@@ -175,7 +182,7 @@ var viewer = viewer || {};
     }
 
     // read all neuroimage files in imgFileObj.files
-    for (var i=0; i<imgFileObj.files.length; i++) {
+    for (i=0; i<imgFileObj.files.length; i++) {
       readFile(imgFileObj.files[i], i);
     }
 
@@ -190,8 +197,7 @@ var viewer = viewer || {};
 
     // find and destroy xtk objects and remove the renderer's div from the UI
     for (var i=0; i<this.renders2D.length; i++) {
-      if (this.renders2D[i].container === containerID) {
-        this.renders2D[i].remove(this.renders2D[i].volume);
+      if (this.renders2D[i].q.id === containerID) {
         this.renders2D[i].destroy();
         this.renders2D.splice(i, 1);
         $('#' + containerID).remove();
@@ -208,9 +214,8 @@ var viewer = viewer || {};
    */
   viewer.Viewer.prototype.positionRenders = function() {
     var jqRenders = $('#' + this.rendersContID + ' div');
-    var numRenders = this.renders2D.length;
 
-    switch(numRenders) {
+    switch(this.numOfRenders) {
       case 1:
         jqRenders.css({
           width: "100%",
@@ -230,7 +235,6 @@ var viewer = viewer || {};
           width: "50%",
           height: "50%",
         });
-
         jqRenders[2].style.width = "100%";
       break;
 
@@ -291,7 +295,7 @@ var viewer = viewer || {};
 
         var id = $(ui.draggable).attr("id");
         // display the dropped renderer's thumbnail
-        $('#' + id.replace("viewrender2D", "viewth")).css({ display:"block" });
+        $('#' + id.replace("viewrender2D", "viewth")).css({ display:"" });
         self.remove2DRender(id);
 
       }
@@ -427,4 +431,13 @@ var viewer = viewer || {};
       }
     }
     return false;
+  };
+
+  /**
+   * Module utility function. Repaint the document
+   */
+  viewer.documentRepaint = function() {
+    var ev = document.createEvent('Event');
+    ev.initEvent('resize', true, true);
+    window.dispatchEvent(ev);
   };
