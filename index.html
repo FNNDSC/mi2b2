@@ -1,0 +1,40 @@
+<!DOCTYPE html >
+<html>
+  <head>
+  	<meta charset="utf-8" >
+    <title>mi2b2</title>
+    <!--Include viewer styles -->
+    <link rel="stylesheet"  href="styles/viewer.css">
+    <!--Include app styles -->
+    <link rel="stylesheet"  href="styles/main.css">
+    <!-- Load viewer scripts -->
+    <script src="/components/jquery/dist/jquery.min.js"></script>
+    <script src="/components/jquery-ui/jquery-ui.min.js"></script>
+  </head>
+
+  <body>
+
+    <div id="wholecontainer">
+
+      <h1>Visualization of neuroimages</h1>
+
+      <div id="viewercontainer" class="tabcontent">
+
+        <div id=viewthumbnail>
+          <img id="img1" src=images/img1.png alt=img1.png>
+          <img id="img2" src=images/img2.png alt=img2.png>
+          <img id="img3" src=images/img3.png alt=img3.png>
+          <img id="img4" src=images/img4.png alt=img4.png>
+        </div>
+
+        <div id=viewrenders>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <script src="viewer.js"></script>
+  </body>
+</html>
