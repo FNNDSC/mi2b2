@@ -1,49 +1,63 @@
 @import url("/js/components/jquery-ui/themes/smoothness/jquery-ui.min.css");
 
-
+/*viewer's whole container*/
 div#viewercontainer{
   margin: 0;
   background-color: #353535;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   border-style: solid;
   border-width: 1px;
 }
 
-div#viewthumbnail{
-  position: absolute;
-  top: 0;
-  left: 5px;
-  margin: 0;
-  height: -webkit-calc(100% - 2px);
-  height: -moz-calc(100% - 2px);
-  height: calc(100% - 2px);
-  width: 98px;
-  border-style: solid;
-  border-width: 1px;
-  overflow: auto;
-}
-
-div#viewthumbnail img{
-    height: 98px;
-    border-style: solid;
-    border-width: 1px;
-    width: 80px;
-}
-
-div#viewthumbnail img:hover{
-  border-color: red;
-}
-
+/*renderers window*/
 div#viewrenders{
   position: absolute;
   top: 0;
   right: 0;
   margin: 0;
-  height: -webkit-calc(100% - 2px);
-  height: -moz-calc(100% - 2px);
-  height: calc(100% - 2px);
-  width: -webkit-calc(100% - 2px);
-  width: -moz-calc(100% - 2px);
-  width: calc(100% - 2px);
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
   border-style: solid;
   border-width: 1px;
+}
+
+/*individual renderers*/
+.view-render{
+  border-style: solid;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  float: left;
+}
+
+/*thumbnail bar*/
+div#viewthumbnail{
+  position: absolute;
+  top: 0;
+  left: 5px;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 100%;
+  width: 100px;
+  border-style: solid;
+  border-width: 1px;
+  overflow: auto;
+}
+
+/*images within the thumbnail bar*/
+.view-thumbnail-img{
+    height: 98px;
+    border-style: solid;
+    border-width: 1px;
+    width: 80px;
+}
+.view-thumbnail-img:hover{
+  border-color: red;
 }

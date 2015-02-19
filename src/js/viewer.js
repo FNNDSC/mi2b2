@@ -92,24 +92,18 @@ var viewer = viewer || {};
   /**
    * Create and add 2D renderer with a loaded volume to the UI.
    *
+   * @param {Oject} Image file object.
    * @param {String} X, Y or Z orientation.
    */
   viewer.Viewer.prototype.add2DRender = function(imgFileObj, orientation) {
     var render, vol, containerID;
     var filedata = [];
     var numFiles = 0;
-    var fileNames = [];
 
     // append render div to the renderers container
     containerID = 'viewrender2D' + imgFileObj.id;
     $('#' + this.rendersContID).append('<div id="' + containerID + '"></div>');
-
-    // render div is floated within the renderers' container
-    $('#' + containerID).css({
-      "border-style": "solid",
-      "box-sizing": "border-box",
-      "float": "left"
-    });
+    $('#' + containerID).addClass("view-render");
 
     // jQuery UI options object for draggable elems
     // ui-draggable CSS class is added to movable elems and ui-draggable-dragging is
@@ -143,19 +137,8 @@ var viewer = viewer || {};
     this.positionRenders();
 
     // create xtk objects
-    render = new X.renderer2D();
-    render.container = containerID;
-    render.bgColor = [0.2, 0.2, 0.2];
-    render.orientation = orientation;
-    render.init();
-
-    for (var i=0; i<imgFileObj.files.length; i++) {
-      fileNames[i] = imgFileObj.files[i].name;
-    }
-    vol = new X.volume();
-    vol.reslicing = 'false';
-    vol.file = fileNames.sort().map(function(str) {
-      return imgFileObj.baseUrl + str;});
+    render = this.create2DRender(containerID, orientation);
+    vol = this.createVolume(imgFileObj);
 
     // add xtk 2D renderer to the list of current UI renders
     this.renders2D.push(render);
@@ -170,11 +153,10 @@ var viewer = viewer || {};
 
         if (numFiles===imgFileObj.files.length) {
           vol.filedata = filedata;
-          viewer.documentRepaint();
           render.add(vol);
           // start the rendering
           render.render();
-
+          viewer.documentRepaint();
         }
       };
 
@@ -182,7 +164,7 @@ var viewer = viewer || {};
     }
 
     // read all neuroimage files in imgFileObj.files
-    for (i=0; i<imgFileObj.files.length; i++) {
+    for (var i=0; i<imgFileObj.files.length; i++) {
       readFile(imgFileObj.files[i], i);
     }
 
@@ -203,10 +185,48 @@ var viewer = viewer || {};
         $('#' + containerID).remove();
         --this.numOfRenders;
         this.positionRenders();
+        viewer.documentRepaint();
         break;
       }
     }
 
+  };
+
+  /**
+   * Create a 2D renderer object.
+   *
+   * @param {String} container id.
+   * @param {String} X, Y or Z orientation.
+   */
+  viewer.Viewer.prototype.create2DRender = function(containerID, orientation) {
+    var render;
+
+    // create xtk objects
+    render = new X.renderer2D();
+    render.container = containerID;
+    render.bgColor = [0.2, 0.2, 0.2];
+    render.orientation = orientation;
+    render.init();
+    return render;
+  };
+
+  /**
+   * Create a volume object.
+   *
+   * @param {Object} image file object
+   */
+  viewer.Viewer.prototype.createVolume = function(imgFileObj) {
+    var fileNames = [];
+    var vol;
+
+    for (var i=0; i<imgFileObj.files.length; i++) {
+      fileNames[i] = imgFileObj.files[i].name;
+    }
+    vol = new X.volume();
+    vol.reslicing = 'false';
+    vol.file = fileNames.sort().map(function(str) {
+      return imgFileObj.baseUrl + str;});
+    return vol;
   };
 
   /**
@@ -277,6 +297,7 @@ var viewer = viewer || {};
       $('#' + self.thumbnailContID).append(
           '<img id="viewth' + id + '" src="' + url + '" alt="' + altText.substr(-8) + '" title="' + altText + '">'
       );
+      $('#viewth' + id).addClass("view-thumbnail-img");
     }
 
     // append thumbnail div to the whole container
@@ -343,7 +364,9 @@ var viewer = viewer || {};
     $('#' + thID).css({ display:"none" });
 
     // make space for the thumbnail window
-    $('#' + this.rendersContID).css({ width: "calc(100% - 112px)" });
+    var jqThCont = $('#' + this.thumbnailContID);
+    var renderMargin = parseInt(jqThCont.css("left")) + parseInt(jqThCont.css("width")) + 5;
+    $('#' + this.rendersContID).css({ width: "calc(100% - " + renderMargin + "px)" });
 
   };
 
