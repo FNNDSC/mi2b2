@@ -53,6 +53,7 @@ div#viewthumbnail{
 
 /*images within the thumbnail bar*/
 .view-thumbnail-img{
+    display: block;
     height: 98px;
     border-style: solid;
     border-width: 1px;

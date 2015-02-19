@@ -233,7 +233,7 @@ var viewer = viewer || {};
    * Rearrange renderers in the UI layout.
    */
   viewer.Viewer.prototype.positionRenders = function() {
-    var jqRenders = $('#' + this.rendersContID + ' div');
+    var jqRenders = $('div.view-render');
 
     switch(this.numOfRenders) {
       case 1:
@@ -357,16 +357,16 @@ var viewer = viewer || {};
       }
     };
 
-    $('#' + this.thumbnailContID + ' img').draggable(drag_opts);
+    $('img.view-thumbnail-img').draggable(drag_opts);
 
     // if there is a renderer already loaded in the UI then hide its thumbnail image
-    var thID = $('#' + this.rendersContID + ' div').attr("id").replace("viewrender2D", "viewth");
+    var thID = $('div.view-render').attr("id").replace("viewrender2D", "viewth");
     $('#' + thID).css({ display:"none" });
 
     // make space for the thumbnail window
     var jqThCont = $('#' + this.thumbnailContID);
-    var renderMargin = parseInt(jqThCont.css("left")) + parseInt(jqThCont.css("width")) + 5;
-    $('#' + this.rendersContID).css({ width: "calc(100% - " + renderMargin + "px)" });
+    var rendersMargin = parseInt(jqThCont.css("left")) + parseInt(jqThCont.css("width")) + 5;
+    $('#' + this.rendersContID).css({ width: "calc(100% - " + rendersMargin + "px)" });
 
   };
 
