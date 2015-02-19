@@ -50,34 +50,33 @@ var viewer = viewer || {};
 
     $('#' + this.wholeContID).css({ position: "relative" }).append(
       '<div id="' + this.rendersContID + '"></div>' );
+    $('#' + this.rendersContID).addClass("sortable");
 
-    // jQuery UI options object for droppable elems
-    // ui-droppable CSS class is by default added to the elem
-    var drop_opts = {
-      scope: this.rendersContID, // restrict dropping only for draggable items that have the same scope
-      // hoverClass: string representing one or more CSS classes to be added  when an accepted
-      // elem moves into it
+    // jQuery UI options object for sortable elems
+    // ui-sortable CSS class is by default added to the element
+    // element being moved is assigned the ui-sortable-helper class
+    var sort_opts = {
+      cursor: 'pointer',
+      containment: '#' + this.wholeContID, // CSS selector within which elem the displacement is restricted
+      helper: 'clone', // We actually move a clone of the elem rather than the elem itself
+      appendTo: '#' + this.thumbnailContID, // CSS selector given the receiver container for the moved clone
+      connectWith: ".sortable",
+      dropOnEmpty: true,
 
       //event handlers
-      // ui.helper is the jQuery obj of the dropped elem
-      // ui.draggable is the jQuery object of the clicked elem (but not the elem that moves)
-      drop: function(evt, ui) {
-
-        if (self.numOfRenders < self.maxNumOfRenders) {
-          // a dropped thumbnail image disappears from thumbnail bar
-          var id = parseInt($(ui.draggable).css({ display:"none" }).attr("id").replace("viewth",""));
-          // add a renderer to the UI
-          self.add2DRender(self.getImgFileObject(id), 'Y');
-        } else {
-          alert('Reached maximum number of renders allow which is 4. You must drag a render out ' +
-           'of the viewer window and drop it into the thumbnails bar to make a render available');
+      beforeStop: function(event, ui) {
+        if (ui.placeholder.parent().attr("id") === self.thumbnailContID) {
+          $(this).sortable("cancel");
+          var id = ui.item.attr("id");
+          // display the dropped renderer's thumbnail
+          $('#' + id.replace("viewrender2D", "viewth")).css({ display:"block" });
+          self.remove2DRender(id);
         }
-
       }
     };
 
-    // make the renderers container droppable and float it so it can contain floated elems
-    $('#' + this.rendersContID).droppable(drop_opts).css({ float: "left" });
+    // make the renderers container sortable and float it so it can contain floated elems
+    $('#' + this.rendersContID).sortable(sort_opts).css({ float: "left" });
 
     // load and render the first volume in the list
     for (var i=0; i<this.imgFileArr.length; i++) {
@@ -104,33 +103,6 @@ var viewer = viewer || {};
     containerID = 'viewrender2D' + imgFileObj.id;
     $('#' + this.rendersContID).append('<div id="' + containerID + '"></div>');
     $('#' + containerID).addClass("view-render");
-
-    // jQuery UI options object for draggable elems
-    // ui-draggable CSS class is added to movable elems and ui-draggable-dragging is
-    // added to the elem being moved
-    var drag_opts = {
-      cursor: 'pointer',
-      scope: this.thumbnailContID, // restrict drop only on items that have the same scope str
-      revert: 'invalid', // returns if dropped on an element that does not accept it
-      axis: 'x', // displacement only possible in x (horizontal) direction
-      containment: '#' + this.wholeContID, // CSS selector within which elem the displacement is restricted
-      helper: 'clone', // We actually move a clone of the elem rather than the elem itself
-      appendTo: '#' + this.thumbnailContID, // CSS selector given the receiver container for the moved clone
-
-      //event handlers
-      // ui.helper is the jQuery obj of the dragged elem
-      start: function(evt, ui) {
-
-        // make dimensions of the moving clone the same as the corresponding thumbnail img
-        var jqTh = $('#' + containerID.replace("viewrender2D", "viewth"));
-        var h = jqTh.css("height");
-        var w = jqTh.css("width");
-        ui.helper.css( {height: h, width: w} );
-      }
-    };
-
-    // make div elem draggable
-    $('#' + containerID).draggable(drag_opts);
 
     // rearrange layout
     ++this.numOfRenders;
@@ -304,25 +276,36 @@ var viewer = viewer || {};
     $('#' + this.wholeContID).append(
       '<div id="' + this.thumbnailContID + '"></div>'
     );
+    $('#' + this.thumbnailContID).addClass("sortable");
 
-    // make the thumbnails container droppable and sortable
-    var drop_opts = {
-      scope: this.thumbnailContID,
+    // make the thumbnails container sortable
+    var sort_opts = {
+      cursor: 'pointer',
+      containment: '#' + this.wholeContID,
+      helper: 'clone',
+      appendTo: '#' + this.rendersContID,
+      connectWith: ".sortable",
+      dropOnEmpty: true,
 
       //event handlers
-      // ui.helper is the jQuery obj of the dropped elem
-      // ui.draggable is the jQuery object of the clicked elem (but not the elem that moves)
-      drop: function(evt, ui) {
-
-        var id = $(ui.draggable).attr("id");
-        // display the dropped renderer's thumbnail
-        $('#' + id.replace("viewrender2D", "viewth")).css({ display:"" });
-        self.remove2DRender(id);
-
+      // beforeStop is called when the placeholder is still in the list
+      beforeStop: function(event, ui) {
+        if (ui.placeholder.parent().attr("id") === self.rendersContID) {
+          $(this).sortable("cancel");
+          if (self.numOfRenders < self.maxNumOfRenders) {
+            // a dropped thumbnail image disappears from thumbnail bar
+            var id = parseInt(ui.item.css({ display:"none" }).attr("id").replace("viewth",""));
+            // add a renderer to the UI
+            self.add2DRender(self.getImgFileObject(id), 'Y');
+          } else {
+            alert('Reached maximum number of renders allow which is 4. You must drag a render out ' +
+             'of the viewer window and drop it into the thumbnails bar to make a render available');
+          }
+        }
       }
     };
 
-    $('#' + this.thumbnailContID).droppable(drop_opts).sortable();
+    $('#' + this.thumbnailContID).sortable(sort_opts);
 
     // load thumbnail images
     var imgFileObj;
@@ -334,30 +317,6 @@ var viewer = viewer || {};
         createImgElm(imgFileObj.id, imgFileObj.files[0].name);
       }
     }
-
-    // make img elems within the thumbnails container draggable
-    var drag_opts = {
-      cursor: 'pointer',
-      scope: this.rendersContID,
-      revert: 'invalid',
-      axis: 'x',
-      containment: '#' + this.wholeContID,
-      helper: 'clone',
-      appendTo: '#' + this.rendersContID,
-
-      //event handlers
-      // ui.helper is the jQuery obj of the dragged elem
-      start: function(evt, ui) {
-
-        // make the moving clone with the same dimensions as the original
-        var jqTh = $(this);
-        var h = jqTh.css("height");
-        var w = jqTh.css("width");
-        ui.helper.css( {height: h, width: w} );
-      }
-    };
-
-    $('img.view-thumbnail-img').draggable(drag_opts);
 
     // if there is a renderer already loaded in the UI then hide its thumbnail image
     var thID = $('div.view-render').attr("id").replace("viewrender2D", "viewth");
