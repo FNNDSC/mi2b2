@@ -75,8 +75,8 @@ var viewer = viewer || {};
       }
     };
 
-    // make the renderers container sortable and float it so it can contain floated elems
-    $('#' + this.rendersContID).sortable(sort_opts).css({ float: "left" });
+    // make the renderers container sortable
+    $('#' + this.rendersContID).sortable(sort_opts);
 
     // load and render the first volume in the list
     for (var i=0; i<this.imgFileArr.length; i++) {
@@ -212,6 +212,8 @@ var viewer = viewer || {};
         jqRenders.css({
           width: "100%",
           height: "100%",
+          top: 0,
+          left: 0
         });
       break;
 
@@ -219,7 +221,11 @@ var viewer = viewer || {};
         jqRenders.css({
           width: "50%",
           height: "100%",
+          top: 0
         });
+        console.log(jqRenders.length);
+        console.log(this.numOfRenders);
+        jqRenders[1].style.left = "50%";
       break;
 
       case 3:
@@ -227,6 +233,12 @@ var viewer = viewer || {};
           width: "50%",
           height: "50%",
         });
+        jqRenders[0].style.top = 0;
+        jqRenders[0].style.left = 0;
+        jqRenders[1].style.top = 0;
+        jqRenders[1].style.left = "50%";
+        jqRenders[2].style.top = "50%";
+        jqRenders[2].style.left = 0;
         jqRenders[2].style.width = "100%";
       break;
 
@@ -235,6 +247,14 @@ var viewer = viewer || {};
           width: "50%",
           height: "50%",
         });
+        jqRenders[0].style.top = 0;
+        jqRenders[0].style.left = 0;
+        jqRenders[1].style.top = 0;
+        jqRenders[1].style.left = "50%";
+        jqRenders[2].style.top = "50%";
+        jqRenders[2].style.left = 0;
+        jqRenders[3].style.top = "50%";
+        jqRenders[3].style.left = "50%";
       break;
     }
   };
@@ -377,7 +397,7 @@ var viewer = viewer || {};
     // geometric model extensions
     ext.MESH = ['obj', 'vtk', 'stl'];
     // thumbnail extensions
-    ext.THUMBNAIL = ['png', 'gif'];
+    ext.THUMBNAIL = ['png', 'gif', 'jpg'];
 
     if (viewer.strEndsWith(fileObj.name, ext.DICOM)) {
       type = 'dicom';
@@ -387,7 +407,7 @@ var viewer = viewer || {};
       type = 'fibers';
     } else if (viewer.strEndsWith(fileObj.name, ext.MESH)) {
       type = 'mesh';
-    } else if (viewer.strEndsWith(fileObj.name, ext.MESH)) {
+    } else if (viewer.strEndsWith(fileObj.name, ext.THUMBNAIL)) {
       type = 'thumbnail';
     } else {
       type = 'unsupported';
