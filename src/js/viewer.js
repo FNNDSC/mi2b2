@@ -82,8 +82,8 @@ var viewer = viewer || {};
     for (var i=0; i<this.imgFileArr.length; i++) {
       if (this.imgFileArr[i].imgType==='vol' || this.imgFileArr[i].imgType==='dicom') {
         this.add2DRender(this.imgFileArr[i], 'Y');
+        break;
       }
-      break;
     }
 
   };
@@ -221,10 +221,9 @@ var viewer = viewer || {};
         jqRenders.css({
           width: "50%",
           height: "100%",
-          top: 0
+          top: 0,
+          left:0
         });
-        console.log(jqRenders.length);
-        console.log(this.numOfRenders);
         jqRenders[1].style.left = "50%";
       break;
 
@@ -290,6 +289,10 @@ var viewer = viewer || {};
           '<img id="viewth' + id + '" src="' + url + '" alt="' + altText.substr(-8) + '" title="' + altText + '">'
       );
       $('#viewth' + id).addClass("view-thumbnail-img");
+      // if there is a corresponding renderer already in the UI then hide this thumbnail image
+      if ($('#viewrender2D' + id).length) {
+        $('#viewth' + id).css({ display:"none" });
+      }
     }
 
     // append thumbnail div to the whole container
@@ -338,14 +341,10 @@ var viewer = viewer || {};
       }
     }
 
-    // if there is a renderer already loaded in the UI then hide its thumbnail image
-    var thID = $('div.view-render').attr("id").replace("viewrender2D", "viewth");
-    $('#' + thID).css({ display:"none" });
-
     // make space for the thumbnail window
     var jqThCont = $('#' + this.thumbnailContID);
-    var rendersMargin = parseInt(jqThCont.css("left")) + parseInt(jqThCont.css("width")) + 5;
-    $('#' + this.rendersContID).css({ width: "calc(100% - " + rendersMargin + "px)" });
+    var rendersLeftEdge = parseInt(jqThCont.css("left")) + parseInt(jqThCont.css("width")) + 5;
+    $('#' + this.rendersContID).css({ width: "calc(100% - " + rendersLeftEdge + "px)" });
 
   };
 
