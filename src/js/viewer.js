@@ -23,8 +23,10 @@ var viewer = viewer || {};
     }
     // viewer container's ID
     this.wholeContID = containerID;
+    // tool bar container's ID
+    this.toolContID = 'viewtoolbar';
     // thumbnail container's ID
-    this.thumbnailContID = 'viewthumbnail';
+    this.thumbnailContID = 'viewthumbnailbar';
     // renderers container's ID
     this.rendersContID =  'viewrenders';
     // 2D renderers
@@ -48,8 +50,14 @@ var viewer = viewer || {};
     // Initially the interface only contains the renderers' container which in turn contains a
     // single renderer that loads and displays the first volume in this.imgFileArr
 
-    $('#' + this.wholeContID).css({ position: "relative" }).append(
-      '<div id="' + this.rendersContID + '"></div>' );
+    $('#' + this.wholeContID).css({
+      "position": "relative",
+      "margin": 0,
+      "-webkit-box-sizing": "border-box",
+      "-moz-box-sizing": "border-box",
+      "box-sizing": "border-box"
+      }).append('<div id="' + this.rendersContID + '"></div>' );
+
     $('#' + this.rendersContID).addClass("sortable");
 
     // jQuery UI options object for sortable elems
@@ -64,6 +72,12 @@ var viewer = viewer || {};
       dropOnEmpty: true,
 
       //event handlers
+      start: function(event, ui) {
+        var thWidth =  $('.view-thumbnail-img').css("width");
+        var thHeight = $('.view-thumbnail-img').css("height");
+        ui.helper.css({ width: thWidth, height: thHeight });
+      },
+
       beforeStop: function(event, ui) {
         if (ui.placeholder.parent().attr("id") === self.thumbnailContID) {
           $(this).sortable("cancel");
@@ -81,7 +95,7 @@ var viewer = viewer || {};
     // load and render the first volume in the list
     for (var i=0; i<this.imgFileArr.length; i++) {
       if (this.imgFileArr[i].imgType==='vol' || this.imgFileArr[i].imgType==='dicom') {
-        this.add2DRender(this.imgFileArr[i], 'Y');
+        this.add2DRender(this.imgFileArr[i], 'Z');
         break;
       }
     }
@@ -259,13 +273,42 @@ var viewer = viewer || {};
   };
 
   /**
+   * Create and add toolbar to the viewer container.
+   */
+  viewer.Viewer.prototype.addToolBar = function() {
+
+    if ($('#' + this.toolContID).length) {
+      return; // toolbar already exists
+    }
+    // append thumbnail divs to the whole container
+    $('#' + this.wholeContID).append(
+      '<div id="' + this.toolContID + '"><div></div></div>'
+    );
+
+    // make space for the toolbar
+    var jqToolCont = $('#' + this.toolContID);
+    var rendersTopEdge = parseInt(jqToolCont.css("top")) + parseInt(jqToolCont.css("height")) + 5;
+    $('#' + this.rendersContID).css({ height: "calc(100% - " + rendersTopEdge + "px)" });
+    if ($('#' + this.thumbnailContID).length) {
+      // there is a thumbnail bar so make space for it
+      var jqThCont = $('#' + this.thumbnailContID);
+      var toolLeftEdge = parseInt(jqThCont.css("left")) + parseInt(jqThCont.css("width")) + 5;
+      jqToolCont.css({ width: "calc(100% - " + toolLeftEdge + "px)" });
+    }
+  };
+
+  /**
    * Create and add thumbnail bar to the viewer container.
    */
   viewer.Viewer.prototype.addThumbnailBar = function() {
     var self = this;
 
-    if ($('#' + this.thumbnailContID).length) {
-      return; // thumbnailbar already exists
+    if (this.imgFileArr.length<2){
+      return; // a single (or none) file doesn't need a thumbnail bar
+    }
+
+    if ($('#' + this.thumbnailContID).length){
+      return; // thumbnail bar already exists
     }
 
     // define function to read the thumbnails' url so it can be assigned to the src of <img>
@@ -319,7 +362,7 @@ var viewer = viewer || {};
             // a dropped thumbnail image disappears from thumbnail bar
             var id = parseInt(ui.item.css({ display:"none" }).attr("id").replace("viewth",""));
             // add a renderer to the UI
-            self.add2DRender(self.getImgFileObject(id), 'Y');
+            self.add2DRender(self.getImgFileObject(id), 'Z');
           } else {
             alert('Reached maximum number of renders allow which is 4. You must drag a render out ' +
              'of the viewer window and drop it into the thumbnails bar to make a render available');
@@ -341,18 +384,20 @@ var viewer = viewer || {};
       }
     }
 
-    // make space for the thumbnail window
+    // make space for the thumbnail bar
     var jqThCont = $('#' + this.thumbnailContID);
     var rendersLeftEdge = parseInt(jqThCont.css("left")) + parseInt(jqThCont.css("width")) + 5;
     $('#' + this.rendersContID).css({ width: "calc(100% - " + rendersLeftEdge + "px)" });
+    if ($('#' + this.toolContID).length) {
+      // there is a toolbar
+      $('#' + this.toolContID).css({ width: "calc(100% - " + rendersLeftEdge + "px)" });
+    }
 
   };
 
 
   /**
    * Destroy all objects and remove html interface
-   *
-   * @param {String} X, Y or Z orientation.
    */
   viewer.Viewer.prototype.destroy = function() {
 

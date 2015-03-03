@@ -266,6 +266,7 @@ var app = app || {};
     }
     this.view = new viewer.Viewer(this._imgFileArr, 'viewercontainer');
     this.view.addThumbnailBar();
+    this.view.addToolBar();
     $('#tabs').tabs("enable", 1).tabs("option", "active", 1);
     //app.view.connect(feedID);
   };
