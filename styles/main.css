@@ -1,12 +1,69 @@
 body {
-  font-family: calibri;
   margin: 0;
 }
 
+/*tabs*/
+.ui-widget-content {
+  border: none;
+}
 
-h1{
+/*div containers within tabs*/
+div.tabcontent{
+  position: relative;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: -webkit-calc(100vh - 90px);
+  height: -moz-calc(100vh - 90px);
+  height: calc(100vh - 90px);
+  overflow: hidden;
+}
+
+.input-h1{
   color: #848484;
   text-align:center;
-  font-size: 2.5em;
-  margin: 2em;
+  font-size: 2.2em;
+  margin: 30px;
+}
+
+.input-h2 {
+  color: #848484;
+  text-align:center;
+  font-size: 1em;
+  font-weight: bold;
+  margin: 10px;
+}
+
+/*directory upload button*/
+.directory-btn{
+  display: block;
+  background-color: #DDD;
+  color: #FFF;
+  font-size: 1.7em;
+  text-align: center;
+  padding: 1em;
+  margin: 60px auto 20px auto;
+  width: 200px;
+  border: 1.5px dashed #BBB;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-shadow: 2px 2px 2px #666;
+  -moz-box-shadow: 2px 2px 2px #666;
+  box-shadow: 2px 2px 2px #666;
+  cursor:pointer;
+}
+.directory-btn:active{
+  -webkit-box-shadow: inset 6px 6px 5px #666;
+  -moz-box-shadow: inset 6px 6px 5px #666;
+  box-shadow: inset 6px 6px 5px #666;
+}
+.directory-btn:hover{
+  background-color: #D5D5D5;
+}
+
+/*viewer's container*/
+div#viewercontainer{
+  background-color: #353535;
+  border: 4px solid maroon;
 }
