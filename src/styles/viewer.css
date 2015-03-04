@@ -1,4 +1,4 @@
-@import url("/js/components/jquery-ui/themes/smoothness/jquery-ui.min.css");
+@import url("../js/components/jquery-ui/themes/smoothness/jquery-ui.min.css");
 
 /*renderers window*/
 div#viewrenders{
