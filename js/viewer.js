@@ -282,7 +282,10 @@ var viewer = viewer || {};
     }
     // append thumbnail divs to the whole container
     $('#' + this.wholeContID).append(
-      '<div id="' + this.toolContID + '"><div></div></div>'
+      '<div id="' + this.toolContID + '">' +
+        ' <button type="button" class="view-tool-button">Link views</button>' +
+        ' <button type="button" class="view-tool-button">Unlink views</button>' +
+      '<div>'
     );
 
     // make space for the toolbar

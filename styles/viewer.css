@@ -1,4 +1,4 @@
-@import url("/mi2b2/js/components/jquery-ui/themes/smoothness/jquery-ui.min.css");
+@import url("../js/components/jquery-ui/themes/smoothness/jquery-ui.min.css");
 
 /*renderers window*/
 div#viewrenders{
@@ -35,18 +35,20 @@ div#viewtoolbar{
   box-sizing: border-box;
   height: 30px;
   width: 100%;
+  text-align:center;
 }
 
 /*tool bar content*/
-div#viewtoolbar > div{
-  margin-left: auto;
-  margin-right: auto;
+.view-tool-button{
+  cursor: pointer;
+  margin: 0;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   height: 100%;
-  width: 300px;
+  width: 150px;
   background-color: black;
+  color: silver;
 }
 
 /*thumbnail bar*/
