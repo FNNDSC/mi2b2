@@ -65,5 +65,5 @@ div.tabcontent{
 /*viewer's container*/
 div#viewercontainer{
   background-color: #353535;
-  border: 4px solid maroon;
+  border: 6px solid #353535;
 }
