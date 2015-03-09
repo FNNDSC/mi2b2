@@ -29,8 +29,10 @@ var viewer = viewer || {};
     this.thumbnailContID = 'viewthumbnailbar';
     // renderers container's ID
     this.rendersContID =  'viewrenders';
-    // 2D renderers
+    // 2D renderer objects
     this.renders2D = [];
+    // whether renderers' events are linked
+    this.rendersLinked = false;
     // maximum number of renderers
     this.maxNumOfRenders = 4;
     // current number of renderers
@@ -109,7 +111,7 @@ var viewer = viewer || {};
    * @param {String} X, Y or Z orientation.
    */
   viewer.Viewer.prototype.add2DRender = function(imgFileObj, orientation) {
-    var render, vol, containerID;
+    var render, containerID;
     var filedata = [];
     var numFiles = 0;
 
@@ -125,6 +127,7 @@ var viewer = viewer || {};
     // create xtk objects
     render = this.create2DRender(containerID, orientation);
     vol = this.createVolume(imgFileObj);
+    render.volume = vol;
 
     // add xtk 2D renderer to the list of current UI renders
     this.renders2D.push(render);
@@ -165,7 +168,9 @@ var viewer = viewer || {};
 
     // find and destroy xtk objects and remove the renderer's div from the UI
     for (var i=0; i<this.renders2D.length; i++) {
-      if (this.renders2D[i].q.id === containerID) {
+      if ($(this.renders2D[i].container).attr("id") === containerID) {
+        this.renders2D[i].remove(this.renders2D[i].volume);
+        this.renders2D[i].volume.destroy();
         this.renders2D[i].destroy();
         this.renders2D.splice(i, 1);
         $('#' + containerID).remove();
@@ -187,7 +192,7 @@ var viewer = viewer || {};
   viewer.Viewer.prototype.create2DRender = function(containerID, orientation) {
     var render;
 
-    // create xtk objects
+    // create xtk object
     render = new X.renderer2D();
     render.container = containerID;
     render.bgColor = [0.2, 0.2, 0.2];
@@ -208,6 +213,7 @@ var viewer = viewer || {};
     for (var i=0; i<imgFileObj.files.length; i++) {
       fileNames[i] = imgFileObj.files[i].name;
     }
+    // create xtk object
     vol = new X.volume();
     vol.reslicing = 'false';
     vol.file = fileNames.sort().map(function(str) {
@@ -276,15 +282,16 @@ var viewer = viewer || {};
    * Create and add toolbar to the viewer container.
    */
   viewer.Viewer.prototype.addToolBar = function() {
+    var self = this;
 
     if ($('#' + this.toolContID).length) {
       return; // toolbar already exists
     }
-    // append thumbnail divs to the whole container
+
+    // append toolbar div and it's buttons to the whole container
     $('#' + this.wholeContID).append(
       '<div id="' + this.toolContID + '">' +
-        ' <button type="button" class="view-tool-button">Link views</button>' +
-        ' <button type="button" class="view-tool-button">Unlink views</button>' +
+        ' <button id="viewtoolbarlink" type="button" class="view-tool-button">Link views</button>' +
       '<div>'
     );
 
@@ -298,6 +305,40 @@ var viewer = viewer || {};
       var toolLeftEdge = parseInt(jqThCont.css("left")) + parseInt(jqThCont.css("width")) + 5;
       jqToolCont.css({ width: "calc(100% - " + toolLeftEdge + "px)" });
     }
+
+    //event handlers
+    $('#viewtoolbarlink').click(function() {
+      var r;
+
+      function onScrollHandler(evt, progTriggered) {
+        if (!progTriggered) {
+          // scroll event triggered by the user
+          for (var i=0; i<self.renders2D.length; i++) {
+            if (self.renders2D[i].interactor !== this) {
+              // trigger the scroll event programatically on other renderers
+              $(self.renders2D[i].interactor).trigger(evt, true);
+            }
+          }
+        }
+      }
+
+      if (self.rendersLinked) {
+        self.rendersLinked = false;
+        for (var i=0; i<self.renders2D.length; i++) {
+          $(self.renders2D[i].interactor).unbind(X.event.events.SCROLL);
+        }
+        $(this).text("Link views");
+      } else {
+        self.rendersLinked = true;
+        for (var i=0; i<self.renders2D.length; i++) {
+          r = self.renders2D[i];
+          $(r.interactor).bind(X.event.events.SCROLL, onScrollHandler);
+        }
+        $(this).text("Unlink views");
+      }
+
+    });
+
   };
 
   /**
