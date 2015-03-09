@@ -67,6 +67,7 @@ var viewer = viewer || {};
     // element being moved is assigned the ui-sortable-helper class
     var sort_opts = {
       cursor: 'pointer',
+      distance: '20',
       containment: '#' + this.wholeContID, // CSS selector within which elem the displacement is restricted
       helper: 'clone', // We actually move a clone of the elem rather than the elem itself
       appendTo: '#' + this.thumbnailContID, // CSS selector given the receiver container for the moved clone
@@ -306,33 +307,33 @@ var viewer = viewer || {};
       jqToolCont.css({ width: "calc(100% - " + toolLeftEdge + "px)" });
     }
 
-    //event handlers
-    $('#viewtoolbarlink').click(function() {
-      var r;
-
-      function onScrollHandler(evt, progTriggered) {
-        if (!progTriggered) {
-          // scroll event triggered by the user
-          for (var i=0; i<self.renders2D.length; i++) {
-            if (self.renders2D[i].interactor !== this) {
-              // trigger the scroll event programatically on other renderers
-              $(self.renders2D[i].interactor).trigger(evt, true);
-            }
+    //
+    // event handlers
+    //
+    var onRender2DScroll = function(evt) {
+      if (!evt.detail) {
+        // scroll event triggered by the user
+        for (var i=0; i<self.renders2D.length; i++) {
+          if (self.renders2D[i].interactor !== this) {
+            // trigger the scroll event programatically on other renderers
+            evt.detail = true;
+            self.renders2D[i].interactor.dispatchEvent(evt);
           }
         }
       }
+    }
 
+    $('#viewtoolbarlink').click(function() {
       if (self.rendersLinked) {
         self.rendersLinked = false;
         for (var i=0; i<self.renders2D.length; i++) {
-          $(self.renders2D[i].interactor).unbind(X.event.events.SCROLL);
+          self.renders2D[i].interactor.removeEventListener(X.event.events.SCROLL, onRender2DScroll);
         }
         $(this).text("Link views");
       } else {
         self.rendersLinked = true;
         for (var i=0; i<self.renders2D.length; i++) {
-          r = self.renders2D[i];
-          $(r.interactor).bind(X.event.events.SCROLL, onScrollHandler);
+          self.renders2D[i].interactor.addEventListener(X.event.events.SCROLL, onRender2DScroll);
         }
         $(this).text("Unlink views");
       }
