@@ -67,6 +67,7 @@ var viewer = viewer || {};
     // element being moved is assigned the ui-sortable-helper class
     var sort_opts = {
       cursor: 'pointer',
+      distance: '20',
       containment: '#' + this.wholeContID, // CSS selector within which elem the displacement is restricted
       helper: 'clone', // We actually move a clone of the elem rather than the elem itself
       appendTo: '#' + this.thumbnailContID, // CSS selector given the receiver container for the moved clone
