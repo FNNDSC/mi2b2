@@ -65,14 +65,28 @@ div#viewthumbnailbar{
   overflow: auto;
 }
 
-/*images within the thumbnail bar*/
+/*thumbnail image frames (divs) within the thumbnail bar*/
+.view-thumbnail{
+    border-style: solid;
+    border-width: 1px;
+    width: 96px;
+    margin-bottom: 2px;
+}
+.view-thumbnail:hover{
+  border-color: red;
+}
+
+/*image within a thumbnail frame*/
 .view-thumbnail-img{
     display: block;
     height: 96px;
     width: 96px;
-    border-style: solid;
-    border-width: 1px;
 }
-.view-thumbnail-img:hover{
-  border-color: red;
+
+/*text within a thumbnail frame*/
+.view-thumbnail-text{
+  font-size: small;
+  text-align:center;
+  background-color: black;
+  color: silver;
 }

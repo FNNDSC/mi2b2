@@ -67,7 +67,7 @@ var viewer = viewer || {};
     // element being moved is assigned the ui-sortable-helper class
     var sort_opts = {
       cursor: 'pointer',
-      distance: '20',
+      distance: '20', // required moving distance before the displacement is taken into account
       containment: '#' + this.wholeContID, // CSS selector within which elem the displacement is restricted
       helper: 'clone', // We actually move a clone of the elem rather than the elem itself
       appendTo: '#' + this.thumbnailContID, // CSS selector given the receiver container for the moved clone
@@ -76,8 +76,8 @@ var viewer = viewer || {};
 
       //event handlers
       start: function(event, ui) {
-        var thWidth =  $('.view-thumbnail-img').css("width");
-        var thHeight = $('.view-thumbnail-img').css("height");
+        var thWidth =  $('.view-thumbnail').css("width");
+        var thHeight = $('.view-thumbnail').css("height");
         ui.helper.css({ width: thWidth, height: thHeight });
       },
 
@@ -368,22 +368,25 @@ var viewer = viewer || {};
       reader.readAsDataURL(fileObj);
     }
 
-    // callback to append new img elem
-    function createImgElm(id, altText, url) {
+    // callback to append new thumbnail
+    function createThumbnail(id, altText, url) {
       if (url === undefined) {
         url = ' ';
       }
       $('#' + self.thumbnailContID).append(
-          '<img id="viewth' + id + '" src="' + url + '" alt="' + altText.substr(-8) + '" title="' + altText + '">'
+        '<div id="viewth' + id + '" class="view-thumbnail">' +
+          '<img class="view-thumbnail-img" src="' + url + '" alt="' + altText.substr(-8) + '" title="' + altText + '">' +
+          '<div class="view-thumbnail-text">' + altText.substr(-8) + '</div>' +
+        '</div>'
       );
-      $('#viewth' + id).addClass("view-thumbnail-img");
-      // if there is a corresponding renderer already in the UI then hide this thumbnail image
+
+      // if there is a corresponding renderer already in the UI then hide this thumbnail
       if ($('#viewrender2D' + id).length) {
         $('#viewth' + id).css({ display:"none" });
       }
     }
 
-    // append thumbnail div to the whole container
+    // append thumbnailbar to the whole container
     $('#' + this.wholeContID).append(
       '<div id="' + this.thumbnailContID + '"></div>'
     );
@@ -404,7 +407,7 @@ var viewer = viewer || {};
         if (ui.placeholder.parent().attr("id") === self.rendersContID) {
           $(this).sortable("cancel");
           if (self.numOfRenders < self.maxNumOfRenders) {
-            // a dropped thumbnail image disappears from thumbnail bar
+            // a dropped thumbnail disappears from thumbnail bar
             var id = parseInt(ui.item.css({ display:"none" }).attr("id").replace("viewth",""));
             // add a renderer to the UI
             self.add2DRender(self.getImgFileObject(id), 'Z');
@@ -423,9 +426,9 @@ var viewer = viewer || {};
     for (var i=0; i<this.imgFileArr.length; i++) {
       imgFileObj = this.imgFileArr[i];
       if (imgFileObj.thumbnail) {
-        readThumbnailUrl(imgFileObj, createImgElm);
+        readThumbnailUrl(imgFileObj, createThumbnail);
       } else {
-        createImgElm(imgFileObj.id, imgFileObj.files[0].name);
+        createThumbnail(imgFileObj.id, imgFileObj.files[0].name);
       }
     }
 
