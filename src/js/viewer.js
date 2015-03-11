@@ -66,22 +66,32 @@ var viewer = viewer || {};
     // ui-sortable CSS class is by default added to the element
     // element being moved is assigned the ui-sortable-helper class
     var sort_opts = {
-      cursor: 'pointer',
-      distance: '20', // required moving distance before the displacement is taken into account
+      cursor: 'move',
+      //distance: '10', // required moving distance before the displacement is taken into account
       containment: '#' + this.wholeContID, // CSS selector within which elem the displacement is restricted
-      helper: 'clone', // We actually move a clone of the elem rather than the elem itself
       appendTo: '#' + this.thumbnailContID, // CSS selector given the receiver container for the moved clone
       connectWith: ".sortable",
       dropOnEmpty: true,
 
-      //event handlers
-      start: function(event, ui) {
+      helper: function (evt, target) {
+        var id = target.attr("id");
         var thWidth =  $('.view-thumbnail').css("width");
         var thHeight = $('.view-thumbnail').css("height");
-        ui.helper.css({ width: thWidth, height: thHeight });
+
+        // the moving helper is a clone of the corresponding thumbnail
+        return $('#' + id.replace("viewrender2D", "viewth")).clone().css({
+          display:"block",
+          width: thWidth,
+          height: thHeight });
       },
 
-      beforeStop: function(event, ui) {
+      //event handlers
+      start: function(evt, ui) {
+        // thumbnails' scroll bar has to be removed to make the moving helper visible
+        $('#' + self.thumbnailContID).css({ overflow: "visible" });
+      },
+
+      beforeStop: function(evt, ui) {
         if (ui.placeholder.parent().attr("id") === self.thumbnailContID) {
           $(this).sortable("cancel");
           var id = ui.item.attr("id");
@@ -89,6 +99,8 @@ var viewer = viewer || {};
           $('#' + id.replace("viewrender2D", "viewth")).css({ display:"block" });
           self.remove2DRender(id);
         }
+        // restore thumbnails' scroll bar
+        $('#' + self.thumbnailContID).css({ overflow: "auto" });
       }
     };
 
@@ -112,14 +124,18 @@ var viewer = viewer || {};
    * @param {String} X, Y or Z orientation.
    */
   viewer.Viewer.prototype.add2DRender = function(imgFileObj, orientation) {
-    var render, containerID;
+    var render, containerID, fName;
     var filedata = [];
     var numFiles = 0;
 
     // append render div to the renderers container
+    fName = imgFileObj.files[0].name;
     containerID = 'viewrender2D' + imgFileObj.id;
-    $('#' + this.rendersContID).append('<div id="' + containerID + '"></div>');
-    $('#' + containerID).addClass("view-render");
+    $('#' + this.rendersContID).append(
+      '<div id="' + containerID + '" class="view-render">' +
+        '<div class="view-render-info">' + fName + '</div>' +
+      '</div>'
+    );
 
     // rearrange layout
     ++this.numOfRenders;
@@ -376,7 +392,7 @@ var viewer = viewer || {};
       $('#' + self.thumbnailContID).append(
         '<div id="viewth' + id + '" class="view-thumbnail">' +
           '<img class="view-thumbnail-img" src="' + url + '" alt="' + altText.substr(-8) + '" title="' + altText + '">' +
-          '<div class="view-thumbnail-text">' + altText.substr(-8) + '</div>' +
+          '<div class="view-thumbnail-info">' + altText.substring(0, altText.lastIndexOf('.')).substr(-10) + '</div>' +
         '</div>'
       );
 
@@ -394,7 +410,7 @@ var viewer = viewer || {};
 
     // make the thumbnails container sortable
     var sort_opts = {
-      cursor: 'pointer',
+      cursor: 'move',
       containment: '#' + this.wholeContID,
       helper: 'clone',
       appendTo: '#' + this.rendersContID,

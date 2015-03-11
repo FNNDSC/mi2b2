@@ -24,6 +24,16 @@ div#viewrenders{
   position: absolute;
 }
 
+/*individual renderers's text info*/
+.view-render-info{
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  z-index: 9999;
+  color: silver;
+  font-size: small;
+}
+
 /*tool bar*/
 div#viewtoolbar{
   position: absolute;
@@ -83,8 +93,8 @@ div#viewthumbnailbar{
     width: 96px;
 }
 
-/*text within a thumbnail frame*/
-.view-thumbnail-text{
+/*text info within a thumbnail frame*/
+.view-thumbnail-info{
   font-size: small;
   text-align:center;
   background-color: black;
