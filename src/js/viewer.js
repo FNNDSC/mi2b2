@@ -63,8 +63,8 @@ var viewer = viewer || {};
     $('#' + this.rendersContID).addClass("sortable");
 
     // jQuery UI options object for sortable elems
-    // ui-sortable CSS class is by default added to the element
-    // element being moved is assigned the ui-sortable-helper class
+    // ui-sortable CSS class is by default added to the containing elem
+    // an elem being moved is assigned the ui-sortable-helper class
     var sort_opts = {
       cursor: 'move',
       //distance: '10', // required moving distance before the displacement is taken into account
@@ -133,7 +133,10 @@ var viewer = viewer || {};
     containerID = 'viewrender2D' + imgFileObj.id;
     $('#' + this.rendersContID).append(
       '<div id="' + containerID + '" class="view-render">' +
-        '<div class="view-render-info">' + fName + '</div>' +
+        '<div class="view-render-info view-render-info-topleft"></div>' +
+        '<div class="view-render-info view-render-info-topright"></div>' +
+        '<div class="view-render-info view-render-info-bottomright"></div>' +
+        '<div class="view-render-info view-render-info-bottomleft"></div>' +
       '</div>'
     );
 
@@ -173,6 +176,45 @@ var viewer = viewer || {};
     for (var i=0; i<imgFileObj.files.length; i++) {
       readFile(imgFileObj.files[i], i);
     }
+
+    //temporal demo code
+    // define function to read the json file
+    function readJson(fileObj, callback) {
+      var reader = new FileReader();
+
+      reader.onload = function() {
+        json = JSON.parse(reader.result);
+        callback(json);
+      };
+
+      reader.readAsText(fileObj);
+    }
+    readJson(imgFileObj.json, function(jsonObj) {
+      var jqR = $('#' + containerID)
+
+      $('.view-render-info-topleft', jqR).html(
+        jsonObj.PatientName + '<br>' +
+        jsonObj.PatientID + '<br>' +
+        jsonObj.PatientBirthDate + '<br>' +
+        jsonObj.PatientSex );
+
+      $('.view-render-info-topright', jqR).html(
+        jsonObj.SeriesDescription + '<br>' +
+        jsonObj.Manufacturer + '<br>' +
+        jsonObj.StudyDate + '<br>' +
+        jsonObj.mri_info.dimensions + '<br>' +
+        jsonObj.mri_info.voxelSizes );
+
+      $('.view-render-info-bottomright', jqR).html(
+        jsonObj.mri_info.orientation + '<br>' +
+        jsonObj.mri_info.primarySliceDirection );
+
+      $('.view-render-info-bottomleft', jqR).html(
+        'slice: ' + vol.indexZ);
+
+        window.vol = vol;
+
+    })
 
   };
 
@@ -329,10 +371,10 @@ var viewer = viewer || {};
     var onRender2DScroll = function(evt) {
       if (!evt.detail) {
         // scroll event triggered by the user
+        evt.detail = true;
         for (var i=0; i<self.renders2D.length; i++) {
           if (self.renders2D[i].interactor !== this) {
             // trigger the scroll event programatically on other renderers
-            evt.detail = true;
             self.renders2D[i].interactor.dispatchEvent(evt);
           }
         }
@@ -506,6 +548,8 @@ var viewer = viewer || {};
     ext.MESH = ['obj', 'vtk', 'stl'];
     // thumbnail extensions
     ext.THUMBNAIL = ['png', 'gif', 'jpg'];
+    // json extensions
+    ext.JSON = ['json'];
 
     if (viewer.strEndsWith(fileObj.name, ext.DICOM)) {
       type = 'dicom';
@@ -517,6 +561,9 @@ var viewer = viewer || {};
       type = 'mesh';
     } else if (viewer.strEndsWith(fileObj.name, ext.THUMBNAIL)) {
       type = 'thumbnail';
+    } else if (viewer.strEndsWith(fileObj.name, ext.JSON)) {
+      // temporal demo code
+      type = 'json';
     } else {
       type = 'unsupported';
     }

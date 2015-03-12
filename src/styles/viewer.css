@@ -27,11 +27,25 @@ div#viewrenders{
 /*individual renderers's text info*/
 .view-render-info{
   position: absolute;
-  top: 2px;
-  left: 2px;
   z-index: 9999;
   color: silver;
   font-size: small;
+}
+.view-render-info-topleft{
+  top: 2px;
+  left: 2px;
+}
+.view-render-info-topright{
+  top: 2px;
+  right: 2px;
+}
+.view-render-info-bottomright{
+  bottom: 2px;
+  right: 2px;
+}
+.view-render-info-bottomleft{
+  bottom: 2px;
+  left: 2px;
 }
 
 /*tool bar*/
