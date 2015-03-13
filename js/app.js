@@ -32,6 +32,9 @@ var app = app || {};
     // Viewer object
     this.view = null;
 
+    // temporal demo code
+    this._jsons = {};
+
     var self = this;
 
     // Event handler for the directory loader button
@@ -162,6 +165,12 @@ var app = app || {};
         // save thumbnail file in an associative array
         // array keys are the full path with the extension trimmed
         this._thumbnails[path.substring(0, path.lastIndexOf('.'))] = fileObj;
+
+      } else if (imgType === 'json') {
+        // temporal demo code
+        // array keys are the full path with the extension trimmed
+        this._jsons[path.substring(0, path.lastIndexOf('.'))] = fileObj;
+
       } else if (imgType !== 'unsupported') {
         // push fibers, meshes and volumes into this._imgFileArr
         this._imgFileArr.push({
@@ -238,7 +247,7 @@ var app = app || {};
    * Create Viewer object
    */
   app.App.prototype.createView = function() {
-    var path;
+    var path, name;
 
     // Push ordered DICOMs into this._imgFileArr
     for (var patient in this._dcmData) {
@@ -254,10 +263,21 @@ var app = app || {};
     }
 
     // Add thumbnail images
-    // For DICOM we assume the thumbnail has the same name as the first DICOM file
     for (var i = 0; i < this._imgFileArr.length; i++) {
-      path = this._imgFileArr[i].files[0].fullPath;
-      this._imgFileArr[i].thumbnail = this._thumbnails[path.substring(0, path.lastIndexOf('.'))];
+      for (var j = 0; j < this._imgFileArr[i].files.length; j++) {
+        // Search for a thumbnail with the same name as the current neuroimage file
+        path = this._imgFileArr[i].files[j].fullPath;
+        name = path.substring(0, path.lastIndexOf('.'));
+        if(this._thumbnails.hasOwnProperty(name)) {
+          this._imgFileArr[i].thumbnail = this._thumbnails[name];
+        }
+
+        //temporal demo code
+        if(this._jsons.hasOwnProperty(name)) {
+          this._imgFileArr[i].json = this._jsons[name];
+        }
+
+      }
     }
     // Instantiate a new Viewer object
     if (this.view) {
