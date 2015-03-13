@@ -247,7 +247,7 @@ var app = app || {};
    * Create Viewer object
    */
   app.App.prototype.createView = function() {
-    var path;
+    var path, name;
 
     // Push ordered DICOMs into this._imgFileArr
     for (var patient in this._dcmData) {
@@ -263,14 +263,21 @@ var app = app || {};
     }
 
     // Add thumbnail images
-    // For DICOM we assume the thumbnail has the same name as the first DICOM file
     for (var i = 0; i < this._imgFileArr.length; i++) {
-      path = this._imgFileArr[i].files[0].fullPath;
-      this._imgFileArr[i].thumbnail = this._thumbnails[path.substring(0, path.lastIndexOf('.'))];
+      for (var j = 0; j < this._imgFileArr[i].files.length; j++) {
+        // Search for a thumbnail with the same name as the current neuroimage file
+        path = this._imgFileArr[i].files[j].fullPath;
+        name = path.substring(0, path.lastIndexOf('.'));
+        if(this._thumbnails.hasOwnProperty(name)) {
+          this._imgFileArr[i].thumbnail = this._thumbnails[name];
+        }
 
-      //temporal demo code
-      this._imgFileArr[i].json = this._jsons[path.substring(0, path.lastIndexOf('.'))];
+        //temporal demo code
+        if(this._jsons.hasOwnProperty(name)) {
+          this._imgFileArr[i].json = this._jsons[name];
+        }
 
+      }
     }
     // Instantiate a new Viewer object
     if (this.view) {

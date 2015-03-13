@@ -86,7 +86,7 @@ var viewer = viewer || {};
       },
 
       //event handlers
-      start: function(evt, ui) {
+      start: function() {
         // thumbnails' scroll bar has to be removed to make the moving helper visible
         $('#' + self.thumbnailContID).css({ overflow: "visible" });
       },
@@ -124,7 +124,7 @@ var viewer = viewer || {};
    * @param {String} X, Y or Z orientation.
    */
   viewer.Viewer.prototype.add2DRender = function(imgFileObj, orientation) {
-    var render, containerID, fName;
+    var render, vol, containerID, fName;
     var filedata = [];
     var numFiles = 0;
 
@@ -183,14 +183,14 @@ var viewer = viewer || {};
       var reader = new FileReader();
 
       reader.onload = function() {
-        json = JSON.parse(reader.result);
+        var json = JSON.parse(reader.result);
         callback(json);
       };
 
       reader.readAsText(fileObj);
     }
     readJson(imgFileObj.json, function(jsonObj) {
-      var jqR = $('#' + containerID)
+      var jqR = $('#' + containerID);
 
       $('.view-render-info-topleft', jqR).html(
         jsonObj.PatientName + '<br>' +
@@ -214,7 +214,7 @@ var viewer = viewer || {};
 
         window.vol = vol;
 
-    })
+    });
 
   };
 
@@ -379,18 +379,20 @@ var viewer = viewer || {};
           }
         }
       }
-    }
+    };
 
     $('#viewtoolbarlink').click(function() {
+      var i;
+
       if (self.rendersLinked) {
         self.rendersLinked = false;
-        for (var i=0; i<self.renders2D.length; i++) {
+        for (i=0; i<self.renders2D.length; i++) {
           self.renders2D[i].interactor.removeEventListener(X.event.events.SCROLL, onRender2DScroll);
         }
         $(this).text("Link views");
       } else {
         self.rendersLinked = true;
-        for (var i=0; i<self.renders2D.length; i++) {
+        for (i=0; i<self.renders2D.length; i++) {
           self.renders2D[i].interactor.addEventListener(X.event.events.SCROLL, onRender2DScroll);
         }
         $(this).text("Unlink views");
