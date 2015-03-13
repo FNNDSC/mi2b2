@@ -212,8 +212,6 @@ var viewer = viewer || {};
       $('.view-render-info-bottomleft', jqR).html(
         'slice: ' + vol.indexZ);
 
-        window.vol = vol;
-
     });
 
   };
@@ -230,6 +228,7 @@ var viewer = viewer || {};
       if ($(this.renders2D[i].container).attr("id") === containerID) {
         this.renders2D[i].remove(this.renders2D[i].volume);
         this.renders2D[i].volume.destroy();
+        this.renders2D[i].interactor.removeEventListener(X.event.events.SCROLL, this.onRender2DScroll);
         this.renders2D[i].destroy();
         this.renders2D.splice(i, 1);
         $('#' + containerID).remove();
@@ -250,6 +249,7 @@ var viewer = viewer || {};
    */
   viewer.Viewer.prototype.create2DRender = function(containerID, orientation) {
     var render;
+    var self = this;
 
     // create xtk object
     render = new X.renderer2D();
@@ -257,6 +257,34 @@ var viewer = viewer || {};
     render.bgColor = [0.2, 0.2, 0.2];
     render.orientation = orientation;
     render.init();
+
+    //
+    // event handlers
+    //
+    this.onRender2DScroll = function(evt) {
+      var i;
+
+      for (i=0; i<self.renders2D.length; i++) {
+        if (self.renders2D[i].interactor === this) {
+          // update slice number on the GUI
+          $('.view-render-info-bottomleft', $(self.renders2D[i].container)).html(
+            'slice: ' + self.renders2D[i].volume.indexZ);
+        }
+      }
+      if (self.rendersLinked && !evt.detail) {
+        // scroll event triggered by the user
+        evt.detail = true;
+        for (i=0; i<self.renders2D.length; i++) {
+          if (self.renders2D[i].interactor !== this) {
+            // trigger the scroll event programatically on other renderers
+            self.renders2D[i].interactor.dispatchEvent(evt);
+          }
+        }
+      }
+    };
+
+    render.interactor.addEventListener(X.event.events.SCROLL, this.onRender2DScroll);
+
     return render;
   };
 
@@ -368,36 +396,14 @@ var viewer = viewer || {};
     //
     // event handlers
     //
-    var onRender2DScroll = function(evt) {
-      if (!evt.detail) {
-        // scroll event triggered by the user
-        evt.detail = true;
-        for (var i=0; i<self.renders2D.length; i++) {
-          if (self.renders2D[i].interactor !== this) {
-            // trigger the scroll event programatically on other renderers
-            self.renders2D[i].interactor.dispatchEvent(evt);
-          }
-        }
-      }
-    };
-
     $('#viewtoolbarlink').click(function() {
-      var i;
-
       if (self.rendersLinked) {
         self.rendersLinked = false;
-        for (i=0; i<self.renders2D.length; i++) {
-          self.renders2D[i].interactor.removeEventListener(X.event.events.SCROLL, onRender2DScroll);
-        }
         $(this).text("Link views");
       } else {
         self.rendersLinked = true;
-        for (i=0; i<self.renders2D.length; i++) {
-          self.renders2D[i].interactor.addEventListener(X.event.events.SCROLL, onRender2DScroll);
-        }
         $(this).text("Unlink views");
       }
-
     });
 
   };
