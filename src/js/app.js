@@ -44,7 +44,6 @@ var app = app || {};
       var fileObj;
 
       self._numFiles = files.length;
-
       for (var i=0; i<self._numFiles; i++) {
         fileObj = files[i];
         if ('webkitRelativePath' in fileObj) {
@@ -95,7 +94,6 @@ var app = app || {};
 
       // chrome browser
 
-      var length = e.dataTransfer.items.length;
       // array to control when the entire tree has been read. This happens when
       // all it's entries are different from zero
       var hasBeenRead = [];
@@ -105,18 +103,16 @@ var app = app || {};
         hasBeenRead[pos] = 0;
 
         function readingDone() {
-          var i;
-
           hasBeenRead[pos] = 1;
-          for (i=0; i<hasBeenRead.length; i++) {
+          for (var i=0; i<hasBeenRead.length; i++) {
             if (hasBeenRead[i] === 0) {
               break;
             }
           }
           if (i >= hasBeenRead.length) {
             self._numFiles = files.length;
-            for (i=0; i<self._numFiles; i++) {
-              self.add(files[i]);
+            for (var j=0; j<self._numFiles; j++) {
+              self.add(files[j]);
             }
           }
         }
@@ -128,18 +124,30 @@ var app = app || {};
             readingDone();
           });
         } else if (entry.isDirectory) {
+          //read all entries within this directory
+          var dirEntries = [];
           var dirReader = entry.createReader();
-          dirReader.readEntries(function(entries){
-            var idx = entries.length; //manage empty dir
-            while (idx--) { //read last entry until all have been read
-              readFiles(entries[idx]);
-            }
-            readingDone();
-          });
+
+          function read() {
+            dirReader.readEntries(function(entries) {
+              if (entries.length) {
+                dirEntries = dirEntries.concat(entries);
+                read(); //keep calling read untill receiving an empty array
+              } else {
+                var idx = dirEntries.length; //manage empty dir
+                while (idx--) { //recursively read last entry until all have been read
+                  readFiles(dirEntries[idx]);
+                }
+                readingDone();
+              }
+            });
+          }
+
+          read();
         }
       }
 
-      for (i = 0; i<length; i++) {
+      for (i = 0; i<e.dataTransfer.items.length; i++) {
         readFiles(e.dataTransfer.items[i].webkitGetAsEntry());
       }
 
@@ -156,6 +164,7 @@ var app = app || {};
   app.App.prototype.add = function(fileObj) {
     var path = fileObj.fullPath;
     var imgType = viewer.Viewer.imgType(fileObj);
+    var dashIndex;
 
     if (imgType === 'dicom') {
       // parse the dicom file
@@ -163,9 +172,13 @@ var app = app || {};
     } else {
       if (imgType === 'thumbnail') {
         // save thumbnail file in an associative array
-        // array keys are the full path with the extension trimmed
-        this._thumbnails[path.substring(0, path.lastIndexOf('.'))] = fileObj;
-
+        // array keys are the full path up to the first dash in the file name or the last period
+        dashIndex = path.indexOf('-', path.lastIndexOf('/'));
+        if (dashIndex === -1) {
+          this._thumbnails[path.substring(0, path.lastIndexOf('.'))] = fileObj;
+        } else {
+          this._thumbnails[path.substring(0, dashIndex)] = fileObj;
+        }
       } else if (imgType === 'json') {
         // temporal demo code
         // array keys are the full path with the extension trimmed
@@ -268,7 +281,7 @@ var app = app || {};
         // Search for a thumbnail with the same name as the current neuroimage file
         path = this._imgFileArr[i].files[j].fullPath;
         name = path.substring(0, path.lastIndexOf('.'));
-        if(this._thumbnails.hasOwnProperty(name)) {
+        if (this._thumbnails.hasOwnProperty(name)) {
           this._imgFileArr[i].thumbnail = this._thumbnails[name];
         }
 
