@@ -436,16 +436,26 @@ var viewer = viewer || {};
 
     // callback to append new thumbnail
     function createThumbnail(id, altText, url) {
+      var info, title;
+      // we assume the name of the thumbnail can be of the form:
+      // 1.3.12.2.1107.5.2.32.35288.30000012092602261631200043880-AXIAL_RFMT_MPRAGE-Sag_T1_MEMPRAGE_1_mm_4e_nomoco.jpg
+      if (altText.lastIndexOf('-')) {
+        title = altText.substring(0, altText.lastIndexOf('.'));
+        title = title.substring(title.lastIndexOf('-') + 1);
+        info = title.substr(0, 10);
+      } else {
+        title = altText;
+        info = altText.substring(0, altText.lastIndexOf('.')).substr(-10);
+      }
       if (url === undefined) {
         url = ' ';
       }
       $('#' + self.thumbnailContID).append(
         '<div id="viewth' + id + '" class="view-thumbnail">' +
-          '<img class="view-thumbnail-img" src="' + url + '" alt="' + altText.substr(-8) + '" title="' + altText + '">' +
-          '<div class="view-thumbnail-info">' + altText.substring(0, altText.lastIndexOf('.')).substr(-10) + '</div>' +
+          '<img class="view-thumbnail-img" src="' + url + '" alt="' + altText.substr(-8) + '" title="' + title + '">' +
+          '<div class="view-thumbnail-info">' + info + '</div>' +
         '</div>'
       );
-
       // if there is a corresponding renderer already in the UI then hide this thumbnail
       if ($('#viewrender2D' + id).length) {
         $('#viewth' + id).css({ display:"none" });
@@ -514,13 +524,10 @@ var viewer = viewer || {};
    * Destroy all objects and remove html interface
    */
   viewer.Viewer.prototype.destroy = function() {
-
     // destroy XTK renderers
     for (var i=0; i<this.renders2D.length; i++) {
-      this.renders2D[i].destroy();
+      this.remove2DRender($(this.renders2D[i].container).attr("id"));
     }
-    this.renders2D = [];
-
     // remove html
     $('#' + this.wholeContID).empty();
   };
