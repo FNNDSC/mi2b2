@@ -118,18 +118,19 @@ var viewer = viewer || {};
   };
 
   /**
-   * Create and add 2D renderer with a loaded volume to the UI.
+   * Create and add a 2D renderer with a loaded volume to the UI.
    *
    * @param {Oject} Image file object.
    * @param {String} X, Y or Z orientation.
    */
   viewer.Viewer.prototype.add2DRender = function(imgFileObj, orientation) {
-    var render, vol, containerID, fName;
+    var render, vol, containerID;
     var filedata = [];
     var numFiles = 0;
+    var self = this;
 
-    // append render div to the renderers container
-    fName = imgFileObj.files[0].name;
+    // append renderer div to the renderers container
+    // the renderer's id is related to the imgFileObj's id
     containerID = 'viewrender2D' + imgFileObj.id;
     $('#' + this.rendersContID).append(
       '<div id="' + containerID + '" class="view-render">' +
@@ -144,16 +145,85 @@ var viewer = viewer || {};
     ++this.numOfRenders;
     this.positionRenders();
 
+    //
     // create xtk objects
+    //
     render = this.create2DRender(containerID, orientation);
+    // renderer's event handlers
+    this.onRender2DScroll = function(evt) {
+      var i;
+
+      for (i=0; i<self.renders2D.length; i++) {
+        if (self.renders2D[i].interactor === this) {
+          // update slice number on the GUI
+          $('.view-render-info-bottomleft', $(self.renders2D[i].container)).html(
+            'slice: ' + self.renders2D[i].volume.indexZ + '/' + (self.renders2D[i].volume.range[2] - 1));
+        }
+      }
+      if (self.rendersLinked && !evt.detail) {
+        // scroll event triggered by the user
+        evt.detail = true;
+        for (i=0; i<self.renders2D.length; i++) {
+          if (self.renders2D[i].interactor !== this) {
+            // trigger the scroll event programatically on other renderers
+            self.renders2D[i].interactor.dispatchEvent(evt);
+          }
+        }
+      }
+    };
+    // bind onRender2DScroll method with the renderer's interactor 
+    render.interactor.addEventListener(X.event.events.SCROLL, this.onRender2DScroll);
+
+    // the onShowtime event handler gets executed after all files were fully loaded and
+    // just before the first rendering attempt
+    render.onShowtime = function() {
+      //temporal demo code
+      // define function to read the json file
+      function readJson(fileObj, callback) {
+        var reader = new FileReader();
+
+        reader.onload = function() {
+          var json = JSON.parse(reader.result);
+          callback(json);
+        };
+
+        reader.readAsText(fileObj);
+      }
+      // read the json file
+      readJson(imgFileObj.json, function(jsonObj) {
+        var jqR = $('#' + containerID);
+
+        $('.view-render-info-topleft', jqR).html(
+          jsonObj.PatientName + '<br>' +
+          jsonObj.PatientID + '<br>' +
+          jsonObj.PatientBirthDate + '<br>' +
+          jsonObj.PatientSex );
+
+        $('.view-render-info-topright', jqR).html(
+          jsonObj.SeriesDescription + '<br>' +
+          jsonObj.Manufacturer + '<br>' +
+          jsonObj.StudyDate + '<br>' +
+          jsonObj.mri_info.dimensions + '<br>' +
+          jsonObj.mri_info.voxelSizes );
+
+        $('.view-render-info-bottomright', jqR).html(
+          jsonObj.mri_info.orientation + '<br>' +
+          jsonObj.mri_info.primarySliceDirection );
+
+        $('.view-render-info-bottomleft', jqR).html(
+          'slice: ' + vol.indexZ + '/' + (vol.range[2] - 1));
+      });
+    };
+
+    // create xtk volume and link it to its render
     vol = this.createVolume(imgFileObj);
     render.volume = vol;
 
     // add xtk 2D renderer to the list of current UI renders
     this.renders2D.push(render);
 
-    // define function to read a file into filedata array
-    function readFile(fileObj, pos) {
+    // define function to read an MRI file into filedata array
+    function readMriFile(fileObj, pos) {
       var reader = new FileReader();
 
       reader.onload = function() {
@@ -174,45 +244,8 @@ var viewer = viewer || {};
 
     // read all neuroimage files in imgFileObj.files
     for (var i=0; i<imgFileObj.files.length; i++) {
-      readFile(imgFileObj.files[i], i);
+      readMriFile(imgFileObj.files[i], i);
     }
-
-    //temporal demo code
-    // define function to read the json file
-    function readJson(fileObj, callback) {
-      var reader = new FileReader();
-
-      reader.onload = function() {
-        var json = JSON.parse(reader.result);
-        callback(json);
-      };
-
-      reader.readAsText(fileObj);
-    }
-    readJson(imgFileObj.json, function(jsonObj) {
-      var jqR = $('#' + containerID);
-
-      $('.view-render-info-topleft', jqR).html(
-        jsonObj.PatientName + '<br>' +
-        jsonObj.PatientID + '<br>' +
-        jsonObj.PatientBirthDate + '<br>' +
-        jsonObj.PatientSex );
-
-      $('.view-render-info-topright', jqR).html(
-        jsonObj.SeriesDescription + '<br>' +
-        jsonObj.Manufacturer + '<br>' +
-        jsonObj.StudyDate + '<br>' +
-        jsonObj.mri_info.dimensions + '<br>' +
-        jsonObj.mri_info.voxelSizes );
-
-      $('.view-render-info-bottomright', jqR).html(
-        jsonObj.mri_info.orientation + '<br>' +
-        jsonObj.mri_info.primarySliceDirection );
-
-      $('.view-render-info-bottomleft', jqR).html(
-        'slice: ' + vol.indexZ);
-
-    });
 
   };
 
@@ -242,14 +275,13 @@ var viewer = viewer || {};
   };
 
   /**
-   * Create a 2D renderer object.
+   * Create an xtk 2D renderer object.
    *
    * @param {String} container id.
    * @param {String} X, Y or Z orientation.
    */
   viewer.Viewer.prototype.create2DRender = function(containerID, orientation) {
     var render;
-    var self = this;
 
     // create xtk object
     render = new X.renderer2D();
@@ -257,39 +289,11 @@ var viewer = viewer || {};
     render.bgColor = [0.2, 0.2, 0.2];
     render.orientation = orientation;
     render.init();
-
-    //
-    // event handlers
-    //
-    this.onRender2DScroll = function(evt) {
-      var i;
-
-      for (i=0; i<self.renders2D.length; i++) {
-        if (self.renders2D[i].interactor === this) {
-          // update slice number on the GUI
-          $('.view-render-info-bottomleft', $(self.renders2D[i].container)).html(
-            'slice: ' + self.renders2D[i].volume.indexZ);
-        }
-      }
-      if (self.rendersLinked && !evt.detail) {
-        // scroll event triggered by the user
-        evt.detail = true;
-        for (i=0; i<self.renders2D.length; i++) {
-          if (self.renders2D[i].interactor !== this) {
-            // trigger the scroll event programatically on other renderers
-            self.renders2D[i].interactor.dispatchEvent(evt);
-          }
-        }
-      }
-    };
-
-    render.interactor.addEventListener(X.event.events.SCROLL, this.onRender2DScroll);
-
     return render;
   };
 
   /**
-   * Create a volume object.
+   * Create an xtk volume object.
    *
    * @param {Object} image file object
    */
