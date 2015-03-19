@@ -33,19 +33,21 @@ div#viewrenders{
 }
 .view-render-info-topleft{
   top: 2px;
-  left: 2px;
+  left: 10px;
 }
 .view-render-info-topright{
   top: 2px;
-  right: 2px;
+  right: 10px;
+  text-align:right;
 }
 .view-render-info-bottomright{
   bottom: 2px;
-  right: 2px;
+  right: 10px;
+  text-align:right;
 }
 .view-render-info-bottomleft{
   bottom: 2px;
-  left: 2px;
+  left: 10px;
 }
 
 /*tool bar*/

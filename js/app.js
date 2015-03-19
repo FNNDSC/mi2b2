@@ -217,7 +217,7 @@ var app = app || {};
       // Uint8Array so we create that here
       var byteArray = new Uint8Array(arrayBuffer);
       // Invoke the parseDicom function and get back a DataSet object with the contents
-      var dataSet, patientID, studyInstanceUID, seriesInstanceUID, sopInstanceUID;
+      var dataSet, patientID, studyInstanceUID, seriesInstanceUID, sopInstanceUID, dicomInfo;
       var path = fileObj.fullPath;
       var baseUrl = path.substring(0, path.lastIndexOf('/') + 1);
       var filename = fileObj.name;
@@ -229,6 +229,18 @@ var app = app || {};
         studyInstanceUID = dataSet.string('x0020000d');
         seriesInstanceUID = dataSet.string('x0020000e');
         sopInstanceUID = dataSet.string('x00080018');
+        dicomInfo = {
+          patientName: dataSet.string('x00100010'),
+          patientId: patientID,
+          patientBirthDate: dataSet.string('x00100030'),
+          patientAge: dataSet.string('x00101010'),
+          patientSex: dataSet.string('x00100040'),
+          seriesDescription: dataSet.string('x0008103e'),
+          manufacturer: dataSet.string('x00080070'),
+          studyDate: dataSet.string('x00080020'),
+          //orientation: dataSet.string('x00200037'),
+          //primarySliceDirection: dataSet.string('x00200032')
+        }
         if (!self._dcmData[patientID]) {
           self._dcmData[patientID] = {};
         }
@@ -238,6 +250,7 @@ var app = app || {};
         if (!self._dcmData[patientID][studyInstanceUID][seriesInstanceUID]) {
           self._dcmData[patientID][studyInstanceUID][seriesInstanceUID] = {};
           self._dcmData[patientID][studyInstanceUID][seriesInstanceUID]['baseUrl'] = baseUrl;
+          self._dcmData[patientID][studyInstanceUID][seriesInstanceUID]['dicomInfo'] = dicomInfo;
           self._dcmData[patientID][studyInstanceUID][seriesInstanceUID]['files'] = [];
         }
         if (!self._dcmData[patientID][studyInstanceUID][seriesInstanceUID][sopInstanceUID]) {
@@ -269,6 +282,7 @@ var app = app || {};
           this._imgFileArr.push({
             'baseUrl': this._dcmData[patient][study][series]['baseUrl'],
             'imgType': 'dicom',
+            'dicomInfo': this._dcmData[patient][study][series]['dicomInfo'],
             'files': this._dcmData[patient][study][series]['files']
           });
         }
