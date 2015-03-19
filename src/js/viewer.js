@@ -171,12 +171,48 @@ var viewer = viewer || {};
         }
       }
     };
-    // bind onRender2DScroll method with the renderer's interactor 
+    // bind onRender2DScroll method with the renderer's interactor
     render.interactor.addEventListener(X.event.events.SCROLL, this.onRender2DScroll);
 
     // the onShowtime event handler gets executed after all files were fully loaded and
     // just before the first rendering attempt
     render.onShowtime = function() {
+
+      // define function to set the UI mri info
+      function setUIMriInfo(info) {
+        var jqR = $('#' + containerID);
+        var age = '', orient='', direct='';
+
+        if (info.patientAge) {
+          age =  'AGE: ' + info.patientAge + '<br>';
+        }
+        $('.view-render-info-topleft', jqR).html(
+          info.patientName + '<br>' +
+          info.patientId + '<br>' +
+          'BIRTHDATE: ' + info.patientBirthDate + '<br>' +
+          age +
+          'SEX: ' + info.patientSex );
+
+        $('.view-render-info-topright', jqR).html(
+          'SERIES: ' + info.seriesDescription + '<br>' +
+          info.manufacturer + '<br>' +
+          info.studyDate + '<br>' +
+          info.dimensions + '<br>' +
+          info.voxelSizes );
+
+        if (info.orientation) {
+            orient = info.orientation + '<br>';
+        }
+        if (info.primarySliceDirection) {
+          direct = info.primarySliceDirection;
+        }
+        $('.view-render-info-bottomright', jqR).html(
+          orient + direct );
+
+        $('.view-render-info-bottomleft', jqR).html(
+          'slice: ' + vol.indexZ + '/' + (vol.range[2] - 1));
+      }
+
       //temporal demo code
       // define function to read the json file
       function readJson(fileObj, callback) {
@@ -189,30 +225,37 @@ var viewer = viewer || {};
 
         reader.readAsText(fileObj);
       }
-      // read the json file
-      readJson(imgFileObj.json, function(jsonObj) {
-        var jqR = $('#' + containerID);
 
-        $('.view-render-info-topleft', jqR).html(
-          jsonObj.PatientName + '<br>' +
-          jsonObj.PatientID + '<br>' +
-          jsonObj.PatientBirthDate + '<br>' +
-          jsonObj.PatientSex );
-
-        $('.view-render-info-topright', jqR).html(
-          jsonObj.SeriesDescription + '<br>' +
-          jsonObj.Manufacturer + '<br>' +
-          jsonObj.StudyDate + '<br>' +
-          jsonObj.mri_info.dimensions + '<br>' +
-          jsonObj.mri_info.voxelSizes );
-
-        $('.view-render-info-bottomright', jqR).html(
-          jsonObj.mri_info.orientation + '<br>' +
-          jsonObj.mri_info.primarySliceDirection );
-
-        $('.view-render-info-bottomleft', jqR).html(
+      if (imgFileObj.json) {
+        // if there is a json file then read it
+        readJson(imgFileObj.json, function(jsonObj) {
+          var mriInfo = {
+            patientName: jsonObj.PatientName,
+            patientId: jsonObj.PatientID,
+            patientBirthDate: jsonObj.PatientBirthDate,
+            patientSex: jsonObj.PatientSex,
+            seriesDescription: jsonObj.SeriesDescription,
+            manufacturer: jsonObj.Manufacturer,
+            studyDate: jsonObj.StudyDate,
+            orientation: jsonObj.mri_info.orientation,
+            primarySliceDirection: jsonObj.mri_info.primarySliceDirection,
+            dimensions: jsonObj.mri_info.dimensions,
+            voxelSizes: jsonObj.mri_info.voxelSizes
+          }
+          setUIMriInfo(mriInfo);
+        });
+      } else if (imgFileObj.dicomInfo) {
+        // if instead there is dicom information then use it
+        var mriInfo = imgFileObj.dicomInfo;
+        mriInfo.dimensions = (vol.range[0] - 1) + ' x ' + (vol.range[1] - 1) + ' x ' + (vol.range[2] - 1);
+        mriInfo.voxelSizes = vol.spacing[0].toPrecision(4) + ', ' + vol.spacing[1].toPrecision(4) +
+        ', ' + vol.spacing[2].toPrecision(4);
+        setUIMriInfo(mriInfo);
+      } else {
+        // just display slice number
+        $('.view-render-info-bottomleft', $('#' + containerID)).html(
           'slice: ' + vol.indexZ + '/' + (vol.range[2] - 1));
-      });
+      }
     };
 
     // create xtk volume and link it to its render
