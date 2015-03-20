@@ -1,26 +1,18 @@
 /**
  * This module takes care of all image visualization and user interface.
  *
- * An object of the Viewer class expects an array of image file objects where
+ * An object of the Viewer class expects an array of file objects where
  * each object contains the following properties:
- * -baseUrl: String ‘directory/containing/the/files’
- * -thumbnail: HTML5 File object (for a thumbnail image)
- * -imgType: String neuroimage type. Any of the possible values returned by viewer.Viewer.imgType
- * -files: Array of HTML5 File objects (it contains a single file for formats other than DICOM)
+ * -url: String representing the file url (full file path for local files)
+ * -file: HTML5 File object
  */
 
 // Provide a namespace
 var viewer = viewer || {};
 
-  viewer.Viewer = function(imgFileArr, containerID) {
+  viewer.Viewer = function(containerID) {
 
     this.version = 0.0;
-    // array of image file objects
-    this.imgFileArr = imgFileArr;
-    // assign an id to each array elem
-    for (var i=0; i<this.imgFileArr.length; i++) {
-      this.imgFileArr[i].id = i;
-    }
     // viewer container's ID
     this.wholeContID = containerID;
     // tool bar container's ID
@@ -37,11 +29,205 @@ var viewer = viewer || {};
     this.maxNumOfRenders = 4;
     // current number of renderers
     this.numOfRenders = 0;
-    // insert initial html
-    this._initInterface();
+
+    // array of image file objects (main viewer's data structure)
+    // each object contains the following properties:
+    //  -id: Integer, the object's id
+    //  -baseUrl: String ‘directory/containing/the/files’
+    //  -imgType: String neuroimage type. Any of the possible values returned by viewer.Viewer.imgType
+    //  -files: Array of HTML5 File objects (it contains a single file for imgType different from 'dicom')
+    //   DICOM files are sorted by patientID, studyInstanceUID, seriesInstanceUID using Chafey's
+    //   dicomParser: https://github.com/chafey/dicomParser
+    //  -thumbnail: HTML5 File object (for a thumbnail image)
+    //  -json: HTML5 File object (an optional json file with the mri info for imgType different from 'dicom')
+    this.imgFileArr = [];
 
   };
 
+  /**
+   * Build viewer's main data structure and initiliaze UI html when ready.
+   *
+   * @param {Array} array of file objects.
+   */
+  viewer.Viewer.prototype.init = function(fObjArr, callback) {
+    var thumbnails = {}; // associative array of thumbnail image files
+    var jsons = {}; // associative array of json files
+    var dcmData = {}; // multidimensional associative array with ordered DICOM files
+    var nonDcmData = []; // array of non-DICOM data
+    var numDicoms = 0; // number of DICOM files
+    var numNotDicoms = 0; // number of non-DICOM files
+    var numFiles = fObjArr.length; // total number of files
+    var self = this;
+
+    // function to build the image file array
+    function buildImgFileArr() {
+      var path, name, i, j;
+
+      // push ordered DICOMs into self.imgFileArr
+      for (var patient in dcmData) {
+        for (var study in dcmData[patient]) {
+          for (var series in dcmData[patient][study]) {
+            self.imgFileArr.push({
+              'baseUrl': dcmData[patient][study][series]['baseUrl'],
+              'imgType': 'dicom',
+              'dicomInfo': dcmData[patient][study][series]['dicomInfo'],
+              'files': dcmData[patient][study][series]['files']
+            });
+          }
+        }
+      }
+
+      // push non-DICOM data into self.imgFileArr
+      for (i=0; i<nonDcmData.length; i++) {
+        self.imgFileArr.push(nonDcmData[i]);
+      }
+
+      // Add thumbnail images
+      for (i=0; i<self.imgFileArr.length; i++) {
+        // assign an id to each array elem
+        self.imgFileArr[i].id = i;
+        for (j=0; j<self.imgFileArr[i].files.length; j++) {
+          // Search for a thumbnail with the same name as the current neuroimage file
+          path = self.imgFileArr[i].baseUrl + self.imgFileArr[i].files[j].name;
+          name = path.substring(0, path.lastIndexOf('.'));
+          if (thumbnails.hasOwnProperty(name)) {
+            self.imgFileArr[i].thumbnail = thumbnails[name];
+          }
+          //temporal demo code
+          if(jsons.hasOwnProperty(name)) {
+            self.imgFileArr[i].json = jsons[name];
+          }
+        }
+      }
+
+      // load and render the first volume in the list
+      for (i=0; i<self.imgFileArr.length; i++) {
+        if (self.imgFileArr[i].imgType==='vol' || self.imgFileArr[i].imgType==='dicom') {
+          self.add2DRender(self.imgFileArr[i], 'Z');
+          break;
+        }
+      }
+      if (callback) {
+        callback();
+      }
+    }
+
+    // function to parse and organize DICOM files by patientID, studyInstanceUID,
+    // seriesInstanceUID, sopInstanceUID
+    function parseDicom(fileObj) {
+      var file = fileObj.file;
+      var reader = new FileReader();
+      var self = this;
+
+      reader.onload = function() {
+        var arrayBuffer = reader.result;
+        // Here we have the file data as an ArrayBuffer.  dicomParser requires as input a
+        // Uint8Array so we create that here
+        var byteArray = new Uint8Array(arrayBuffer);
+        // Invoke the parseDicom function and get back a DataSet object with the contents
+        var dataSet, patientID, studyInstanceUID, seriesInstanceUID, sopInstanceUID, dicomInfo;
+        var path = fileObj.url;
+        var baseUrl = path.substring(0, path.lastIndexOf('/') + 1);
+        var filename = file.name;
+
+        try {
+          dataSet = dicomParser.parseDicom(byteArray);
+          // Access any desire property using its tag
+          patientID = dataSet.string('x00100020');
+          studyInstanceUID = dataSet.string('x0020000d');
+          seriesInstanceUID = dataSet.string('x0020000e');
+          sopInstanceUID = dataSet.string('x00080018');
+          dicomInfo = {
+            patientName: dataSet.string('x00100010'),
+            patientId: patientID,
+            patientBirthDate: dataSet.string('x00100030'),
+            patientAge: dataSet.string('x00101010'),
+            patientSex: dataSet.string('x00100040'),
+            seriesDescription: dataSet.string('x0008103e'),
+            manufacturer: dataSet.string('x00080070'),
+            studyDate: dataSet.string('x00080020'),
+            //orientation: dataSet.string('x00200037'),
+            //primarySliceDirection: dataSet.string('x00200032')
+          }
+          if (!dcmData[patientID]) {
+            dcmData[patientID] = {};
+          }
+          if (!dcmData[patientID][studyInstanceUID]) {
+            dcmData[patientID][studyInstanceUID] = {};
+          }
+          if (!dcmData[patientID][studyInstanceUID][seriesInstanceUID]) {
+            dcmData[patientID][studyInstanceUID][seriesInstanceUID] = {};
+            dcmData[patientID][studyInstanceUID][seriesInstanceUID]['baseUrl'] = baseUrl;
+            dcmData[patientID][studyInstanceUID][seriesInstanceUID]['dicomInfo'] = dicomInfo;
+            dcmData[patientID][studyInstanceUID][seriesInstanceUID]['files'] = [];
+          }
+          if (!dcmData[patientID][studyInstanceUID][seriesInstanceUID][sopInstanceUID]) {
+            dcmData[patientID][studyInstanceUID][seriesInstanceUID]['files'].push(file);
+            dcmData[patientID][studyInstanceUID][seriesInstanceUID][sopInstanceUID] = filename;
+          }
+          ++numDicoms;
+          // if all files have been added then create view
+          if (numDicoms + numNotDicoms === numFiles) {
+            buildImgFileArr();
+          }
+        } catch(err) {
+          alert('File ' + path + ' Error - ' + err);
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
+    }
+
+    // function to add a file object into internal data structures
+    function addFile(fileObj) {
+     var path = fileObj.url;
+     var file = fileObj.file;
+     var imgType = viewer.Viewer.imgType(fileObj.file);
+     var dashIndex;
+
+     if (imgType === 'dicom') {
+       // parse the dicom file
+       parseDicom(fileObj);
+     } else {
+       if (imgType === 'thumbnail') {
+         // save thumbnail file in an associative array
+         // array keys are the full path up to the first dash in the file name or the last period
+         dashIndex = path.indexOf('-', path.lastIndexOf('/'));
+         if (dashIndex === -1) {
+           thumbnails[path.substring(0, path.lastIndexOf('.'))] = file;
+         } else {
+           thumbnails[path.substring(0, dashIndex)] = file;
+         }
+       } else if (imgType === 'json') {
+         // temporal demo code
+         // array keys are the full path with the extension trimmed
+         jsons[path.substring(0, path.lastIndexOf('.'))] = file;
+
+       } else if (imgType !== 'unsupported') {
+         // push fibers, meshes and volumes into nonDcmData
+         nonDcmData.push({
+           'baseUrl': path.substring(0, path.lastIndexOf('/') + 1),
+           'imgType': imgType,
+           'files': [file]
+         });
+       }
+       ++numNotDicoms;
+       // if all files have been added then create the UI
+       if (numDicoms + numNotDicoms === numFiles) {
+         buildImgFileArr();
+       }
+     }
+   }
+
+    // insert initial html
+    self._initInterface();
+
+    // add files
+    for (var i=0; i<fObjArr.length; i++) {
+      addFile(fObjArr[i]);
+    }
+
+  };
 
   /**
    * Append initial html interface to the viewer container.
@@ -106,14 +292,6 @@ var viewer = viewer || {};
 
     // make the renderers container sortable
     $('#' + this.rendersContID).sortable(sort_opts);
-
-    // load and render the first volume in the list
-    for (var i=0; i<this.imgFileArr.length; i++) {
-      if (this.imgFileArr[i].imgType==='vol' || this.imgFileArr[i].imgType==='dicom') {
-        this.add2DRender(this.imgFileArr[i], 'Z');
-        break;
-      }
-    }
 
   };
 
@@ -181,7 +359,7 @@ var viewer = viewer || {};
       // define function to set the UI mri info
       function setUIMriInfo(info) {
         var jqR = $('#' + containerID);
-        var age = '', orient='', direct='';
+        var age = '', orient = '', direct = '';
 
         if (info.patientAge) {
           age =  'AGE: ' + info.patientAge + '<br>';
@@ -215,7 +393,7 @@ var viewer = viewer || {};
 
       //temporal demo code
       // define function to read the json file
-      function readJson(fileObj, callback) {
+      function readJson(file, callback) {
         var reader = new FileReader();
 
         reader.onload = function() {
@@ -223,7 +401,7 @@ var viewer = viewer || {};
           callback(json);
         };
 
-        reader.readAsText(fileObj);
+        reader.readAsText(file);
       }
 
       if (imgFileObj.json) {
@@ -266,7 +444,7 @@ var viewer = viewer || {};
     this.renders2D.push(render);
 
     // define function to read an MRI file into filedata array
-    function readMriFile(fileObj, pos) {
+    function readMriFile(file, pos) {
       var reader = new FileReader();
 
       reader.onload = function() {
@@ -282,7 +460,7 @@ var viewer = viewer || {};
         }
       };
 
-      reader.readAsArrayBuffer(fileObj);
+      reader.readAsArrayBuffer(file);
     }
 
     // read all neuroimage files in imgFileObj.files
@@ -464,21 +642,20 @@ var viewer = viewer || {};
     if (this.imgFileArr.length<2){
       return; // a single (or none) file doesn't need a thumbnail bar
     }
-
     if ($('#' + this.thumbnailContID).length){
       return; // thumbnail bar already exists
     }
 
     // define function to read the thumbnails' url so it can be assigned to the src of <img>
     function readThumbnailUrl(imgFileObj, callback) {
-      var fileObj = imgFileObj.thumbnail;
+      var file = imgFileObj.thumbnail;
       var reader = new FileReader();
 
       reader.onload = function() {
-        callback(imgFileObj.id, fileObj.name, reader.result);
+        callback(imgFileObj.id, file.name, reader.result);
       };
 
-      reader.readAsDataURL(fileObj);
+      reader.readAsDataURL(file);
     }
 
     // callback to append new thumbnail
@@ -566,7 +743,6 @@ var viewer = viewer || {};
 
   };
 
-
   /**
    * Destroy all objects and remove html interface
    */
@@ -588,7 +764,6 @@ var viewer = viewer || {};
     return this.imgFileArr[id];
   };
 
-
   /**
    * Static method to determine if a File object is a supported neuroimage type.
    * Return the type of the image: 'dicom', 'vol', 'fibers', 'mesh', 'thumbnail'
@@ -596,7 +771,7 @@ var viewer = viewer || {};
    *
    * @param {Object} HTML5 File object
    */
-  viewer.Viewer.imgType = function(fileObj) {
+  viewer.Viewer.imgType = function(file) {
     var ext = {};
     var type;
 
@@ -613,17 +788,17 @@ var viewer = viewer || {};
     // json extensions
     ext.JSON = ['json'];
 
-    if (viewer.strEndsWith(fileObj.name, ext.DICOM)) {
+    if (viewer.strEndsWith(file.name, ext.DICOM)) {
       type = 'dicom';
-    } else if (viewer.strEndsWith(fileObj.name, ext.VOL)) {
+    } else if (viewer.strEndsWith(file.name, ext.VOL)) {
       type = 'vol';
-    } else if (viewer.strEndsWith(fileObj.name, ext.FIBERS)) {
+    } else if (viewer.strEndsWith(file.name, ext.FIBERS)) {
       type = 'fibers';
-    } else if (viewer.strEndsWith(fileObj.name, ext.MESH)) {
+    } else if (viewer.strEndsWith(file.name, ext.MESH)) {
       type = 'mesh';
-    } else if (viewer.strEndsWith(fileObj.name, ext.THUMBNAIL)) {
+    } else if (viewer.strEndsWith(file.name, ext.THUMBNAIL)) {
       type = 'thumbnail';
-    } else if (viewer.strEndsWith(fileObj.name, ext.JSON)) {
+    } else if (viewer.strEndsWith(file.name, ext.JSON)) {
       // temporal demo code
       type = 'json';
     } else {
