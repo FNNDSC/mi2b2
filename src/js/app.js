@@ -89,6 +89,8 @@ var app = app || {};
 
       function readFiles(entry) {
         var pos = hasBeenRead.length;
+        var dirEntries = [];
+
         hasBeenRead[pos] = 0;
 
         function readingDone() {
@@ -108,6 +110,21 @@ var app = app || {};
           }
         }
 
+        function read(dirReader) {
+          dirReader.readEntries(function(entries) {
+            if (entries.length) {
+              dirEntries = dirEntries.concat(entries);
+              read(dirReader); //keep calling read recursively untill receiving an empty array
+            } else {
+              var idx = dirEntries.length; //manage empty dir
+              while (idx--) { //recursively read last entry until all have been read
+                readFiles(dirEntries[idx]);
+              }
+              readingDone();
+            }
+          });
+        }
+
         if (entry.isFile) {
           entry.file(function(file){
             file.fullPath = entry.fullPath;
@@ -115,26 +132,9 @@ var app = app || {};
             readingDone();
           });
         } else if (entry.isDirectory) {
+          var reader = entry.createReader();
           //read all entries within this directory
-          var dirEntries = [];
-          var dirReader = entry.createReader();
-
-          function read() {
-            dirReader.readEntries(function(entries) {
-              if (entries.length) {
-                dirEntries = dirEntries.concat(entries);
-                read(); //keep calling read recursively untill receiving an empty array
-              } else {
-                var idx = dirEntries.length; //manage empty dir
-                while (idx--) { //recursively read last entry until all have been read
-                  readFiles(dirEntries[idx]);
-                }
-                readingDone();
-              }
-            });
-          }
-
-          read();
+          read(reader);
         }
       }
 
@@ -168,18 +168,15 @@ var app = app || {};
    * Create Viewer object
    */
   app.App.prototype.createView = function() {
-    var self = this;
 
     // Instantiate a new Viewer object
     if (this.view) {
       this.view.destroy();
       this.view = null;
     }
-    this.view = new viewer.Viewer('viewercontainer');
-    this.view.init(this._imgFileArr, function() {
-      self.view.addThumbnailBar();
-      self.view.addToolBar();
-    });
+    this.view = new viewer.Viewer(this._imgFileArr, 'viewercontainer');
+    this.view.addThumbnailBar();
+    this.view.addToolBar();
 
     $('#tabs').tabs("enable", 1).tabs("option", "active", 1);
   };
