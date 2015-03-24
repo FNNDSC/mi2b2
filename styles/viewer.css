@@ -1,7 +1,7 @@
 @import url("../js/components/jquery-ui/themes/smoothness/jquery-ui.min.css");
 
 /*renderers window*/
-div#viewrenders{
+div.view-renders{
   position: absolute;
   bottom: 0;
   right: 0;
@@ -51,7 +51,7 @@ div#viewrenders{
 }
 
 /*tool bar*/
-div#viewtoolbar{
+div.view-toolbar{
   position: absolute;
   top: 5px;
   right: 0;
@@ -78,7 +78,7 @@ div#viewtoolbar{
 }
 
 /*thumbnail bar*/
-div#viewthumbnailbar{
+div.view-thumbnailbar{
   position: absolute;
   top: 5px;
   left: 5px;
