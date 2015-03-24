@@ -16,11 +16,11 @@ var viewer = viewer || {};
     // viewer container's ID
     this.wholeContID = containerID;
     // tool bar container's ID
-    this.toolContID = 'viewtoolbar';
+    this.toolbarContID = this.wholeContID + '_toolbar';
     // thumbnail container's ID
-    this.thumbnailContID = 'viewthumbnailbar';
+    this.thumbnailbarContID = this.wholeContID + '_thumbnailbar';
     // renderers container's ID
-    this.rendersContID =  'viewrenders';
+    this.rendersContID =  this.wholeContID + '_renders';
     // 2D renderer objects
     this.renders2D = [];
     // whether renderers' events are linked
@@ -162,9 +162,7 @@ var viewer = viewer || {};
       "-webkit-box-sizing": "border-box",
       "-moz-box-sizing": "border-box",
       "box-sizing": "border-box"
-      }).append('<div id="' + this.rendersContID + '"></div>' );
-
-    $('#' + this.rendersContID).addClass("sortable");
+    }).append('<div id="' + this.rendersContID + '" class="view-renders sortable"></div>' );
 
     // jQuery UI options object for sortable elems
     // ui-sortable CSS class is by default added to the containing elem
@@ -173,17 +171,18 @@ var viewer = viewer || {};
       cursor: 'move',
       //distance: '10', // required moving distance before the displacement is taken into account
       containment: '#' + this.wholeContID, // CSS selector within which elem the displacement is restricted
-      appendTo: '#' + this.thumbnailContID, // CSS selector given the receiver container for the moved clone
+      appendTo: '#' + this.thumbnailbarContID, // CSS selector given the receiver container for the moved clone
       connectWith: ".sortable",
       dropOnEmpty: true,
 
       helper: function (evt, target) {
-        var id = target.attr("id");
         var thWidth =  $('.view-thumbnail').css("width");
         var thHeight = $('.view-thumbnail').css("height");
+        var renderId = target.attr("id");
+        var thId = renderId.replace(self.rendersContID + "_render2D", self.thumbnailbarContID + "_th");
 
         // the moving helper is a clone of the corresponding thumbnail
-        return $('#' + id.replace("viewrender2D", "viewth")).clone().css({
+        return $('#' + thId).clone().css({
           display:"block",
           width: thWidth,
           height: thHeight });
@@ -192,19 +191,22 @@ var viewer = viewer || {};
       //event handlers
       start: function() {
         // thumbnails' scroll bar has to be removed to make the moving helper visible
-        $('#' + self.thumbnailContID).css({ overflow: "visible" });
+        $('#' + self.thumbnailbarContID).css({ overflow: "visible" });
       },
 
       beforeStop: function(evt, ui) {
-        if (ui.placeholder.parent().attr("id") === self.thumbnailContID) {
+        var renderId, thId;
+
+        if (ui.placeholder.parent().attr("id") === self.thumbnailbarContID) {
           $(this).sortable("cancel");
-          var id = ui.item.attr("id");
+          renderId = ui.item.attr("id");
+          thId = renderId.replace(self.rendersContID + "_render2D", self.thumbnailbarContID + "_th");
           // display the dropped renderer's thumbnail
-          $('#' + id.replace("viewrender2D", "viewth")).css({ display:"block" });
-          self.remove2DRender(id);
+          $('#' + thId).css({ display:"block" });
+          self.remove2DRender(renderId);
         }
         // restore thumbnails' scroll bar
-        $('#' + self.thumbnailContID).css({ overflow: "auto" });
+        $('#' + self.thumbnailbarContID).css({ overflow: "auto" });
       }
     };
 
@@ -227,7 +229,7 @@ var viewer = viewer || {};
 
     // append renderer div to the renderers container
     // the renderer's id is related to the imgFileObj's id
-    containerID = 'viewrender2D' + imgFileObj.id;
+    containerID = this.rendersContID + "_render2D" + imgFileObj.id;
     $('#' + this.rendersContID).append(
       '<div id="' + containerID + '" class="view-render">' +
         '<div class="view-render-info view-render-info-topleft"></div>' +
@@ -538,24 +540,24 @@ var viewer = viewer || {};
   viewer.Viewer.prototype.addToolBar = function() {
     var self = this;
 
-    if ($('#' + this.toolContID).length) {
+    if ($('#' + this.toolbarContID).length) {
       return; // toolbar already exists
     }
 
     // append toolbar div and it's buttons to the whole container
     $('#' + this.wholeContID).append(
-      '<div id="' + this.toolContID + '">' +
-        ' <button id="viewtoolbarlink" type="button" class="view-tool-button">Link views</button>' +
+      '<div id="' + this.toolbarContID + '" class="view-toolbar">' +
+        '<button id="' + this.toolbarContID + '_buttonlink" type="button" class="view-tool-button">Link views</button>' +
       '<div>'
     );
 
     // make space for the toolbar
-    var jqToolCont = $('#' + this.toolContID);
+    var jqToolCont = $('#' + this.toolbarContID);
     var rendersTopEdge = parseInt(jqToolCont.css("top")) + parseInt(jqToolCont.css("height")) + 5;
     $('#' + this.rendersContID).css({ height: "calc(100% - " + rendersTopEdge + "px)" });
-    if ($('#' + this.thumbnailContID).length) {
+    if ($('#' + this.thumbnailbarContID).length) {
       // there is a thumbnail bar so make space for it
-      var jqThCont = $('#' + this.thumbnailContID);
+      var jqThCont = $('#' + this.thumbnailbarContID);
       var toolLeftEdge = parseInt(jqThCont.css("left")) + parseInt(jqThCont.css("width")) + 5;
       jqToolCont.css({ width: "calc(100% - " + toolLeftEdge + "px)" });
     }
@@ -563,7 +565,7 @@ var viewer = viewer || {};
     //
     // event handlers
     //
-    $('#viewtoolbarlink').click(function() {
+    $('#' + this.toolbarContID + '_buttonlink').click(function() {
       if (self.rendersLinked) {
         self.rendersLinked = false;
         $(this).text("Link views");
@@ -584,7 +586,7 @@ var viewer = viewer || {};
     if (this.imgFileArr.length<2){
       return; // a single (or none) file doesn't need a thumbnail bar
     }
-    if ($('#' + this.thumbnailContID).length){
+    if ($('#' + this.thumbnailbarContID).length){
       return; // thumbnail bar already exists
     }
 
@@ -616,23 +618,22 @@ var viewer = viewer || {};
       if (url === undefined) {
         url = ' ';
       }
-      $('#' + self.thumbnailContID).append(
-        '<div id="viewth' + id + '" class="view-thumbnail">' +
+      $('#' + self.thumbnailbarContID).append(
+        '<div id="' + self.thumbnailbarContID + '_th' + id + '" class="view-thumbnail">' +
           '<img class="view-thumbnail-img" src="' + url + '" alt="' + altText.substr(-8) + '" title="' + title + '">' +
           '<div class="view-thumbnail-info">' + info + '</div>' +
         '</div>'
       );
       // if there is a corresponding renderer already in the UI then hide this thumbnail
-      if ($('#viewrender2D' + id).length) {
-        $('#viewth' + id).css({ display:"none" });
+      if ($('#' + self.rendersContID + '_render2D' + id).length) {
+        $('#' + self.thumbnailbarContID + '_th' + id).css({ display:"none" });
       }
     }
 
     // append thumbnailbar to the whole container
     $('#' + this.wholeContID).append(
-      '<div id="' + this.thumbnailContID + '"></div>'
+      '<div id="' + this.thumbnailbarContID + '" class="view-thumbnailbar sortable"></div>'
     );
-    $('#' + this.thumbnailContID).addClass("sortable");
 
     // make the thumbnails container sortable
     var sort_opts = {
@@ -650,8 +651,8 @@ var viewer = viewer || {};
           $(this).sortable("cancel");
           if (self.numOfRenders < self.maxNumOfRenders) {
             // a dropped thumbnail disappears from thumbnail bar
-            var id = parseInt(ui.item.css({ display:"none" }).attr("id").replace("viewth",""));
-            // add a renderer to the UI
+            var id = parseInt(ui.item.css({ display:"none" }).attr("id").replace(self.thumbnailbarContID + "_th",""));
+            // add a renderer to the UI containing a volume with the same id suffix as the thumbnail
             self.add2DRender(self.getImgFileObject(id), 'Z');
           } else {
             alert('Reached maximum number of renders allow which is 4. You must drag a render out ' +
@@ -661,7 +662,7 @@ var viewer = viewer || {};
       }
     };
 
-    $('#' + this.thumbnailContID).sortable(sort_opts);
+    $('#' + this.thumbnailbarContID).sortable(sort_opts);
 
     // load thumbnail images
     var imgFileObj;
@@ -675,12 +676,12 @@ var viewer = viewer || {};
     }
 
     // make space for the thumbnail bar
-    var jqThCont = $('#' + this.thumbnailContID);
+    var jqThCont = $('#' + this.thumbnailbarContID);
     var rendersLeftEdge = parseInt(jqThCont.css("left")) + parseInt(jqThCont.css("width")) + 5;
     $('#' + this.rendersContID).css({ width: "calc(100% - " + rendersLeftEdge + "px)" });
-    if ($('#' + this.toolContID).length) {
+    if ($('#' + this.toolbarContID).length) {
       // there is a toolbar
-      $('#' + this.toolContID).css({ width: "calc(100% - " + rendersLeftEdge + "px)" });
+      $('#' + this.toolbarContID).css({ width: "calc(100% - " + rendersLeftEdge + "px)" });
     }
 
   };
