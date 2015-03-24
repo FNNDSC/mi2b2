@@ -6,27 +6,21 @@ require.config({
         // Also, the path should NOT include the '.js' file extension.
         // This example is using jQuery located at
         // components/jquery/dist/jquery.min.js relative to the baseUrl.
-        jquery: ['components/jquery/dist/jquery.min'],
-        jquery_ui: 'components/jquery-ui/jquery-ui.min',
-        dicomParser: 'lib/dicomParser.min',
-        xtk: 'lib/xtk',
-        viewer: 'viewer',
-        app: 'app',
+        // It tries to load jQuery from Google's CDN first and falls back
+        // to load locally
+        jquery: ['https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min', 'components/jquery/dist/jquery.min'],
+        jquery_ui: ['https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js', 'components/jquery-ui/jquery-ui.min'],
+        mi2b2: 'mi2b2.min'
     }
 });
 
 // 1st level dependencies
 require(['jquery', 'jquery_ui'], function() {
   // 2nd level dependencies
-  require(['xtk', 'dicomParser'], function() {
-    // 3rd level dependencies
-    require(['viewer'], function() {
-      require(['app'], function() {
+  require(['mi2b2'], function() {
 
-        // Entry point
-        app.appObj = new app.App();
+    // Entry point
+    app.appObj = new app.App();
 
-      });
     });
-  });
 });
