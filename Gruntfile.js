@@ -13,7 +13,7 @@ module.exports = function(grunt) {
       ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
 
     // Custome Paths
-    srcFiles: ['src/js/*.js'], // source files
+    srcFiles: ['src/js/viewer.js', 'src/js/app.js'], // source files (order here is important for dependencies)
     testFiles: ['spec/*.spec.js'], // test files (jasmin' specs)
     libDir: 'src/js/lib', // libraries that cannot be installed through bower
     componentsDir: 'src/js/components', // bower components
@@ -72,7 +72,7 @@ module.exports = function(grunt) {
         stripBanners: true
       },
       dist: {
-        src: ['<%= jshint.source.src %>', '<%= libDir %>/**/*.js'], // no bower component is concatenated
+        src: ['<%= libDir %>/**/*.js', '<%= jshint.source.src %>'], // no bower component is concatenated
         dest: 'dist/js/<%= pkg.name %>.js'
       }
     },

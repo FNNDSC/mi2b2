@@ -9,8 +9,8 @@ require.config({
         // It tries to load jQuery from Google's CDN first and falls back
         // to load locally
         jquery: ['https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min', 'components/jquery/dist/jquery.min'],
-        jquery_ui: ['https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js', 'components/jquery-ui/jquery-ui.min']
-        mi2b2: 'mi2b2',
+        jquery_ui: ['https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js', 'components/jquery-ui/jquery-ui.min'],
+        mi2b2: 'mi2b2.min'
     }
 });
 

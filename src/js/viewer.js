@@ -45,7 +45,7 @@ var viewer = viewer || {};
   };
 
   /**
-   * Build viewer's main data structure and initiliaze UI html when ready.
+   * Build viewer's main data structure and initiliaze the UI's html.
    *
    * @param {Array} array of file objects.
    */
@@ -170,8 +170,8 @@ var viewer = viewer || {};
     var sort_opts = {
       cursor: 'move',
       //distance: '10', // required moving distance before the displacement is taken into account
-      containment: '#' + this.wholeContID, // CSS selector within which elem the displacement is restricted
-      appendTo: '#' + this.thumbnailbarContID, // CSS selector given the receiver container for the moved clone
+      containment: '#' + this.wholeContID, // CSS selector within which elem displacement is restricted
+      appendTo: '#' + this.thumbnailbarContID, // CSS selector giving the receiver container for the moving clone
       connectWith: ".sortable",
       dropOnEmpty: true,
 
