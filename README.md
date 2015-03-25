@@ -29,8 +29,8 @@ This project uses grunt.
 
 * Run grunt: 
 
-````grunt````
-
+<tt>grunt</tt>
+ 
 The production web app is built within the directory <tt>dist</tt>.
 
 
