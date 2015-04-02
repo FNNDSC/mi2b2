@@ -444,6 +444,9 @@ var viewer = viewer || {};
    *
    * @param {String} container id.
    * @param {String} X, Y or Z orientation.
+   *
+   * @return {string} the newly created render object.
+   * @public
    */
   viewer.Viewer.prototype.create2DRender = function(containerID, orientation) {
     var render;
@@ -607,7 +610,7 @@ var viewer = viewer || {};
       var info, title;
       // we assume the name of the thumbnail can be of the form:
       // 1.3.12.2.1107.5.2.32.35288.30000012092602261631200043880-AXIAL_RFMT_MPRAGE-Sag_T1_MEMPRAGE_1_mm_4e_nomoco.jpg
-      if (altText.lastIndexOf('-')) {
+      if (altText.lastIndexOf('-') !== -1) {
         title = altText.substring(0, altText.lastIndexOf('.'));
         title = title.substring(title.lastIndexOf('-') + 1);
         info = title.substr(0, 10);
@@ -769,6 +772,22 @@ var viewer = viewer || {};
     }
     return false;
   };
+
+  /**
+   * Module utility function. Create and return a Blob object conytaining a JPG image
+   *
+   * @param {Array} a data URI such as the one returned by the toDataURL() of
+   * a canvas element
+   */
+   viewer.dataURItoJPGBlob = function(dataURI) {
+    var binary = atob(dataURI.split(',')[1]);
+    var array = [];
+
+    for(var i = 0; i < binary.length; i++) {
+        array.push(binary.charCodeAt(i));
+    }
+    return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
+  }
 
   /**
    * Module utility function. Repaint the document
