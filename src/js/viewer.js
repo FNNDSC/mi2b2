@@ -223,8 +223,6 @@ var viewer = viewer || {};
    */
   viewer.Viewer.prototype.add2DRender = function(imgFileObj, orientation) {
     var render, vol, containerID;
-    var filedata = [];
-    var numFiles = 0;
     var self = this;
 
     // append renderer div to the renderers container
@@ -363,20 +361,22 @@ var viewer = viewer || {};
     // add xtk 2D renderer to the list of current UI renders
     this.renders2D.push(render);
 
-    // define function to read an MRI file into filedata array
+    // function to read an MRI file into filedata array
+    readMriFile.filedata = [];
+    readMriFile.numFiles = 0;
     function readMriFile(file, pos) {
       var reader = new FileReader();
 
       reader.onload = function() {
-        filedata[pos] = reader.result;
-        ++numFiles;
+        readMriFile.filedata[pos] = reader.result;
+        ++readMriFile.numFiles;
 
-        if (numFiles===imgFileObj.files.length) {
+        if (readMriFile.numFiles===imgFileObj.files.length) {
 
           if (imgFileObj.imgType === 'dicom') {
             // Here we use Chafey's dicomParser: https://github.com/chafey/dicomParser.
             // dicomParser requires as input a Uint8Array so we create it here
-            var byteArray = new Uint8Array(filedata[0]);
+            var byteArray = new Uint8Array(readMriFile.filedata[0]);
             // Invoke the parseDicom function and get back a DataSet object with the contents
             try {
               var dataSet = dicomParser.parseDicom(byteArray);
@@ -396,7 +396,7 @@ var viewer = viewer || {};
             }
           }
 
-          vol.filedata = filedata;
+          vol.filedata = readMriFile.filedata;
           render.add(vol);
           // start the rendering
           render.render();
@@ -593,46 +593,6 @@ var viewer = viewer || {};
       return; // thumbnail bar already exists
     }
 
-    // define function to read the thumbnails' url so it can be assigned to the src of <img>
-    function readThumbnailUrl(imgFileObj, callback) {
-      var file = imgFileObj.thumbnail;
-      var reader = new FileReader();
-
-      reader.onload = function() {
-        callback(imgFileObj.id, file.name, reader.result);
-      };
-
-      reader.readAsDataURL(file);
-    }
-
-    // callback to append new thumbnail
-    function createThumbnail(id, altText, url) {
-      var info, title;
-      // we assume the name of the thumbnail can be of the form:
-      // 1.3.12.2.1107.5.2.32.35288.30000012092602261631200043880-AXIAL_RFMT_MPRAGE-Sag_T1_MEMPRAGE_1_mm_4e_nomoco.jpg
-      if (altText.lastIndexOf('-') !== -1) {
-        title = altText.substring(0, altText.lastIndexOf('.'));
-        title = title.substring(title.lastIndexOf('-') + 1);
-        info = title.substr(0, 10);
-      } else {
-        title = altText;
-        info = altText.substring(0, altText.lastIndexOf('.')).substr(-10);
-      }
-      if (url === undefined) {
-        url = ' ';
-      }
-      $('#' + self.thumbnailbarContID).append(
-        '<div id="' + self.thumbnailbarContID + '_th' + id + '" class="view-thumbnail">' +
-          '<img class="view-thumbnail-img" src="' + url + '" alt="' + altText.substr(-8) + '" title="' + title + '">' +
-          '<div class="view-thumbnail-info">' + info + '</div>' +
-        '</div>'
-      );
-      // if there is a corresponding renderer already in the UI then hide this thumbnail
-      if ($('#' + self.rendersContID + '_render2D' + id).length) {
-        $('#' + self.thumbnailbarContID + '_th' + id).css({ display:"none" });
-      }
-    }
-
     // append thumbnailbar to the whole container
     $('#' + this.wholeContID).append(
       '<div id="' + this.thumbnailbarContID + '" class="view-thumbnailbar sortable"></div>'
@@ -667,24 +627,130 @@ var viewer = viewer || {};
 
     $('#' + this.thumbnailbarContID).sortable(sort_opts);
 
-    // load thumbnail images
-    var imgFileObj;
-    for (var i=0; i<this.imgFileArr.length; i++) {
-      imgFileObj = this.imgFileArr[i];
-      if (imgFileObj.thumbnail) {
-        readThumbnailUrl(imgFileObj, createThumbnail);
-      } else {
-        createThumbnail(imgFileObj.id, imgFileObj.files[0].name);
-      }
-    }
-
     // make space for the thumbnail bar
-    var jqThCont = $('#' + this.thumbnailbarContID);
-    var rendersLeftEdge = parseInt(jqThCont.css("left")) + parseInt(jqThCont.css("width")) + 5;
+    var jqThBarCont = $('#' + this.thumbnailbarContID);
+    var rendersLeftEdge = parseInt(jqThBarCont.css("left")) + parseInt(jqThBarCont.css("width")) + 5;
     $('#' + this.rendersContID).css({ width: "calc(100% - " + rendersLeftEdge + "px)" });
     if ($('#' + this.toolbarContID).length) {
       // there is a toolbar
       $('#' + this.toolbarContID).css({ width: "calc(100% - " + rendersLeftEdge + "px)" });
+    }
+
+    // function to load the thumbnail corresponding to the imgFileObj argument
+    // if there is a thumbnail property in the imgFileObj then load it otherwise
+    // automatically create the thumbnail from a renderer's canvas object
+    function loadThumbnail(imgFileObj) {
+      var fname, info, title, thContJq, imgJq;
+      var id = imgFileObj.id;
+
+      // we assume the name of the thumbnail can be of the form:
+      // 1.3.12.2.1107.5.2.32.35288.30000012092602261631200043880-AXIAL_RFMT_MPRAGE-Sag_T1_MEMPRAGE_1_mm_4e_nomoco.jpg
+      if (imgFileObj.thumbnail) {
+        fname = imgFileObj.thumbnail.name;
+      } else {
+        fname = imgFileObj.files[0].name;
+      }
+      if (fname.lastIndexOf('-') !== -1) {
+        title = fname.substring(0, fname.lastIndexOf('.'));
+        title = title.substring(title.lastIndexOf('-') + 1);
+        info = title.substr(0, 10);
+      } else {
+        title = fname;
+        info = fname.substring(0, fname.lastIndexOf('.')).substr(-10);
+      }
+      // append this thumbnail to thumbnailbar
+      $('#' + self.thumbnailbarContID).append(
+        '<div id="' + self.thumbnailbarContID + '_th' + id + '" class="view-thumbnail">' +
+          '<img class="view-thumbnail-img" title="' + title + '">' +
+          '<div class="view-thumbnail-info">' + info + '</div>' +
+        '</div>'
+      );
+      thContJq = $('#' + self.thumbnailbarContID + '_th' + id);
+      imgJq = $('.view-thumbnail-img', thContJq);
+
+      // internal function to read the thumbnail's url so it can be assigned to the src of <img>
+      function readThumbnailUrl() {
+        var reader = new FileReader();
+
+        reader.onload = function() {
+          imgJq.attr('src', reader.result);
+        };
+
+        reader.readAsDataURL(imgFileObj.thumbnail);
+      }
+
+      // internal function to create and read the thumbnails' url so it can be assigned to the src of <img>
+      function createAndReadThumbnailUrl() {
+        var filedata = [];
+        var numFiles = 0;
+        var vol = self.createVolume(imgFileObj);
+        var render;
+        var tempRenderContId = thContJq.attr('id') + '_temp';
+        var imgWidth = imgJq.css("width");
+        var imgHeight = imgJq.css("height");
+
+        // hide the <img> and prepend a div for a renderer canvas with the same size as the hidden <img>
+        imgJq.css({ display:"none" });
+        thContJq.prepend('<div id="' + tempRenderContId + '"></div>');
+        $('#' + tempRenderContId).css({ width: imgWidth, height: imgHeight });
+        render = self.create2DRender(tempRenderContId, 'Z');
+
+        render.afterRender = function() {
+          var canvas = $('#' + tempRenderContId + ' > canvas')[0];
+          var img = imgJq[0];
+          var reader = new FileReader();
+
+          reader.onload = function() {
+            img.src = reader.result;
+            render.remove(vol);
+            vol.destroy();
+            $('#' + tempRenderContId).remove();
+            render.destroy();
+            // restore the hidden <img>
+            imgJq.css({ display:"block" });
+            // if there is a corresponding renderer window already in the UI then hide this thumbnail
+            if ($('#' + self.rendersContID + '_render2D' + id).length) {
+              thContJq.css({ display:"none" });
+            }
+          };
+
+          reader.readAsDataURL(viewer.dataURItoJPGBlob(canvas.toDataURL('image/jpeg')));
+        };
+
+        function readFile(file, pos) {
+          var reader = new FileReader();
+
+          reader.onload = function() {
+            filedata[pos] = reader.result;
+            ++numFiles;
+            if (numFiles===imgFileObj.files.length) {
+              vol.filedata = filedata;
+              render.add(vol);
+              // start the rendering
+              render.render();
+            }
+          };
+
+          reader.readAsArrayBuffer(file);
+        }
+
+        // read all files belonging to the volume
+        for (var i=0; i<imgFileObj.files.length; i++) {
+          readFile(imgFileObj.files[i], i);
+        }
+      }
+
+      if (imgFileObj.thumbnail) {
+        readThumbnailUrl();
+      } else {
+        createAndReadThumbnailUrl();
+      }
+
+    }
+
+    // load thumbnail images and create their UIs when ready
+    for (var i=0; i<this.imgFileArr.length; i++) {
+      loadThumbnail(this.imgFileArr[i]);
     }
 
   };
@@ -776,7 +842,7 @@ var viewer = viewer || {};
   /**
    * Module utility function. Create and return a Blob object conytaining a JPG image
    *
-   * @param {Array} a data URI such as the one returned by the toDataURL() of
+   * @param {String} a data URI such as the one returned by the toDataURL() of
    * a canvas element
    */
    viewer.dataURItoJPGBlob = function(dataURI) {
