@@ -65,7 +65,17 @@ var viewer = viewer || {};
         self.imgFileArr.push({
         'baseUrl': baseUrl,
         'imgType': 'dicom',
-        'files': dicoms[baseUrl] });
+        'files': dicoms[baseUrl].sort(function(f1, f2) {
+          var fnames = [f1.name, f2.name].sort();
+
+          if (fnames[0] === fnames[1]) {
+            return 0;
+          } else if (fnames[0] === f1.name) {
+            return -1;
+          } else {
+            return 1;
+          }
+        })});
       }
       // push non-DICOM data into self.imgFileArr
       for (i=0; i<nonDcmData.length; i++) {
@@ -75,21 +85,37 @@ var viewer = viewer || {};
       for (i=0; i<self.imgFileArr.length; i++) {
         self.imgFileArr[i].id = i;
       }
-      // Add thumbnail images
-      for (i=0; i<self.imgFileArr.length; i++) {
-        for (j=0; j<self.imgFileArr[i].files.length; j++) {
-          // Search for a thumbnail with the same name as the current neuroimage file
-          path = self.imgFileArr[i].baseUrl + self.imgFileArr[i].files[j].name;
-          name = path.substring(0, path.lastIndexOf('.'));
-          if (thumbnails.hasOwnProperty(name)) {
-            self.imgFileArr[i].thumbnail = thumbnails[name];
-          }
-          //temporal demo code
-          if(jsons.hasOwnProperty(name)) {
-            self.imgFileArr[i].json = jsons[name];
+      // add thumbnail images
+      for (var th in thumbnails) {
+        // Search for a neuroimage file with the same name as the current thumbnail
+        for (i=0; i<self.imgFileArr.length; i++) {
+          j = 0;
+          do {
+            path = self.imgFileArr[i].baseUrl + self.imgFileArr[i].files[j].name;
+            name = path.substring(0, path.lastIndexOf('.'));
+          } while ((++j<self.imgFileArr[i].files.length)  && (th!==name));
+          if (th === name) {
+            self.imgFileArr[i].thumbnail = thumbnails[th];
+            break;
           }
         }
       }
+      // temporal demo code to add json files
+      for (var jsn in jsons) {
+        // Search for a neuroimage file with the same name as the current json
+        for (i=0; i<self.imgFileArr.length; i++) {
+          j = 0;
+          do {
+            path = self.imgFileArr[i].baseUrl + self.imgFileArr[i].files[j].name;
+            name = path.substring(0, path.lastIndexOf('.'));
+          } while ((++j<self.imgFileArr[i].files.length)  && (jsn!==name));
+          if (jsn === name) {
+            self.imgFileArr[i].json = jsons[jsn];
+            break;
+          }
+        }
+      }
+
     }
 
     // function to add a file object into internal data structures
@@ -104,7 +130,7 @@ var viewer = viewer || {};
        if (!dicoms[baseUrl]) {
          dicoms[baseUrl] = [];
        }
-       dicoms[baseUrl].push(file); // all dicoms with the same urls belong to the sasme volume
+       dicoms[baseUrl].push(file); // all dicoms with the same urls belong to the same volume
      } else if (imgType === 'thumbnail') {
        // save thumbnail file in an associative array
        // array keys are the full path up to the first dash in the file name or the last period
@@ -253,14 +279,14 @@ var viewer = viewer || {};
         if (self.renders2D[i].interactor === this) {
           // update slice number on the GUI
           $('.view-render-info-bottomleft', $(self.renders2D[i].container)).html(
-            'slice: ' + self.renders2D[i].volume.indexZ + '/' + (self.renders2D[i].volume.range[2] - 1));
+            'slice: ' + (self.renders2D[i].volume.indexZ + 1) + '/' + self.renders2D[i].volume.range[2]);
         }
       }
       if (self.rendersLinked && !evt.detail) {
         // scroll event triggered by the user
         evt.detail = true;
         for (i=0; i<self.renders2D.length; i++) {
-          if (self.renders2D[i].interactor !== this) {
+          if (self.renders2D[i].interactor !== evt.target) {
             // trigger the scroll event programatically on other renderers
             self.renders2D[i].interactor.dispatchEvent(evt);
           }
@@ -306,7 +332,7 @@ var viewer = viewer || {};
           orient + direct );
 
         $('.view-render-info-bottomleft', jqR).html(
-          'slice: ' + vol.indexZ + '/' + (vol.range[2] - 1));
+          'slice: ' + (vol.indexZ + 1) + '/' + vol.range[2]);
       }
 
       //temporal demo code
@@ -343,14 +369,14 @@ var viewer = viewer || {};
       } else if (imgFileObj.dicomInfo) {
         // if instead there is dicom information then use it
         var mriInfo = imgFileObj.dicomInfo;
-        mriInfo.dimensions = (vol.range[0] - 1) + ' x ' + (vol.range[1] - 1) + ' x ' + (vol.range[2] - 1);
+        mriInfo.dimensions = (vol.range[0]) + ' x ' + (vol.range[1]) + ' x ' + (vol.range[2]);
         mriInfo.voxelSizes = vol.spacing[0].toPrecision(4) + ', ' + vol.spacing[1].toPrecision(4) +
         ', ' + vol.spacing[2].toPrecision(4);
         setUIMriInfo(mriInfo);
       } else {
         // just display slice number
         $('.view-render-info-bottomleft', $('#' + containerID)).html(
-          'slice: ' + vol.indexZ + '/' + (vol.range[2] - 1));
+          'slice: ' + (vol.indexZ + 1) + '/' + vol.range[2]);
       }
     };
 
@@ -550,7 +576,7 @@ var viewer = viewer || {};
     // append toolbar div and it's buttons to the whole container
     $('#' + this.wholeContID).append(
       '<div id="' + this.toolbarContID + '" class="view-toolbar">' +
-        '<button id="' + this.toolbarContID + '_buttonlink" type="button" class="view-tool-button">Link views</button>' +
+        '<button id="' + this.toolbarContID + '_buttonlink" class="view-toolbar-button" type="button" title="Link views">Link views</button>' +
       '<div>'
     );
 
@@ -853,7 +879,7 @@ var viewer = viewer || {};
         array.push(binary.charCodeAt(i));
     }
     return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
-  }
+  };
 
   /**
    * Module utility function. Repaint the document
