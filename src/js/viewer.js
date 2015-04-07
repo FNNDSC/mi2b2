@@ -700,6 +700,10 @@ var viewer = viewer || {};
 
         reader.onload = function() {
           imgJq.attr('src', reader.result);
+          // if there is a corresponding renderer window already in the UI then hide this thumbnail
+          if ($('#' + self.rendersContID + '_render2D' + id).length) {
+            thContJq.css({ display:"none" });
+          }
         };
 
         reader.readAsDataURL(imgFileObj.thumbnail);

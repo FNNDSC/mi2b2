@@ -1,12 +1,17 @@
-body {
+body{
   margin: 0;
 }
 
 /*tabs*/
-.ui-widget-content {
+.ui-widget-content{
   border: none;
 }
-
+/*close icon within tabs*/
+div#tabs li .ui-icon-close{
+  float: left;
+  margin: 0.2em 0.2em 0 0;
+  cursor: pointer;
+}
 /*div containers within tabs*/
 div.tabcontent{
   position: relative;
@@ -63,7 +68,7 @@ div.tabcontent{
 }
 
 /*viewer's container*/
-div#viewercontainer{
+div.viewer-container{
   background-color: #353535;
   border: 6px solid #353535;
 }

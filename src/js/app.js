@@ -4,6 +4,7 @@
  * This app reads a directory tree from a directory picker/dropzone button (chrome)
  * or multiple neuroimage files in the same directory (other browsers) into an array
  * of objects and pass it to a Viewer object for visualization and collaboration.
+ * The app can contain several Viewer objects which will be displayed in different tabs.
  */
 
 // Provide a namespace
@@ -11,20 +12,22 @@ var app = app || {};
 
   app.App = function() {
 
-    // Init jQuery UI tabs
-    $('#tabs').tabs();
-    $('#tabs').tabs("disable", 1);
-
-    // Source data array for the Viewer object
-    this._imgFileArr = [];
-    // Current number of files already added
-    this._numFiles = 0;
-    // Total number of files to be added
-    this._totalNumFiles = 0;
-    // Viewer object
-    this.view = null;
-
+    // Viewer object array
+    this.views = [];
     var self = this;
+
+    // Init jQuery UI tabs
+    this.tabs = $('#tabs').tabs({ activate: function() {viewer.documentRepaint();} });
+    // close icon: removing the tab on click
+    this.tabs.delegate( "span.ui-icon-close", "click", function() {
+      var panelId = $( this ).closest( "li" ).remove().attr( "aria-controls" );
+      var ix = parseInt(panelId.charAt(panelId.length-1));
+
+      this.views[ix].destroy();
+      this.views.splice(ix, 1);
+      $( "#" + panelId ).remove();
+      self.tabs.tabs( "refresh" );
+    });
 
     // Event handler for the directory loader button
     var dirBtn = document.getElementById('dirbtn');
@@ -33,7 +36,7 @@ var app = app || {};
       var fileObj;
 
       self.changeUIonDataLoad('loading');
-      self._numFiles = 0;
+      self.init();
       self._totalNumFiles = files.length;
       for (var i=0; i<self._totalNumFiles; i++) {
         fileObj = files[i];
@@ -64,7 +67,7 @@ var app = app || {};
 
       e.preventDefault();
       self.changeUIonDataLoad('loading');
-      self._numFiles = 0;
+      self.init();
 
       if (!e.dataTransfer.items) {
 
@@ -153,6 +156,18 @@ var app = app || {};
   };
 
   /**
+   * Initilize the app internal data for a new Viewer object
+   */
+  app.App.prototype.init = function() {
+    // Source data array for the new Viewer object
+    this._imgFileArr = [];
+    // Current number of files already added
+    this._numFiles = 0;
+    // Total number of files to be added
+    this._totalNumFiles = 0;
+  };
+
+  /**
    * Add file into internal data structures
    *
    * @param {Object} HTML5 File object.
@@ -173,17 +188,26 @@ var app = app || {};
    * Create Viewer object
    */
   app.App.prototype.createView = function() {
+    var view;
+    var nviews = this.views.length;
+    var tabContentId = 'tabviewer' + nviews;
+    var viewId = 'viewer' + nviews;
 
+    // add a new tab with a close icon
+    $('div#tabs ul').append('<li><a href="#' + tabContentId + '">' + 'Viewer' + (nviews + 1) +
+      '</a><span class="ui-icon ui-icon-close" role=presentation>Remove Tab</span></li>');
+    $('div#tabs').append('<div id="' + tabContentId  + '"></div>');
+    $("div#tabs").tabs("refresh");
+
+    // append viewer div
+    $('#' + tabContentId).append('<div id="' + viewId + '" class="viewer-container tabcontent">');
     // Instantiate a new Viewer object
-    if (this.view) {
-      this.view.destroy();
-      this.view = null;
-    }
-    this.view = new viewer.Viewer(this._imgFileArr, 'viewercontainer');
+    view = new viewer.Viewer(this._imgFileArr, viewId);
+    view.addThumbnailBar();
+    view.addToolBar();
+    this.views.push(view);
     this.changeUIonDataLoad('loaded');
-    this.view.addThumbnailBar();
-    this.view.addToolBar();
-    $('#tabs').tabs("enable", 1).tabs("option", "active", 1);
+    $('#tabs').tabs("option", "active", nviews + 1);
   };
 
   /**
