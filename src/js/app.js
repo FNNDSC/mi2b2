@@ -32,6 +32,8 @@ var app = app || {};
       var files = e.target.files;
       var fileObj;
 
+      self.changeUIonDataLoad('loading');
+      self._numFiles = 0;
       self._totalNumFiles = files.length;
       for (var i=0; i<self._totalNumFiles; i++) {
         fileObj = files[i];
@@ -61,6 +63,9 @@ var app = app || {};
       var i;
 
       e.preventDefault();
+      self.changeUIonDataLoad('loading');
+      self._numFiles = 0;
+
       if (!e.dataTransfer.items) {
 
         // browser is not chrome
@@ -175,8 +180,23 @@ var app = app || {};
       this.view = null;
     }
     this.view = new viewer.Viewer(this._imgFileArr, 'viewercontainer');
+    this.changeUIonDataLoad('loaded');
     this.view.addThumbnailBar();
     this.view.addToolBar();
-
     $('#tabs').tabs("enable", 1).tabs("option", "active", 1);
+  };
+
+  /**
+   * Change UI elements to indicate a data loading state
+   *
+   * @param {String} state string ('loading', 'loaded').
+   */
+  app.App.prototype.changeUIonDataLoad = function(stateStr) {
+    var buttonUIJq = $('.directory-btn');
+
+    if (stateStr === 'loading') {
+      buttonUIJq.text('Loading...');
+    } else if (stateStr === 'loaded') {
+      buttonUIJq.text('Drop a folder (or click)');
+    }
   };
