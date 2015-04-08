@@ -6,6 +6,10 @@ body{
 .ui-widget-content{
   border: none;
 }
+li.ui-state-default{
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
 /*close icon within tabs*/
 div#tabs li .ui-icon-close{
   float: left;
@@ -28,27 +32,38 @@ div.tabcontent{
   color: #848484;
   text-align:center;
   font-size: 2.2em;
-  margin: 30px;
+  margin-top: 30px;
+  margin-bottom: 50px;
 }
 
-.input-h2 {
-  color: #848484;
-  text-align:center;
-  font-size: 1em;
-  font-weight: bold;
-  margin: 10px;
+/*Div containing slicedrop image and upload button*/
+div#directoryselection{
+  width: 400px;
+  margin: 0 auto;
+  overflow: auto;
+}
+div#directoryselection > img{
+  float: left;
+  display: block;
+  width: 89px;
+  height: 96px;
+  margin-right: 5px;
 }
 
 /*directory upload button*/
 .directory-btn{
+  float: left;
   display: block;
   background-color: #DDD;
   color: #FFF;
   font-size: 1.7em;
   text-align: center;
   padding: 1em;
-  margin: 60px auto 20px auto;
-  width: 200px;
+  margin-bottom: 20px;
+  width: 260px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   border: 1.5px dashed #BBB;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
@@ -65,6 +80,14 @@ div.tabcontent{
 }
 .directory-btn:hover{
   background-color: #D5D5D5;
+}
+
+.input-h2 {
+  color: #848484;
+  text-align:center;
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0;
 }
 
 /*viewer's container*/
