@@ -14,23 +14,25 @@ var app = app || {};
 
     // Viewer object array
     this.views = [];
-    var self = this;
 
+    var self = this;
     // Init jQuery UI tabs
     this.tabs = $('#tabs').tabs({ activate: function() {viewer.documentRepaint();} });
     // close icon: removing the tab on click
     this.tabs.delegate( "span.ui-icon-close", "click", function() {
       var panelId = $( this ).closest( "li" ).remove().attr( "aria-controls" );
-      var ix = parseInt(panelId.charAt(panelId.length-1));
+      var pStrL= panelId.length;
+      var ix = parseInt(parseInt(panelId.charAt(pStrL-2)) ? panelId.substr(pStrL-2) : panelId.charAt(pStrL-1));
 
-      this.views[ix].destroy();
-      this.views.splice(ix, 1);
+      self.views[ix].destroy();
+      self.views[ix] = null;
       $( "#" + panelId ).remove();
       self.tabs.tabs( "refresh" );
     });
 
-    // Event handler for the directory loader button
+    // Event handlers for the directory loader button
     var dirBtn = document.getElementById('dirbtn');
+
     dirBtn.onchange = function(e) {
       var files = e.target.files;
       var fileObj;
