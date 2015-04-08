@@ -388,21 +388,21 @@ var viewer = viewer || {};
     this.renders2D.push(render);
 
     // function to read an MRI file into filedata array
-    readMriFile.filedata = [];
-    readMriFile.numFiles = 0;
+    var filedata = [];
+    var numFiles = 0;
     function readMriFile(file, pos) {
       var reader = new FileReader();
 
       reader.onload = function() {
-        readMriFile.filedata[pos] = reader.result;
-        ++readMriFile.numFiles;
+        filedata[pos] = reader.result;
+        ++numFiles;
 
-        if (readMriFile.numFiles===imgFileObj.files.length) {
+        if (numFiles===imgFileObj.files.length) {
 
           if (imgFileObj.imgType === 'dicom') {
             // Here we use Chafey's dicomParser: https://github.com/chafey/dicomParser.
             // dicomParser requires as input a Uint8Array so we create it here
-            var byteArray = new Uint8Array(readMriFile.filedata[0]);
+            var byteArray = new Uint8Array(filedata[0]);
             // Invoke the parseDicom function and get back a DataSet object with the contents
             try {
               var dataSet = dicomParser.parseDicom(byteArray);
@@ -422,7 +422,7 @@ var viewer = viewer || {};
             }
           }
 
-          vol.filedata = readMriFile.filedata;
+          vol.filedata = filedata;
           render.add(vol);
           // start the rendering
           render.render();
@@ -510,7 +510,7 @@ var viewer = viewer || {};
    * Rearrange renderers in the UI layout.
    */
   viewer.Viewer.prototype.positionRenders = function() {
-    var jqRenders = $('div.view-render');
+    var jqRenders = $('div.view-render', $('#' + this.rendersContID));
 
     switch(this.numOfRenders) {
       case 1:

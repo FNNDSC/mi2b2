@@ -95,6 +95,9 @@ module.exports = function(grunt) {
       styles: {
         files: [{expand: true, cwd: 'src/', src: ['styles/**'], dest: 'dist/'}]
       },
+      images: {
+        files: [{expand: true, cwd: 'src/', src: ['images/**'], dest: 'dist/'}]
+      },
       config: {
         src: 'src/config_production.js',
         dest: 'dist/config.js',
