@@ -188,7 +188,7 @@ var viewer = viewer || {};
       "-webkit-box-sizing": "border-box",
       "-moz-box-sizing": "border-box",
       "box-sizing": "border-box"
-    }).append('<div id="' + this.rendersContID + '" class="view-renders sortable"></div>' );
+    }).append('<div id="' + this.rendersContID + '" class="view-renders ' + this.wholeContID + '-sortable"></div>' );
 
     // jQuery UI options object for sortable elems
     // ui-sortable CSS class is by default added to the containing elem
@@ -198,7 +198,7 @@ var viewer = viewer || {};
       distance: '60', // required moving distance before the displacement is taken into account
       containment: '#' + this.wholeContID, // CSS selector within which elem displacement is restricted
       appendTo: '#' + this.thumbnailbarContID, // CSS selector giving the receiver container for the moving clone
-      connectWith: ".sortable",
+      connectWith: '.' + this.wholeContID + '-sortable', // CSS selector representing the elems in which we can insert these elems.
       dropOnEmpty: true,
 
       helper: function (evt, target) {
@@ -621,7 +621,7 @@ var viewer = viewer || {};
 
     // append thumbnailbar to the whole container
     $('#' + this.wholeContID).append(
-      '<div id="' + this.thumbnailbarContID + '" class="view-thumbnailbar sortable"></div>'
+      '<div id="' + this.thumbnailbarContID + '" class="view-thumbnailbar ' + this.wholeContID + '-sortable"></div>'
     );
 
     // make the thumbnails container sortable
@@ -630,7 +630,7 @@ var viewer = viewer || {};
       containment: '#' + this.wholeContID,
       helper: 'clone',
       appendTo: '#' + this.rendersContID,
-      connectWith: ".sortable",
+      connectWith: '.' + this.wholeContID + '-sortable',
       dropOnEmpty: true,
 
       //event handlers
