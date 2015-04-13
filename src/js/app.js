@@ -14,6 +14,7 @@ var app = app || {};
 
     // Viewer object array
     this.views = [];
+    this.nviews = 0;
 
     var self = this;
     // Init jQuery UI tabs
@@ -26,6 +27,7 @@ var app = app || {};
 
       self.views[ix].destroy();
       self.views[ix] = null;
+      self.nviews--;
       $( "#" + panelId ).remove();
       self.tabs.tabs( "refresh" );
     });
@@ -190,12 +192,12 @@ var app = app || {};
    */
   app.App.prototype.createView = function() {
     var view;
-    var nviews = this.views.length;
-    var tabContentId = 'tabviewer' + nviews;
-    var viewId = 'viewer' + nviews;
+    var vlen = this.views.length;
+    var tabContentId = 'tabviewer' + vlen;
+    var viewId = 'viewer' + vlen;
 
     // add a new tab with a close icon
-    $('div#tabs ul').append('<li><a href="#' + tabContentId + '">' + 'Viewer' + (nviews + 1) +
+    $('div#tabs ul').append('<li><a href="#' + tabContentId + '">' + 'Viewer' + (vlen + 1) +
       '</a><span class="ui-icon ui-icon-close" role=presentation>Remove Tab</span></li>');
     $('div#tabs').append('<div id="' + tabContentId  + '"></div>');
     $("div#tabs").tabs("refresh");
@@ -207,8 +209,9 @@ var app = app || {};
     view.addThumbnailBar();
     view.addToolBar();
     this.views.push(view);
+    ++this.nviews;
     this.changeUIonDataLoad('loaded');
-    $('#tabs').tabs("option", "active", nviews + 1);
+    $('#tabs').tabs("option", "active", this.nviews);
   };
 
   /**
@@ -222,6 +225,6 @@ var app = app || {};
     if (stateStr === 'loading') {
       buttonUIJq.text('Loading...');
     } else if (stateStr === 'loaded') {
-      buttonUIJq.text('Drop a folder (or click)');
+      buttonUIJq.text('Drop files (or click)');
     }
   };
