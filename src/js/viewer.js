@@ -195,7 +195,7 @@ var viewer = viewer || {};
     // an elem being moved is assigned the ui-sortable-helper class
     var sort_opts = {
       cursor: 'move',
-      //distance: '10', // required moving distance before the displacement is taken into account
+      distance: '60', // required moving distance before the displacement is taken into account
       containment: '#' + this.wholeContID, // CSS selector within which elem displacement is restricted
       appendTo: '#' + this.thumbnailbarContID, // CSS selector giving the receiver container for the moving clone
       connectWith: ".sortable",
