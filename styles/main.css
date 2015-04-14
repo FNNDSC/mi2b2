@@ -5,6 +5,10 @@ body{
 /*tabs*/
 .ui-widget-content{
   border: none;
+  padding: 0;
+}
+.ui-tabs .ui-tabs-panel{
+  padding: 0.3em 0 0;
 }
 li.ui-state-default{
   border-top-left-radius: 6px;
@@ -16,16 +20,31 @@ div#tabs li .ui-icon-close{
   margin: 0.2em 0.2em 0 0;
   cursor: pointer;
 }
+
 /*div containers within tabs*/
-div.tabcontent{
+/*main page container*/
+div#inputcontainer{
   position: relative;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  height: -webkit-calc(100vh - 90px);
-  height: -moz-calc(100vh - 90px);
-  height: calc(100vh - 90px);
-  overflow: hidden;
+  height: -webkit-calc(100vh - 4.8em);
+  height: -moz-calc(100vh - 4.8em);
+  height: calc(100vh - 4.8em);
+  margin: 0;
+}
+/*viewer containers*/
+div.viewer-container{
+  position: relative;
+  background-color: #353535;
+  border: 6px solid #353535;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: -webkit-calc(100vh - 3.2em);
+  height: -moz-calc(100vh - 3.2em);
+  height: calc(100vh - 3.2em);
+  margin: 0;
 }
 
 .input-h1{
@@ -36,7 +55,7 @@ div.tabcontent{
   margin-bottom: 50px;
 }
 
-/*Div containing slicedrop image and upload button*/
+/*div containing slicedrop image and upload button*/
 div#directoryselection{
   width: 400px;
   margin: 0 auto;
@@ -71,7 +90,7 @@ div#directoryselection > img{
   -webkit-box-shadow: 2px 2px 2px #666;
   -moz-box-shadow: 2px 2px 2px #666;
   box-shadow: 2px 2px 2px #666;
-  cursor:pointer;
+  cursor: pointer;
 }
 .directory-btn:active{
   -webkit-box-shadow: inset 6px 6px 5px #666;
@@ -84,14 +103,24 @@ div#directoryselection > img{
 
 .input-h2 {
   color: #848484;
-  text-align:center;
+  text-align: center;
   font-size: 1em;
   font-weight: bold;
   margin: 0;
 }
 
-/*viewer's container*/
-div.viewer-container{
-  background-color: #353535;
-  border: 6px solid #353535;
+/*footbar*/
+.footbar {
+  position: absolute;
+  border-top: 1px solid #E4E4E4;
+  background-color: #F2F2F2;
+  padding: 0.5em 0;
+  bottom: 0;
+  height: 6em;
+  width: 100%;
+  text-align:center;
+  vertical-align: middle;
+  line-height: 6em;
+  font-size: 0.8em;
+  margin: 0;
 }
