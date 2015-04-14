@@ -673,17 +673,22 @@ var viewer = viewer || {};
       // 1.3.12.2.1107.5.2.32.35288.30000012092602261631200043880-AXIAL_RFMT_MPRAGE-Sag_T1_MEMPRAGE_1_mm_4e_nomoco.jpg
       if (imgFileObj.thumbnail) {
         fname = imgFileObj.thumbnail.name;
-      } else {
+      } else if (imgFileObj.imgType !== 'dicom'){
         fname = imgFileObj.files[0].name;
-      }
-      if (fname.lastIndexOf('-') !== -1) {
-        title = fname.substring(0, fname.lastIndexOf('.'));
-        title = title.substring(title.lastIndexOf('-') + 1);
-        info = title.substr(0, 10);
       } else {
-        title = fname;
-        info = fname.substring(0, fname.lastIndexOf('.')).substr(-10);
+        fname = ''; title = ''; info = '';
       }
+      if (fname) {
+        if (fname.lastIndexOf('-') !== -1) {
+          title = fname.substring(0, fname.lastIndexOf('.'));
+          title = title.substring(title.lastIndexOf('-') + 1);
+          info = title.substr(0, 10);
+        } else {
+          title = fname;
+          info = fname.substring(0, fname.lastIndexOf('.')).substr(-10);
+        }
+      }
+
       // append this thumbnail to thumbnailbar
       $('#' + self.thumbnailbarContID).append(
         '<div id="' + self.thumbnailbarContID + '_th' + id + '" class="view-thumbnail">' +
@@ -754,6 +759,20 @@ var viewer = viewer || {};
             filedata[pos] = reader.result;
             ++numFiles;
             if (numFiles===imgFileObj.files.length) {
+              // all files have been read
+              if (imgFileObj.imgType === 'dicom') {
+                //update the thumbnail info with the series description
+                var byteArray = new Uint8Array(filedata[0]);
+                try {
+                  var dataSet = dicomParser.parseDicom(byteArray);
+                  title = dataSet.string('x0008103e');
+                  info = title.substr(0, 10);
+                  imgJq.attr('title', title);
+                  $('.view-thumbnail-info', thContJq).text(info);
+                } catch(err) {
+                  console.log('Could not parse dicom ' + imgFileObj.baseUrl + ' Error - ' + err);
+                }
+              }
               vol.filedata = filedata;
               render.add(vol);
               // start the rendering
