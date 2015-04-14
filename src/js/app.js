@@ -203,7 +203,7 @@ var app = app || {};
     $("div#tabs").tabs("refresh");
 
     // append viewer div
-    $('#' + tabContentId).append('<div id="' + viewId + '" class="viewer-container tabcontent">');
+    $('#' + tabContentId).append('<div id="' + viewId + '" class="viewer-container">');
     // Instantiate a new Viewer object
     view = new viewer.Viewer(this._imgFileArr, viewId);
     view.addThumbnailBar();
