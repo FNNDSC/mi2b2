@@ -31,7 +31,7 @@ div#inputcontainer{
   height: -webkit-calc(100vh - 4.8em);
   height: -moz-calc(100vh - 4.8em);
   height: calc(100vh - 4.8em);
-  margin: 0;
+  margin: 30px 0 0;
 }
 /*viewer containers*/
 div.viewer-container{
@@ -47,11 +47,30 @@ div.viewer-container{
   margin: 0;
 }
 
+/*collaboration section*/
+.collab{
+  position: absolute;
+  top: 3em;
+  left: 2px;
+  z-index: 9999;
+}
+.collab-input{
+  display: none;
+  border: 2px solid;
+  margin-top: 2px;
+  padding: 2px;
+  background-color: #DDD;
+}
+#gobutton{
+  display: block;
+  margin: 2px auto 0;
+}
+
 .input-h1{
   color: #848484;
   text-align:center;
   font-size: 2.2em;
-  margin-top: 30px;
+  margin-top: 0;
   margin-bottom: 50px;
 }
 

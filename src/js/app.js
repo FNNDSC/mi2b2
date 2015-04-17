@@ -32,7 +32,18 @@ var app = app || {};
       self.tabs.tabs( "refresh" );
     });
 
-    // Event handlers for the directory loader button
+    // Event handler for the collab button
+    $('#collabbutton').click( function() {
+      $('.collab > .collab-input').slideToggle("fast");
+      if ($(this).text()==='Hide collab window'){
+        $(this).text('Enter existing collab room');
+      } else {
+        $(this).text('Hide collab window');
+        $('#roomId').focus();
+      }
+    });
+
+    // Event handler for the directory loader button
     var dirBtn = document.getElementById('dirbtn');
 
     dirBtn.onchange = function(e) {
