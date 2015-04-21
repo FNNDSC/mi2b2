@@ -65,7 +65,7 @@ var app = app || {};
     };
 
     // Event handlers for the dropzone
-    var dropzone = document.getElementById('directoryselection');
+    var dropzone = document.getElementById('tabload');
 
     dropzone.ondragenter = function(e) {
       e.preventDefault();
@@ -216,7 +216,8 @@ var app = app || {};
     // append viewer div
     $('#' + tabContentId).append('<div id="' + viewId + '" class="viewer-container">');
     // Instantiate a new Viewer object
-    view = new viewer.Viewer(this._imgFileArr, viewId);
+    view = new viewer.Viewer(viewId);
+    view.init(this._imgFileArr);
     view.addThumbnailBar();
     view.addToolBar();
     this.views.push(view);
