@@ -54,7 +54,7 @@ var app = app || {};
     };
 
     // Event handlers for the dropzone
-    var dropzone = document.getElementById('directoryselection');
+    var dropzone = document.getElementById('tabload');
 
     dropzone.ondragenter = function(e) {
       e.preventDefault();
