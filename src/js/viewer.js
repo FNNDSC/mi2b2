@@ -3,8 +3,9 @@
  *
  * An object of the Viewer class expects an array of file objects where
  * each object contains the following properties:
- * -url: String representing the file url (full file path for local files)
- * -file: HTML5 File object
+ * -url: String representing the file url
+ * -file: HTML5 File object (optional but neccesary when the files are gotten through a
+ *        local filepicker or dropzone)
  */
 
 // Provide a namespace
@@ -122,10 +123,20 @@ var viewer = viewer || {};
     function addFile(fileObj) {
      var path = fileObj.url;
      var baseUrl = path.substring(0, path.lastIndexOf('/') + 1);
-     var file = fileObj.file;
-     var imgType = viewer.Viewer.imgType(fileObj.file);
+     var file;
+     var imgType;
      var dashIndex;
 
+     if (fileObj.file) {
+       // get the HTML5 File object
+       file = fileObj.file;
+     } else {
+       // build a dummy File object with a property remote
+       file = {name: path.substring(path.lastIndexOf('/')+1),
+              url: path,
+              remote: true};
+     }
+     imgType = viewer.Viewer.imgType(fileObj.file);
      if (imgType === 'dicom') {
        if (!dicoms[baseUrl]) {
          dicoms[baseUrl] = [];
@@ -341,11 +352,16 @@ var viewer = viewer || {};
         var reader = new FileReader();
 
         reader.onload = function() {
-          var json = JSON.parse(reader.result);
-          callback(json);
+          callback(JSON.parse(reader.result));
         };
 
-        reader.readAsText(file);
+        if (file.remote) {
+          viewer.urlToBlob(file.url, function(blob) {
+            reader.readAsText(blob);
+          });
+        } else {
+          reader.readAsText(file);
+        }
       }
 
       if (imgFileObj.json) {
@@ -430,7 +446,13 @@ var viewer = viewer || {};
         }
       };
 
-      reader.readAsArrayBuffer(file);
+      if (file.remote) {
+        viewer.urlToBlob(file.url, function(blob) {
+          reader.readAsArrayBuffer(blob);
+        });
+      } else {
+        reader.readAsArrayBuffer(file);
+      }
     }
 
     // read all neuroimage files in imgFileObj.files
@@ -711,7 +733,13 @@ var viewer = viewer || {};
           }
         };
 
-        reader.readAsDataURL(imgFileObj.thumbnail);
+        if (imgFileObj.thumbnail.remote) {
+          viewer.urlToBlob(imgFileObj.thumbnail.url, function(blob) {
+            reader.readAsDataURL(blob);
+          });
+        } else {
+          reader.readAsDataURL(imgFileObj.thumbnail);
+        }
       }
 
       // internal function to create and read the thumbnails' url so it can be assigned to the src of <img>
@@ -780,7 +808,13 @@ var viewer = viewer || {};
             }
           };
 
-          reader.readAsArrayBuffer(file);
+          if (file.remote) {
+            viewer.urlToBlob(file.url, function(blob) {
+              reader.readAsArrayBuffer(blob);
+            });
+          } else {
+            reader.readAsArrayBuffer(file);
+          }
         }
 
         // read all files belonging to the volume
@@ -902,6 +936,23 @@ var viewer = viewer || {};
         array.push(binary.charCodeAt(i));
     }
     return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
+  };
+
+  /**
+   * Module utility function. Make an Ajax request to get a Blob from a url.
+   *
+   * @param {String} a url
+   * @param {Function} callback whose argument is the Blob object
+   */
+   viewer.urlToBlob = function(url, callback) {
+     var xhr = new XMLHttpRequest();
+
+     xhr.open("GET", url);
+     xhr.responseType = "blob";//force the HTTP response, response-type header to be blob
+     xhr.onload = function() {
+         callback(xhr.response);//xhr.response is now a blob object
+     };
+     xhr.send();
   };
 
   /**
