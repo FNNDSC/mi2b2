@@ -136,7 +136,8 @@ var viewer = viewer || {};
               url: path,
               remote: true};
      }
-     imgType = viewer.Viewer.imgType(fileObj.file);
+     imgType = viewer.Viewer.imgType(file);
+
      if (imgType === 'dicom') {
        if (!dicoms[baseUrl]) {
          dicoms[baseUrl] = [];
