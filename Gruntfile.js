@@ -14,8 +14,8 @@ module.exports = function(grunt) {
 
     // Custome Paths
     srcFiles: ['src/js/mi2b2.js'], // source files
-    testFiles: ['spec/*.spec.js'], // test files (jasmine specs)
     componentsDir: 'src/js/components', // bower components
+    testFiles: ['<%= componentsDir %>/viewerjs/spec/*.spec.js', 'spec/*.spec.js'], // test files (jasmine specs)
 
     // Task configuration.
     jshint: {
@@ -135,7 +135,7 @@ module.exports = function(grunt) {
   // Test task.
   grunt.registerTask('test', ['jshint', 'jasmine']);
   // Build task.
-  grunt.registerTask('build', ['jshint', 'requirejs', 'copy']);
+  grunt.registerTask('build', ['jshint', 'jasmine', 'requirejs', 'copy']);
   // Default task.
   grunt.registerTask('default', ['build']);
 
