@@ -32,7 +32,7 @@ sudo npm install -g bower
 
 The following are run from the checked out <tt>mi2b2</tt> directory.
 
-* Install grunt and gruntplugins packages that are needed for development and building. These are defined in <tt>package.json<tt>:
+* Install grunt and gruntplugins packages that are needed for development and building. These are defined in <tt>package.json</tt>:
 
 ````
 npm install
