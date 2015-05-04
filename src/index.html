@@ -3,8 +3,10 @@
   <head>
   	<meta charset="utf-8" >
     <title>mi2b2</title>
+    <!--Include jquery ui styles -->
+    <link rel="stylesheet"  href="js/components/jquery-ui/themes/smoothness/jquery-ui.min.css">
     <!--Include viewer styles -->
-    <link rel="stylesheet"  href="styles/viewer.css">
+    <link rel="stylesheet"  href="js/components/viewerjs/src/styles/viewerjs.css">
     <!--Include app styles -->
     <link rel="stylesheet"  href="styles/main.css">
   </head>
@@ -29,7 +31,6 @@
         </div>
 
         <div id="inputcontainer">
-
           <h1 class="input-h1">Visualization of neuroimages</h1>
 
           <div id="directoryselection">
@@ -39,7 +40,6 @@
           </div>
 
           <h2 class="input-h2">Your data stays on your computer. No upload required!</h2>
-
         </div>
 
         <div class="footbar">
@@ -51,7 +51,7 @@
     </div>
 
     <!-- Load viewer scripts -->
-    <script data-main="config" src="js/components/requirejs/require.js"></script>
+    <script data-main="main" src="js/components/requirejs/require.js"></script>
 
   </body>
 </html>
