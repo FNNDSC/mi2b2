@@ -24,7 +24,9 @@ sudo npm install -g grunt-cli
 
 * Install bower: 
 
-````sudo npm install -g bower````
+````
+sudo npm install -g bower
+````
 
 ### Install components (<tt>viewerjs</tt>)
 
