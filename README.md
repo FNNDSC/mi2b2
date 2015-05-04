@@ -12,13 +12,15 @@ This project uses grunt.
 
 * Ensure that your npm is up-to-date: 
 
-````sudo npm update -g npm````
+````
+sudo npm update -g npm
+````
 
 * Install grunt's command line interface (CLI) globally: 
 
 ````sudo npm install -g grunt-cli````
 
-### Install components (<tt>viewerjs</tt>
+### Install components (<tt>viewerjs</tt>)
 
 * Install grunt and gruntplugins listed at "devDependencies" in package.json: 
 
