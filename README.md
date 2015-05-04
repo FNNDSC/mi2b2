@@ -18,6 +18,8 @@ This project uses grunt.
 
 ````sudo npm install -g grunt-cli````
 
+### Install components (<tt>viewerjs</tt>
+
 * Install grunt and gruntplugins listed at "devDependencies" in package.json: 
 
 ````npm install````
