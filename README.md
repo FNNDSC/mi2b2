@@ -18,27 +18,36 @@ sudo npm update -g npm
 
 * Install grunt's command line interface (CLI) globally: 
 
-````sudo npm install -g grunt-cli
 ````
-
-### Install components (<tt>viewerjs</tt>)
-
-* Install grunt and gruntplugins listed at "devDependencies" in package.json: 
-
-````npm install````
+sudo npm install -g grunt-cli
+````
 
 * Install bower: 
 
 ````sudo npm install -g bower````
 
+### Install components (<tt>viewerjs</tt>)
+
+The following are run from the checked out <tt>mi2b2</tt> directory.
+
+* Install grunt and gruntplugins listed at "devDependencies" in package.json: 
+
+````
+npm install
+````
+
 * Install dependencies listed in bower.json: 
 
-````bower install````
+````
+bower install
+````
 
 * Run grunt: 
 
-<tt>grunt</tt>
- 
+````
+grunt
+````
+
 The production web app is built within the directory <tt>dist</tt>.
 
 
