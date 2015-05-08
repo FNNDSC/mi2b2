@@ -26,6 +26,14 @@ Once you've cloned the repo, you'll need to build the subcomponents.
 ### Pre-requisites:
 * NodeJs - http://nodejs.org/
 
+* Ubuntu / Debian
+
+On Ubuntu type systems, you might need to also install legacy node support:
+
+````
+sudo apt-get install nodejs-legacy
+````
+
 * Ensure that your npm is up-to-date: 
 
 ````
