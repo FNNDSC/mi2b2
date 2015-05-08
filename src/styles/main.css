@@ -1,126 +1,161 @@
+
+/*================================================== rules ================================================== */
 body{
   margin: 0;
+  font-family: 'Karla', sans-serif;
+  background-color: rgb(51,51,51)
 }
 
+div {
+    font-family: 'Karla', sans-serif;
+  background-color: rgb(51,51,51);
+}
+
+/*================================================== TABS ================================================== */
 /*tabs*/
-.ui-widget-content{
-  border: none;
-  padding: 0;
-}
-.ui-tabs .ui-tabs-panel{
-  padding: 0.3em 0 0;
-}
-li.ui-state-default{
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
-}
-/*close icon within tabs*/
-div#tabs li .ui-icon-close{
-  float: left;
-  margin: 0.2em 0.2em 0 0;
-  cursor: pointer;
-}
+/*Widget background*/
+  .ui-widget-content{
+    border: none;
+    padding: 0;
+    background-color: rgb(51,51,51);
+  }
+  .ui-tabs .ui-tabs-panel{
+    padding: 0.3em 0 0;
+  }
+  li.ui-state-default{
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    font-size: 12px;
+
+  }
+  /*close icon within tabs*/
+  div#tabs li .ui-icon-close{
+    float: left;
+    margin: 0.2em 0.2em 0 0;
+    cursor: pointer;
+  }
 
 /*div containers within tabs*/
+/*=============================================== main containers ============================================== */
 /*main page container*/
-div#inputcontainer{
-  position: relative;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  height: -webkit-calc(100vh - 4.8em);
-  height: -moz-calc(100vh - 4.8em);
-  height: calc(100vh - 4.8em);
-  margin: 0;
-}
+  div#inputcontainer{
+    position: relative;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    height: -webkit-calc(100vh - 4.8em);
+    height: -moz-calc(100vh - 4.8em);
+    height: calc(100vh - 4.8em);
+    margin: 0;
+  }
+
 /*viewer containers*/
-div.viewer-container{
-  position: relative;
-  background-color: #353535;
-  border: 6px solid #353535;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  height: -webkit-calc(100vh - 3.2em);
-  height: -moz-calc(100vh - 3.2em);
-  height: calc(100vh - 3.2em);
-  margin: 0;
-}
+  div.viewer-container{
+    position: relative;
+    border: 6px solid #353535;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    height: -webkit-calc(100vh - 3.2em);
+    height: -moz-calc(100vh - 3.2em);
+    height: calc(100vh - 3.2em);
+    margin: 0;
+  }
 
-.input-h1{
-  color: #848484;
-  text-align:center;
-  font-size: 2.2em;
-  margin-top: 30px;
-  margin-bottom: 50px;
-}
+/*================================================== Title 1 ================================================== */
+/*Title goes here*/
+  .input-h1{
+    /*color: #DDE8BB;*/
+    color: #E1EBDA;
+    text-align:left;
+    font-size: 50px;
+    padding-top: 40px;
+    /*text-shadow: 1px 1px rgba(221,232,187, 0.5);*/
+    padding-left: 40px;
+    padding-right: 40px;
+    font-weight: normal;
+    margin-bottom: 100px;
+    /*background-color: rgba(6, 89, 97,0.5);*/
+    vertical-align: middle;
+    line-height: 1em;
+  }
 
+/*================================================== BUTTON ================================================== */
 /*div containing slicedrop image and upload button*/
-div#directoryselection{
-  width: 400px;
-  margin: 0 auto;
-  overflow: auto;
-}
-div#directoryselection > img{
-  float: left;
-  display: block;
-  width: 89px;
-  height: 96px;
-  margin-right: 5px;
-}
+  div#directoryselection{
+    width: 400px;
+    margin: 0 auto;
+    overflow: auto;
+  }
+  div#directoryselection > img{
+    float: left;
+    display: block;
+    width: 86px;
+    height: 94px;
+    margin-right: 5px;
+    margin-top: 10px;
+  }
 
-/*directory upload button*/
-.directory-btn{
-  float: left;
-  display: block;
-  background-color: #DDD;
-  color: #FFF;
-  font-size: 1.7em;
-  text-align: center;
-  padding: 1em;
-  margin-bottom: 20px;
-  width: 260px;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  border: 1.5px dashed #BBB;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-  -webkit-box-shadow: 2px 2px 2px #666;
-  -moz-box-shadow: 2px 2px 2px #666;
-  box-shadow: 2px 2px 2px #666;
-  cursor: pointer;
-}
-.directory-btn:active{
-  -webkit-box-shadow: inset 6px 6px 5px #666;
-  -moz-box-shadow: inset 6px 6px 5px #666;
-  box-shadow: inset 6px 6px 5px #666;
-}
-.directory-btn:hover{
-  background-color: #D5D5D5;
-}
+  /*directory upload button*/
+  .directory-btn{
+    float: left;
+    display: block;
+    height: 94px;
+    background-color: #95A090;
+    border: 3px solid #D9E2D4; 
+    color: black;
+    font-size: 14px;
+    text-align: center;
+    padding: 1em;
+    line-height: 1.5em;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-left: 2px;
+    width: 300px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .directory-btn:active{
+    -webkit-box-shadow: inset 3px 3px 2.5px #666;
+    -moz-box-shadow: inset 3px 3px 2.5px #666;
+    box-shadow: inset 3px 3px 2.5px #666;
+  }
+  .directory-btn:hover{
+    background-color: #E1EBDA; 
+    border: 4px solid #95A090;
+  }
 
-.input-h2 {
-  color: #848484;
-  text-align: center;
-  font-size: 1em;
-  font-weight: bold;
-  margin: 0;
-}
+/*================================================== title 2 ================================================== */
 
+/*Second piece of text goes here*/
+  .input-h2 {
+    color: white;
+    background-color: rgb(51,51,51);
+    text-align: left;
+    font-size: 13px;
+    font-weight: normal;
+    padding-left: 40px;
+
+
+  }
+/*================================================== Footbar ================================================== */
 /*footbar*/
-.footbar {
-  position: absolute;
-  border-top: 1px solid #E4E4E4;
-  background-color: #F2F2F2;
-  padding: 0.5em 0;
-  bottom: 0;
-  height: 6em;
-  width: 100%;
-  text-align:center;
-  vertical-align: middle;
-  line-height: 6em;
-  font-size: 0.8em;
-  margin: 0;
-}
+  .footbar {
+    position: fixed;
+    background-color: #E1EBDA;
+    height: 6em;
+    width: 100%;
+    padding-left: 40px;
+    text-align:left;
+    vertical-align: middle;
+    line-height: 0.9em;
+    font-size: 11px;
+    /*padding: 0.2em 0;*/
+    bottom: 0;
+    margin: 0;
+  }
