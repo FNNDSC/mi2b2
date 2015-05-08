@@ -4,6 +4,14 @@
 
 Medical image viewer for  mi2b2
 
+## Clone
+
+````
+git clone git@github.com:FNNDSC/mi2b2.git
+````
+
+or, with https
+
 ## Build
 This project uses grunt.
 
