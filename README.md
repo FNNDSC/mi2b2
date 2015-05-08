@@ -4,35 +4,18 @@
 
 Medical image viewer for  mi2b2
 
-## Clone
-
-Directly with ssh
-
-````
-git clone git@github.com:FNNDSC/mi2b2.git
-````
-
-or, with https
-
-````
-https://github.com/FNNDSC/mi2b2.git
-````
-
-## Build
-This project uses grunt.
-
-Once you've cloned the repo, you'll need to build the subcomponents.
-
 ### Pre-requisites:
 * NodeJs - http://nodejs.org/
 
-* Ubuntu / Debian
+#### Ubuntu / Debian
 
 On Ubuntu type systems, you might need to also install legacy node support:
 
 ````
 sudo apt-get install nodejs-legacy
 ````
+
+#### Install npm support
 
 * Ensure that your npm is up-to-date: 
 
@@ -51,6 +34,34 @@ sudo npm install -g grunt-cli
 ````
 sudo npm install -g bower
 ````
+
+#### Post npm issues
+
+If you encounter issues with permissions (unable to mkdir for example) when you run npm as yourself, make sure that in your home dir that the npm tree is owned by you:
+
+````
+cd ~
+sudo chown -R $(whoami) ~/.npm
+````
+
+## Clone
+
+Directly with ssh
+
+````
+git clone git@github.com:FNNDSC/mi2b2.git
+````
+
+or, with https
+
+````
+https://github.com/FNNDSC/mi2b2.git
+````
+
+## Build
+This project uses grunt.
+
+Once you've cloned the repo, you'll need to build the subcomponents.
 
 ### Install components (<tt>viewerjs</tt>)
 
