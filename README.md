@@ -21,6 +21,8 @@ https://github.com/FNNDSC/mi2b2.git
 ## Build
 This project uses grunt.
 
+Once you've cloned the repo, you'll need to build the subcomponents.
+
 ### Pre-requisites:
 * NodeJs - http://nodejs.org/
 
