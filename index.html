@@ -2,7 +2,7 @@
 <html>
   <head>
   	<meta charset="utf-8" >
-    <title>mi2b2</title>
+    <title>MRI data visualizer: mi2b2</title>
     <!--Include jquery ui styles -->
     <link rel="stylesheet"  href="js/components/jquery-ui/themes/smoothness/jquery-ui.min.css">
     <!--Include viewer styles -->
@@ -21,11 +21,21 @@
 
       <div id="tabload">
 
+        <div class="collab">
+          <button id="collabbutton" type="button">Enter existing collab room</button>
+          <div class="collab-input">
+            <label for="roomId">room id:</label>
+            <input id="roomId" type="text">
+            <button id="gobutton" type="button">Go!</button>
+          </div>
+        </div>
+
         <div id="inputcontainer">
-          <h1 class="input-h1">Visualization of neuroimages</h1>
+          <h1 class="input-h1">Welcome to the <b>mi<sub>2</sub>b<sup>2</sup></b>
+          MRI Visualizer</h1>
 
           <div id="directoryselection">
-            <img src=images/slicedrop.jpg>
+            <img src=images/mi2b2Logo.jpg>
             <label for="dirbtn" class="directory-btn">Drop files (or click)</label>
             <input id="dirbtn" type="file" style="display: none;" webkitdirectory="" mozdirectory="" directory="" multiple>
           </div>
@@ -34,7 +44,11 @@
         </div>
 
         <div class="footbar">
-          <a href="http://childrenshospital.org/FNNDSC">Copyright (c) 2015 Boston Children's Hospital</a>
+          <br/>
+          <b>Copyright &copy; 2015  </b><br><br>
+          <a href="http://childrenshospital.org/FNNDSC" style="text-decoration: none">Boston Children's Hospital</a>
+          <br> <br>
+          <a href="http://partners.org" style="text-decoration: none">Partners Healthcare</a>  
         </div>
 
       </div>
