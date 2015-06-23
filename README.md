@@ -4,36 +4,87 @@
 
 Medical image viewer for  mi2b2
 
-## Build
-This project uses grunt.
-
 ### Pre-requisites:
 * NodeJs - http://nodejs.org/
 
+#### Ubuntu / Debian
+
+On Ubuntu type systems, you might need to also install legacy node support:
+
+````
+sudo apt-get install nodejs-legacy
+````
+
+#### Install npm support
+
 * Ensure that your npm is up-to-date: 
 
-````sudo npm update -g npm````
+````
+sudo npm update -g npm
+````
 
 * Install grunt's command line interface (CLI) globally: 
 
-````sudo npm install -g grunt-cli````
-
-* Install grunt and gruntplugins listed at "devDependencies" in package.json: 
-
-````npm install````
+````
+sudo npm install -g grunt-cli
+````
 
 * Install bower: 
 
-````sudo npm install -g bower````
+````
+sudo npm install -g bower
+````
 
-* Install dependencies listed in bower.json: 
+#### Post npm issues
 
-````bower install````
+If you encounter issues with permissions (unable to mkdir for example) when you run npm as yourself, make sure that in your home dir that the npm tree is owned by you:
 
-* Run grunt: 
+````
+cd ~
+sudo chown -R $(whoami) ~/.npm
+````
 
-<tt>grunt</tt>
- 
+## Clone
+
+Directly with ssh
+
+````
+git clone git@github.com:FNNDSC/mi2b2.git
+````
+
+or, with https
+
+````
+https://github.com/FNNDSC/mi2b2.git
+````
+
+## Build
+This project uses grunt.
+
+Once you've cloned the repo, you'll need to build the subcomponents.
+
+### Install components (<tt>viewerjs</tt>)
+
+The following are run from the checked out <tt>mi2b2</tt> directory.
+
+* Install grunt and gruntplugins packages that are needed for development and building. These are defined in <tt>package.json</tt>:
+
+````
+npm install
+````
+
+* Now install the mi2b2 source dependencies listed in bower.json: 
+
+````
+bower install
+````
+
+* Run grunt to test and build the project: 
+
+````
+grunt
+````
+
 The production web app is built within the directory <tt>dist</tt>.
 
 
