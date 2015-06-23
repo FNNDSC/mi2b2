@@ -5,10 +5,12 @@
  * or multiple neuroimage files in the same directory (other browsers) into an array
  * of objects and pass it to a viewerjs.Viewer object for visualization and collaboration.
  * The app can contain several viewerjs.Viewer objects which will be displayed in different tabs.
+ * A new viewer tab can also be started by joining an existing realtime collaboration among
+ * remote viewerjs.Viewer instances.
  */
 
 // define a new module
-define(['viewerjs'], function(viewerjs) {
+define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
 
   // Provide a namespace
   var mi2b2 = mi2b2 || {};
@@ -36,17 +38,54 @@ define(['viewerjs'], function(viewerjs) {
       });
 
       // Event handler for the collab button
-      $('#collabbutton').click( function() {
+      $('#collabbutton').click(function() {
+
         $('.collab > .collab-input').slideToggle("fast");
-        if ($(this).text()==='Hide collab window'){
+
+        if ($(this).text()==='Hide collab window') {
           $(this).text('Enter existing collab room');
         } else {
+
           $(this).text('Hide collab window');
           $('#roomId').focus();
+
+          // create a viewer
+          self.init();
+          var view = self.createView();
+
+          // request GDrive authorization, load the realtime Api and start the collaboration
+          // as an additional collaborator
+          view.collab.authorizeAndLoadApi(true, function(granted) {
+            var goButton = document.getElementById('gobutton');
+            var roomIdInput = document.getElementById('roomId');
+
+            if (granted && roomIdInput.value) {
+              // realtime API ready.
+              goButton.onclick = function() {
+                if (self.views.every(function(vw) {return vw.wholeContID !== view.wholeContID;})) {
+                  self.appendView(view);
+                  view.collab.joinRealtimeCollaboration(roomIdInput.value);
+                }
+              };
+            } else {
+              goButton.onclick = function() {
+                // start the authorization flow.
+                view.collab.authorizeAndLoadApi(false, function(granted) {
+                  if (granted && roomIdInput.value) {
+                    // realtime API ready.
+                    if (self.views.every(function(vw) {return vw.wholeContID !== view.wholeContID;})) {
+                      self.appendView(view);
+                      view.collab.joinRealtimeCollaboration(roomIdInput.value);
+                    }
+                  }
+                });
+              }
+            }
+          });
         }
       });
 
-      // Event handlers for the directory loader button
+      // Event handler for the directory loader button
       var dirBtn = document.getElementById('dirbtn');
 
       dirBtn.onchange = function(e) {
@@ -63,7 +102,7 @@ define(['viewerjs'], function(viewerjs) {
           } else if (!('fullPath' in fileObj)) {
             fileObj.fullPath = fileObj.name;
           }
-          self.add(fileObj);
+          self.addFile(fileObj);
         }
       };
 
@@ -99,7 +138,7 @@ define(['viewerjs'], function(viewerjs) {
               if (!('fullPath' in fileObj)) {
                 fileObj.fullPath = fileObj.name;
               }
-              self.add(fileObj);
+              self.addFile(fileObj);
             }
           } else {
             alert('Unsuported browser');
@@ -131,7 +170,7 @@ define(['viewerjs'], function(viewerjs) {
               // all files have been read
               self._totalNumFiles = files.length;
               for (var j=0; j<self._totalNumFiles; j++) {
-                self.add(files[j]);
+                self.addFile(files[j]);
               }
             }
           }
@@ -189,7 +228,7 @@ define(['viewerjs'], function(viewerjs) {
      *
      * @param {Object} HTML5 File object.
      */
-    mi2b2.App.prototype.add = function(fileObj) {
+    mi2b2.App.prototype.addFile = function(fileObj) {
       this._imgFileArr.push({
         'url': fileObj.fullPath,
         'file': fileObj
@@ -197,34 +236,56 @@ define(['viewerjs'], function(viewerjs) {
       ++this._numFiles; //a new file was added
       if (this._numFiles === this._totalNumFiles) {
         // all files have been read, so create the viewer object
-        this.createView();
+        var view = this.createView();
+        this.appendView(view);
       }
     };
 
     /**
-     * Create Viewer object
+     * Create a new Viewer object
+     *
+     * @return {Obj} a new Viewer instance with realtime collaboration enabled.
      */
     mi2b2.App.prototype.createView = function() {
-      var view;
       var vlen = this.views.length;
-      var tabContentId = 'tabviewer' + vlen;
       var viewId = 'viewer' + vlen;
+      // client ID from the Google's developer console
+      var CLIENT_ID = '1050768372633-ap5v43nedv10gagid9l70a2vae8p9nah.apps.googleusercontent.com';
+      var collaborator = new cjs.GDriveCollab(CLIENT_ID);
+      // instantiate a new viewerjs.Viewer object
+      // a collaborator object is only required if we want to enable realtime collaboration.
+      var view = new viewerjs.Viewer(viewId, collaborator);
+      return view;
+    }
+
+    /**
+     * Append a new viewer to the list of viewers and the GUI
+     *
+     * @param {Object} the Viewer object.
+     */
+    mi2b2.App.prototype.appendView = function(view) {
+      var viewId = view.wholeContID;
+      var viewNum = parseInt(viewId.replace('viewer', ''));
+      var tabContentId = 'tabviewer' + viewNum;
 
       // add a new tab with a close icon
-      $('div#tabs ul').append('<li><a href="#' + tabContentId + '">' + 'Viewer' + (vlen + 1) +
+      $('div#tabs ul').append('<li><a href="#' + tabContentId + '">' + 'Viewer' + (viewNum+1) +
         '</a><span class="ui-icon ui-icon-close" role=presentation>Remove Tab</span></li>');
       $('div#tabs').append('<div id="' + tabContentId  + '"></div>');
       $("div#tabs").tabs("refresh");
 
       // append viewer div
       $('#' + tabContentId).append('<div id="' + viewId + '" class="viewer-container">');
-      // Instantiate a new viewerjs.Viewer object
-      view = new viewerjs.Viewer(this._imgFileArr, viewId);
-      view.addThumbnailBar();
-      view.addToolBar();
+
+      if (this._imgFileArr.length) {
+        // start the viewer
+        view.init(this._imgFileArr);
+        view.addThumbnailBar();
+        view.addToolBar();
+        this.changeUIonDataLoad('loaded');
+      }
       this.views.push(view);
       ++this.nviews;
-      this.changeUIonDataLoad('loaded');
       $('#tabs').tabs("option", "active", this.nviews);
     };
 
