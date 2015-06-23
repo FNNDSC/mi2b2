@@ -79,7 +79,7 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
                     }
                   }
                 });
-              }
+              };
             }
           });
         }
@@ -256,7 +256,7 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
       // a collaborator object is only required if we want to enable realtime collaboration.
       var view = new viewerjs.Viewer(viewId, collaborator);
       return view;
-    }
+    };
 
     /**
      * Append a new viewer to the list of viewers and the GUI
