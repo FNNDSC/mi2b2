@@ -2,13 +2,13 @@
 body{
   margin: 0;
   font-family: 'Karla', sans-serif;
-  background-color: rgb(51,51,51)
 }
 
 div {
-    font-family: 'Karla', sans-serif;
-  background-color: rgb(51,51,51);
+  font-family: 'Karla', sans-serif;
+  background-color: rgba(63,63,63, 1);
 }
+
 
 /*================================================== TABS ================================================== */
 /*tabs*/
@@ -16,7 +16,7 @@ div {
   .ui-widget-content{
     border: none;
     padding: 0;
-    background-color: rgb(51,51,51);
+    background-color: rgba(63,63,63, 1);
   }
   .ui-tabs .ui-tabs-panel{
     padding: 0.3em 0 0;
@@ -24,7 +24,7 @@ div {
   li.ui-state-default{
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
-    font-size: 12px;
+    font-size: 11px;
 
   }
   /*close icon within tabs*/
@@ -65,36 +65,41 @@ div {
 /*collaboration section*/
   .collab{
     position: absolute;
-    top: 3em;
-    left: 2px;
+    left: 40px;
     z-index: 9999;
+    font-size: 11px;
+    font-family: 'Karla', sans-serif;
   }
   .collab-input{
     display: none;
     border: 1px solid;
     margin-top: 2px;
     padding: 2px;
-    background-color: #DDD;
+    background-color: #E1EBDA;
+    font-size: 12px;
+    font-family: 'Karla', sans-serif;
   }
   #gobutton{
     display: block;
-    margin: 2px auto 0;
+    margin: 3px auto 0;
+    font-size: 12px;
+    background-color: #95A090;
+    font-family: 'Karla', sans-serif;
   }
 
 /*================================================== Title 1 ================================================== */
 /*Title goes here*/
   .input-h1{
-    /*color: #DDE8BB;*/
-    color: #E1EBDA;
+    color: #eaebda;
     text-align:left;
     font-size: 50px;
     padding-top: 40px;
     /*text-shadow: 1px 1px rgba(221,232,187, 0.5);*/
     padding-left: 40px;
     padding-right: 40px;
+    font-family: 'Karla';
     font-weight: normal;
     margin-bottom: 100px;
-    /*background-color: rgba(6, 89, 97,0.5);*/
     vertical-align: middle;
     line-height: 1em;
   }
@@ -123,9 +128,9 @@ div {
     background-color: #95A090;
     border: 3px solid #D9E2D4;
     color: black;
-    font-size: 14px;
+    font-size: 15px;
     text-align: center;
-    padding: 1em;
+    padding: 2.2em;
     line-height: 1.5em;
     margin-bottom: 10px;
     margin-top: 10px;
@@ -152,8 +157,7 @@ div {
 /*================================================== Title 2 ================================================== */
 /*Second piece of text goes here*/
   .input-h2 {
-    color: white;
-    background-color: rgb(51,51,51);
+    color: #f6f7f0;
     text-align: left;
     font-size: 13px;
     font-weight: normal;
@@ -164,7 +168,7 @@ div {
 /*footbar*/
   .footbar {
     position: fixed;
-    background-color: #E1EBDA;
+    background-color: #eaebda;
     height: 6em;
     width: 100%;
     padding-left: 40px;
