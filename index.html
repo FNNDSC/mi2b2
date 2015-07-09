@@ -9,6 +9,7 @@
     <link rel="stylesheet"  href="js/components/viewerjs/src/styles/viewerjs.css">
     <!--Include app styles -->
     <link rel="stylesheet"  href="styles/main.css">
+    <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
   </head>
 
   <body>
@@ -21,14 +22,7 @@
 
       <div id="tabload">
 
-        <div class="collab">
-          <button id="collabbutton" type="button">Enter existing collab room</button>
-          <div class="collab-input">
-            <label for="roomId">room id:</label>
-            <input id="roomId" type="text">
-            <button id="gobutton" type="button">Go!</button>
-          </div>
-        </div>
+
 
         <div id="inputcontainer">
           <h1 class="input-h1">Welcome to the <b>mi<sub>2</sub>b<sup>2</sup></b>
@@ -39,10 +33,27 @@
             <label for="dirbtn" class="directory-btn">Drop files (or click)</label>
             <input id="dirbtn" type="file" style="display: none;" webkitdirectory="" mozdirectory="" directory="" multiple>
           </div>
-
-          <h2 class="input-h2">Your data stays on your computer. No upload required!</h2>
+          <table style="width:30%">
+            <tr>
+              <h2 class="input-h2">Your data stays on your computer. No upload required!</h2>
+            </tr>
+            <tr>
+             <!--  <td style="word-wrap: break-all"> -->
+              <h2 class="input-h2">You can activate the live collaboration mode by clicking on the button below and inputing the collaboration room #id.</h2>
+<!--               </td> -->
+            </tr>
+            <tr>
+              <div class="collab">
+                <button id="collabbutton" type="button">Enter existing collab room</button>
+                <div class="collab-input">
+                <label for="roomId">room id:</label>
+                <input id="roomId" type="text">
+                <button id="gobutton" type="button">Go!</button>
+                </div>
+              </div>
+            </tr>
+          </table>
         </div>
-
         <div class="footbar">
           <br/>
           <b>Copyright &copy; 2015  </b><br><br>
