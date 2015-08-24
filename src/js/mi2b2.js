@@ -138,6 +138,10 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
               if (!('fullPath' in fileObj)) {
                 fileObj.fullPath = fileObj.name;
               }
+              if ((!fileObj.size) && (!fileObj.type)) {
+                alert('It seems that a folder has been dropped: "'+ fileObj.name +
+                '". Only the Chrome bowser supports dropping of folders. Files inside will be ignored!');
+              }
               self.addFile(fileObj);
             }
           } else {
@@ -169,8 +173,12 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
             if (i >= hasBeenRead.length) {
               // all files have been read
               self._totalNumFiles = files.length;
-              for (var j=0; j<self._totalNumFiles; j++) {
-                self.addFile(files[j]);
+              if (self._totalNumFiles) {
+                for (var j=0; j<self._totalNumFiles; j++) {
+                  self.addFile(files[j]);
+                }
+              } else{
+                self.changeUIonDataLoad('loaded');
               }
             }
           }
