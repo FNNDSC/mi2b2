@@ -30,6 +30,9 @@ to interact with the embedded VObj through peripheral device controls.
 A live deployed version of the web application is running here: <http://fnndsc.github.io/mi2b2/>
 
 
+## Build
+This project uses grunt.
+
 ### Pre-requisites:
 * NodeJs - http://nodejs.org/
 
@@ -70,7 +73,7 @@ cd ~
 sudo chown -R $(whoami) ~/.npm
 ````
 
-## Clone
+### Clone
 
 Directly with ssh
 
@@ -83,9 +86,6 @@ or, with https
 ````
 https://github.com/FNNDSC/mi2b2.git
 ````
-
-## Build
-This project uses grunt.
 
 Once you've cloned the repo, you'll need to build the subcomponents.
 
