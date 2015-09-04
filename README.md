@@ -27,7 +27,7 @@ than locally.
 Please take a look at the [viewerjs.Viewer's wiki](https://github.com/FNNDSC/viewerjs/wiki) to learn how
 to interact with the embedded VObj through peripheral device controls.
 
-A live deployed version if the web application is running here: <http://fnndsc.github.io/mi2b2/>
+A live deployed version of the web application is running here: <http://fnndsc.github.io/mi2b2/>
 
 
 ### Pre-requisites:
