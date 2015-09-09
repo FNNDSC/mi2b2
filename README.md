@@ -17,8 +17,7 @@ visualization object (VObj) embedded and all of them are attached to the same si
 existing tab can then be closed by clicking its cross icon which automatically destroys the corresponding
 VObj and removes from the page all the HTML elements associated with the tab.
 
-The user can start a realtime collaboration session from any of the visualization tabs as the collaboration.
-owner. He/She can also joint to an existing collaboration session by pressing the "Enter existing collab
+The user can start a realtime collaboration session from any of the visualization tabs as the collaboration owner. He/She can also joint to an existing collaboration session by pressing the "Enter existing collab
 room" button, entering the session id in the "room id" input and then clicking the "Go!" button. The Google’s
 login and authorization windows will then pop up and after successful completion a new visualization tab is
 created as before. However in this case the neuroimage data are remotely accessed from GDrive rather than
