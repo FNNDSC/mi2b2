@@ -85,6 +85,10 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
         }
       });
 
+      $('#READMEbutton').click(function() {
+        window.open('https://github.com/FNNDSC/mi2b2/blob/master/README.md');
+      });
+
       // Event handler for the directory loader button
       var dirBtn = document.getElementById('dirbtn');
 

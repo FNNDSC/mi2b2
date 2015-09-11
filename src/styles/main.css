@@ -75,14 +75,14 @@ div {
     border: 1px solid;
     margin-top: 2px;
     padding: 2px;
-    background-color: #E1EBDA;
-    font-size: 12px;
+    background-color: #eaebda;
+    font-size: 11px;
     font-family: 'Droid Sans', sans-serif;
   }
   #gobutton{
     display: block;
     margin: 3px auto 0;
-    font-size: 12px;
+    font-size: 11px;
     background-color: #95A090;
     font-family: 'Droid Sans', sans-serif;
   }
@@ -164,6 +164,24 @@ div {
     padding-left: 40px;
 
   }
+
+
+/*================================================== README ================================================== */
+/*Second piece of text goes here*/
+
+  .README{
+    font-size: 11px;
+    font-family: 'Droid Sans', sans-serif;
+    float: right;
+    padding-right: 80px;
+    background-color: #eaebda;
+  }
+  #READMEbutton{
+    font-size: 11px;
+    font-family: 'Droid Sans', sans-serif;
+
+  }
+
 
 /*================================================== Footbar ================================================== */
 /*footbar*/
