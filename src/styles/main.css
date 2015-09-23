@@ -13,12 +13,11 @@ div {
 /*tabs*/
 /*Widget background*/
   .ui-widget-content{
-    border: none;
     padding: 0;
-    background-color: rgba(63,63,63, 1);
   }
   .ui-tabs .ui-tabs-panel{
     padding: 0.3em 0 0;
+    background-color: rgba(63,63,63, 1);
   }
   li.ui-state-default{
     border-top-left-radius: 6px;

@@ -22,8 +22,30 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
       this.nviews = 0;
 
       var self = this;
+
       // Init jQuery UI tabs
-      this.tabs = $('#tabs').tabs({ activate: function() {viewerjs.documentRepaint();} });
+
+      this.tabs = $('#tabs').tabs({ beforeActivate: function() {
+        for (var i=0; i<self.views.length; i++) {
+          if (self.views[i] && self.views[i].chat && self.views[i].chat.isOpen()) {
+            self.views[i].chat.close();
+          }
+        } }
+      });
+
+      this.tabs = $('#tabs').tabs({ activate: function(event, ui) {
+        var viewId = ui.newPanel.attr('id');
+
+        if (viewId!=='tabload') {
+          var viewNum = parseInt(viewId.replace('tabviewer', ''));
+
+          if (self.views[viewNum].chat) {
+            self.views[viewNum].chat.open();
+          }
+        }
+        viewerjs.documentRepaint();}
+      });
+
       // close icon: removing the tab on click
       this.tabs.delegate( "span.ui-icon-close", "click", function() {
         var panelId = $( this ).closest( "li" ).remove().attr( "aria-controls" );
