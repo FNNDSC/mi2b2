@@ -3,10 +3,8 @@ body{
   margin: 0;
   font-family: 'Droid Sans', sans-serif;
 }
-
 div {
   font-family: 'Droid Sans', sans-serif;
-  background-color: rgba(63,63,63, 1);
 }
 
 /*================================================== TABS ================================================== */
