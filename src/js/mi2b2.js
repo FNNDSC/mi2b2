@@ -10,7 +10,7 @@
  */
 
 // define a new module
-define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
+define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
 
   // Provide a namespace
   var mi2b2 = mi2b2 || {};
@@ -43,7 +43,7 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
             self.views[viewNum].chat.open();
           }
         }
-        viewerjs.documentRepaint();}
+        util.documentRepaint();}
       });
 
       // close icon: removing the tab on click
@@ -66,6 +66,7 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
 
         if ($(this).text()==='Hide collab window') {
           $(this).text('Enter existing collab room');
+
         } else {
 
           $(this).text('Hide collab window');
@@ -84,7 +85,7 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
             if (granted && roomIdInput.value) {
               // realtime API ready.
               goButton.onclick = function() {
-                if (self.views.every(function(vw) {return vw.wholeContID !== view.wholeContID;})) {
+                if (self.views.every(function(vw) {return vw.contId !== view.contId;})) {
                   self.appendView(view);
                   view.collab.joinRealtimeCollaboration(roomIdInput.value);
                 }
@@ -95,7 +96,7 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
                 view.collab.authorizeAndLoadApi(false, function(granted) {
                   if (granted && roomIdInput.value) {
                     // realtime API ready.
-                    if (self.views.every(function(vw) {return vw.wholeContID !== view.wholeContID;})) {
+                    if (self.views.every(function(vw) {return vw.contId !== view.contId;})) {
                       self.appendView(view);
                       view.collab.joinRealtimeCollaboration(roomIdInput.value);
                     }
@@ -107,6 +108,7 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
         }
       });
 
+      // Event handler for the README button
       $('#READMEbutton').click(function() {
         window.open('https://github.com/FNNDSC/mi2b2/blob/master/README.md');
       });
@@ -249,6 +251,7 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
      * Initilize the app internal data for a new Viewer object
      */
     mi2b2.App.prototype.init = function() {
+
       // Source data array for the new Viewer object
       this._imgFileArr = [];
       // Current number of files already added
@@ -263,10 +266,12 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
      * @param {Object} HTML5 File object.
      */
     mi2b2.App.prototype.addFile = function(fileObj) {
+
       this._imgFileArr.push({
         'url': fileObj.fullPath,
         'file': fileObj
       });
+
       ++this._numFiles; //a new file was added
       if (this._numFiles === this._totalNumFiles) {
         // all files have been read, so create the viewer object
@@ -283,12 +288,15 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
     mi2b2.App.prototype.createView = function() {
       var vlen = this.views.length;
       var viewId = 'viewer' + vlen;
+
       // client ID from the Google's developer console
       var CLIENT_ID = '1050768372633-ap5v43nedv10gagid9l70a2vae8p9nah.apps.googleusercontent.com';
       var collaborator = new cjs.GDriveCollab(CLIENT_ID);
+
       // instantiate a new viewerjs.Viewer object
       // a collaborator object is only required if we want to enable realtime collaboration.
       var view = new viewerjs.Viewer(viewId, collaborator);
+
       return view;
     };
 
@@ -298,14 +306,16 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
      * @param {Object} the Viewer object.
      */
     mi2b2.App.prototype.appendView = function(view) {
-      var viewId = view.wholeContID;
+      var viewId = view.contId;
       var viewNum = parseInt(viewId.replace('viewer', ''));
       var tabContentId = 'tabviewer' + viewNum;
 
       // add a new tab with a close icon
       $('div#tabs ul').append('<li><a href="#' + tabContentId + '">' + 'Viewer' + (viewNum+1) +
         '</a><span class="ui-icon ui-icon-close" role=presentation>Remove Tab</span></li>');
+
       $('div#tabs').append('<div id="' + tabContentId  + '"></div>');
+
       $("div#tabs").tabs("refresh");
 
       // append viewer div
@@ -318,8 +328,10 @@ define(['gcjs', 'viewerjs'], function(cjs, viewerjs) {
         view.addToolBar();
         this.changeUIonDataLoad('loaded');
       }
+
       this.views.push(view);
       ++this.nviews;
+
       $('#tabs').tabs("option", "active", this.nviews);
     };
 

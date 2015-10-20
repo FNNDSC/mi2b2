@@ -15,9 +15,13 @@ require.config({
     jszip: 'jszip/dist/jszip',
     dicomParser: 'dicomParser/dist/dicomParser.min',
     xtk: 'viewerjs/src/js/lib/xtk',
+    utiljs: 'utiljs/src/js/utiljs',
     fmjs: 'fmjs/src/js/fmjs',
     gcjs: 'gcjs/src/js/gcjs',
     jqdlgext: 'viewerjs/src/js/jquery.dialogextend',
+    rboxjs: 'viewerjs/src/js/rboxjs',
+    thbarjs: 'viewerjs/src/js/thbarjs',
+    toolbarjs: 'viewerjs/src/js/toolbarjs',
     chatjs: 'viewerjs/src/js/chatjs',
     viewerjs: 'viewerjs/src/js/viewerjs',
     mi2b2: '../mi2b2'
