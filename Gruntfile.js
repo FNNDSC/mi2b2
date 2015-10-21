@@ -81,20 +81,33 @@ module.exports = function(grunt) {
       }
     },
 
+    cssmin: {
+      dist: {
+        files: {
+          'dist/styles/main.css': ['<%= componentsDir %>/viewerjs/src/styles/**/*.css', 'src/styles/**/*.css']
+        }
+      }
+    },
+
+    uglify: {
+      main: {
+        files: {
+          'dist/main.js': ['src/main.js']
+        }
+      }
+    },
+
+    processhtml: { // proccess index.html to remove <link> elements not required after building
+      dist: {
+        files: {
+          'dist/index.html': ['src/index.html']
+        }
+      }
+    },
+
     copy: {
-      html: {
-        src: 'src/index.html',
-        dest: 'dist/index.html',
-      },
-      appStyles: {
-        files: [{expand: true, cwd: 'src/', src: ['styles/**'], dest: 'dist/'}]
-      },
       images: {
         files: [{expand: true, cwd: 'src/', src: ['images/**'], dest: 'dist/'}]
-      },
-      main: {
-        src: 'src/main.js',
-        dest: 'dist/main.js',
       },
       libs: { // copy requiered libs which were not concatenated
 
@@ -104,7 +117,7 @@ module.exports = function(grunt) {
           { expand: true,
             cwd: '<%= componentsDir %>',
             src: ['requirejs/require.js', 'jquery/dist/jquery.min.js',
-              'jquery-ui/jquery-ui.min.js', 'jquery-ui/themes/smoothness/**', 'viewerjs/src/styles/**'],
+              'jquery-ui/jquery-ui.min.js', 'jquery-ui/themes/smoothness/**'],
             dest: 'dist/js/components' }]
       },
     },
@@ -127,16 +140,20 @@ module.exports = function(grunt) {
   });
 
   // These plugins provide necessary tasks.
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-processhtml');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
 
+  grunt.registerTask('watch', ['watch']);
   // Test task.
   grunt.registerTask('test', ['jshint', 'jasmine']);
   // Build task.
-  grunt.registerTask('build', ['jshint', 'jasmine', 'requirejs', 'copy']);
+  grunt.registerTask('build', ['processhtml', 'cssmin', 'jshint', 'jasmine', 'requirejs', 'uglify', 'copy']);
   // Default task.
   grunt.registerTask('default', ['build']);
 
