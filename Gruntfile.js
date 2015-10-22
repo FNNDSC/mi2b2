@@ -18,7 +18,7 @@ module.exports = function(grunt) {
     testFiles: ['<%= componentsDir %>/viewerjs/spec/*.spec.js', 'spec/*.spec.js'], // test files (jasmine specs)
 
     // Task configuration.
-    jshint: {
+    jshint: { // check javascript syntax and errors
       options: {
         curly: true,
         eqeqeq: true,
@@ -49,7 +49,7 @@ module.exports = function(grunt) {
       }
     },
 
-    jasmine: {
+    jasmine: { // run tests
       test: {
         //src: '<%= jshint.source.src %>', this line must be commented when using the define function within the specs files
         options: {
@@ -66,7 +66,7 @@ module.exports = function(grunt) {
       }
     },
 
-    requirejs: {
+    requirejs: { // concat and minimize AMD modules
       compile: {
         options: {
           baseUrl: '<%= componentsDir %>',
@@ -81,7 +81,7 @@ module.exports = function(grunt) {
       }
     },
 
-    cssmin: {
+    cssmin: { // concat and minimize css
       dist: {
         files: {
           'dist/styles/main.css': ['<%= componentsDir %>/viewerjs/src/styles/**/*.css', 'src/styles/**/*.css']
@@ -89,7 +89,7 @@ module.exports = function(grunt) {
       }
     },
 
-    uglify: {
+    uglify: { // minimize the main.js
       main: {
         files: {
           'dist/main.js': ['src/main.js']
@@ -106,7 +106,7 @@ module.exports = function(grunt) {
     },
 
     copy: {
-      images: {
+      images: { // copy requiered images and icons
         files: [{expand: true, cwd: 'src/', src: ['images/**'], dest: 'dist/'}]
       },
       libs: { // copy requiered libs which were not concatenated
