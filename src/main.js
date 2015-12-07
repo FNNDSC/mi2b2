@@ -17,12 +17,13 @@ require.config({
     utiljs: 'utiljs/src/js/utiljs',
     fmjs: 'fmjs/src/js/fmjs',
     gcjs: 'gcjs/src/js/gcjs',
-    xtk: 'rboxjs/src/js/lib/xtk',
+    rendererjs: 'rendererjs/src/js/rendererjs',
+    xtk: 'rendererjs/src/js/lib/xtk',
     rboxjs: 'rboxjs/src/js/rboxjs',
     thbarjs: 'thbarjs/src/js/thbarjs',
     toolbarjs: 'toolbarjs/src/js/toolbarjs',
-    jqdlgext: 'chatjs/src/js/lib/jquery.dialogextend',
     chatjs: 'chatjs/src/js/chatjs',
+    jqdlgext: 'chatjs/src/js/lib/jquery.dialogextend',
     viewerjs: 'viewerjs/src/js/viewerjs',
     mi2b2: '../mi2b2'
   }

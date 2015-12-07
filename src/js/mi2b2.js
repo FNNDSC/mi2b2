@@ -26,7 +26,9 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       // Init jQuery UI tabs
 
       this.tabs = $('#tabs').tabs({ beforeActivate: function() {
+
         for (var i=0; i<self.views.length; i++) {
+
           if (self.views[i] && self.views[i].chat && self.views[i].chat.isOpen()) {
             self.views[i].chat.close();
           }
@@ -43,11 +45,13 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
             self.views[viewNum].chat.open();
           }
         }
+
         util.documentRepaint();}
       });
 
       // close icon: removing the tab on click
       this.tabs.delegate( "span.ui-icon-close", "click", function() {
+
         var panelId = $( this ).closest( "li" ).remove().attr( "aria-controls" );
         var pStrL= panelId.length;
         var ix = parseInt(parseInt(panelId.charAt(pStrL-2)) ? panelId.substr(pStrL-2) : panelId.charAt(pStrL-1));
@@ -83,20 +87,29 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
             var roomIdInput = document.getElementById('roomId');
 
             if (granted && roomIdInput.value) {
+
               // realtime API ready.
               goButton.onclick = function() {
-                if (self.views.every(function(vw) {return vw.contId !== view.contId;})) {
+
+                if (self.views.every(function(vw) { return vw.containerId !== view.containerId; })) {
+
                   self.appendView(view);
                   view.collab.joinRealtimeCollaboration(roomIdInput.value);
                 }
               };
+
             } else {
+
               goButton.onclick = function() {
+
                 // start the authorization flow.
                 view.collab.authorizeAndLoadApi(false, function(granted) {
+
                   if (granted && roomIdInput.value) {
+
                     // realtime API ready.
-                    if (self.views.every(function(vw) {return vw.contId !== view.contId;})) {
+                    if (self.views.every(function(vw) { return vw.containerId !== view.containerId; })) {
+
                       self.appendView(view);
                       view.collab.joinRealtimeCollaboration(roomIdInput.value);
                     }
@@ -123,13 +136,20 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
         self.changeUIonDataLoad('loading');
         self.init();
         self._totalNumFiles = files.length;
+
         for (var i=0; i<self._totalNumFiles; i++) {
+
           fileObj = files[i];
+
           if ('webkitRelativePath' in fileObj) {
+
             fileObj.fullPath = fileObj.webkitRelativePath;
+
           } else if (!('fullPath' in fileObj)) {
+
             fileObj.fullPath = fileObj.name;
           }
+
           self.addFile(fileObj);
         }
       };
@@ -159,22 +179,31 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
           // browser is not chrome
 
           if (e.dataTransfer.files) {
+
             files = e.dataTransfer.files;
             self._totalNumFiles = files.length;
+
             for (i=0; i<self._totalNumFiles; i++) {
+
               fileObj = files[i];
+
               if (!('fullPath' in fileObj)) {
                 fileObj.fullPath = fileObj.name;
               }
+
               if ((!fileObj.size) && (!fileObj.type)) {
+
                 alert('It seems that a folder has been dropped: "'+ fileObj.name +
                 '". Only the Chrome bowser supports dropping of folders. Files inside will be ignored!');
               }
               self.addFile(fileObj);
             }
+
           } else {
+
             alert('Unsuported browser');
           }
+
           return;
         }
 
@@ -192,20 +221,28 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
 
           function readingDone() {
             hasBeenRead[pos] = 1;
+
             //check whether all files in the directory tree have already been added
             for (var i=0; i<hasBeenRead.length; i++) {
+
               if (hasBeenRead[i] === 0) {
                 break;
               }
             }
+
             if (i >= hasBeenRead.length) {
+
               // all files have been read
               self._totalNumFiles = files.length;
+
               if (self._totalNumFiles) {
+
                 for (var j=0; j<self._totalNumFiles; j++) {
                   self.addFile(files[j]);
                 }
+
               } else{
+
                 self.changeUIonDataLoad('loaded');
               }
             }
@@ -254,8 +291,10 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
 
       // Source data array for the new Viewer object
       this._imgFileArr = [];
+
       // Current number of files already added
       this._numFiles = 0;
+
       // Total number of files to be added
       this._totalNumFiles = 0;
     };
@@ -272,32 +311,13 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
         'file': fileObj
       });
 
-      ++this._numFiles; //a new file was added
+      ++this._numFiles; // a new file was added
+
       if (this._numFiles === this._totalNumFiles) {
-        // all files have been read, so create the viewer object
-        var view = this.createView();
-        this.appendView(view);
+
+        // all files have been read, so append a new viewer
+        this.appendView();
       }
-    };
-
-    /**
-     * Create a new Viewer object
-     *
-     * @return {Obj} a new Viewer instance with realtime collaboration enabled.
-     */
-    mi2b2.App.prototype.createView = function() {
-      var vlen = this.views.length;
-      var viewId = 'viewer' + vlen;
-
-      // client ID from the Google's developer console
-      var CLIENT_ID = '1050768372633-ap5v43nedv10gagid9l70a2vae8p9nah.apps.googleusercontent.com';
-      var collaborator = new cjs.GDriveCollab(CLIENT_ID);
-
-      // instantiate a new viewerjs.Viewer object
-      // a collaborator object is only required if we want to enable realtime collaboration.
-      var view = new viewerjs.Viewer(viewId, collaborator);
-
-      return view;
     };
 
     /**
@@ -305,9 +325,11 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
      *
      * @param {Object} the Viewer object.
      */
-    mi2b2.App.prototype.appendView = function(view) {
-      var viewId = view.contId;
-      var viewNum = parseInt(viewId.replace('viewer', ''));
+    mi2b2.App.prototype.appendView = function() {
+
+      var view;
+      var viewNum = this.views.length;
+      var viewId = 'viewer' + viewNum;
       var tabContentId = 'tabviewer' + viewNum;
 
       // add a new tab with a close icon
@@ -322,10 +344,20 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       $('#' + tabContentId).append('<div id="' + viewId + '" class="viewer-container">');
 
       if (this._imgFileArr.length) {
+
+        // client ID from the Google's developer console
+        var CLIENT_ID = '1050768372633-ap5v43nedv10gagid9l70a2vae8p9nah.apps.googleusercontent.com';
+        var collaborator = new cjs.GDriveCollab(CLIENT_ID);
+
+        // instantiate a new viewerjs.Viewer object
+        // a collaborator object is only required if we want to enable realtime collaboration.
+        view = new viewerjs.Viewer(viewId, collaborator);
+
         // start the viewer
         view.init(this._imgFileArr);
-        view.addThumbnailBar();
+        view.addThumbnailsBar();
         view.addToolBar();
+
         this.changeUIonDataLoad('loaded');
       }
 
@@ -344,8 +376,11 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       var buttonUIJq = $('.directory-btn');
 
       if (stateStr === 'loading') {
+
         buttonUIJq.text('Loading...');
+
       } else if (stateStr === 'loaded') {
+
         buttonUIJq.text('Drop files (or click)');
       }
     };
