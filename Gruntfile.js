@@ -83,7 +83,8 @@ module.exports = function(grunt) {
     cssmin: { // concat and minimize css
       dist: {
         files: {
-          'dist/styles/<%= pkg.name %>.css': ['<%= componentsDir %>/rboxjs/src/styles/*.css',
+          'dist/styles/<%= pkg.name %>.css': ['<%= componentsDir %>/rendererjs/src/styles/*.css',
+          '<%= componentsDir %>/rboxjs/src/styles/*.css',
           '<%= componentsDir %>/thbarjs/src/styles/*.css',
           '<%= componentsDir %>/toolbarjs/src/styles/*.css',
           '<%= componentsDir %>/chatjs/src/styles/*.css', 'src/styles/**/*.css']

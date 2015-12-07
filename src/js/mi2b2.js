@@ -76,13 +76,14 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
           $(this).text('Hide collab window');
           $('#roomId').focus();
 
-          // create a viewer
           self.init();
-          var view = self.createView();
 
-          // request GDrive authorization, load the realtime Api and start the collaboration
-          // as an additional collaborator
-          view.collab.authorizeAndLoadApi(true, function(granted) {
+          // create a collaborator object, client ID from the Google's developer console
+          var CLIENT_ID = '1050768372633-ap5v43nedv10gagid9l70a2vae8p9nah.apps.googleusercontent.com';
+          var collab = new cjs.GDriveCollab(CLIENT_ID);
+
+          // request GDrive authorization and load the realtime Api
+          collab.authorizeAndLoadApi(true, function(granted) {
             var goButton = document.getElementById('gobutton');
             var roomIdInput = document.getElementById('roomId');
 
@@ -93,7 +94,9 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
 
                 if (self.views.every(function(vw) { return vw.containerId !== view.containerId; })) {
 
-                  self.appendView(view);
+                  var view = self.addView(collab);
+
+                  // start the collaboration as an additional collaborator
                   view.collab.joinRealtimeCollaboration(roomIdInput.value);
                 }
               };
@@ -103,14 +106,16 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
               goButton.onclick = function() {
 
                 // start the authorization flow.
-                view.collab.authorizeAndLoadApi(false, function(granted) {
+                collab.authorizeAndLoadApi(false, function(granted) {
 
                   if (granted && roomIdInput.value) {
 
                     // realtime API ready.
                     if (self.views.every(function(vw) { return vw.containerId !== view.containerId; })) {
 
-                      self.appendView(view);
+                      var view = self.addView(collab);
+
+                      // start the collaboration as an additional collaborator
                       view.collab.joinRealtimeCollaboration(roomIdInput.value);
                     }
                   }
@@ -315,17 +320,22 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
 
       if (this._numFiles === this._totalNumFiles) {
 
-        // all files have been read, so append a new viewer
-        this.appendView();
+        // all files have been read, so add a new viewer
+        // create a collaborator object to enable realtime collaboration, client ID from the Google's developer console
+        var CLIENT_ID = '1050768372633-ap5v43nedv10gagid9l70a2vae8p9nah.apps.googleusercontent.com';
+        var collab = new cjs.GDriveCollab(CLIENT_ID);
+
+        this.addView(collab);
       }
     };
 
     /**
-     * Append a new viewer to the list of viewers and the GUI
+     * Add a new viewer to the list of viewers and append its GUI.
+     *
+     * @param {Object} optional collaborator object to enable realtime collaboration.
      */
-    mi2b2.App.prototype.appendView = function() {
+    mi2b2.App.prototype.addView = function(collaborator) {
 
-      var view;
       var viewNum = this.views.length;
       var viewId = 'viewer' + viewNum;
       var tabContentId = 'tabviewer' + viewNum;
@@ -341,15 +351,11 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       // append viewer div
       $('#' + tabContentId).append('<div id="' + viewId + '" class="viewer-container">');
 
+      // instantiate a new viewerjs.Viewer object
+      // a collaborator object is only required if we want to enable realtime collaboration.
+      var view = new viewerjs.Viewer(viewId, collaborator);
+
       if (this._imgFileArr.length) {
-
-        // client ID from the Google's developer console
-        var CLIENT_ID = '1050768372633-ap5v43nedv10gagid9l70a2vae8p9nah.apps.googleusercontent.com';
-        var collaborator = new cjs.GDriveCollab(CLIENT_ID);
-
-        // instantiate a new viewerjs.Viewer object
-        // a collaborator object is only required if we want to enable realtime collaboration.
-        view = new viewerjs.Viewer(viewId, collaborator);
 
         // start the viewer
         view.init(this._imgFileArr);
@@ -363,6 +369,8 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       ++this.nviews;
 
       $('#tabs').tabs("option", "active", this.nviews);
+
+      return view;
     };
 
     /**
