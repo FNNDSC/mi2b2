@@ -322,8 +322,6 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
 
     /**
      * Append a new viewer to the list of viewers and the GUI
-     *
-     * @param {Object} the Viewer object.
      */
     mi2b2.App.prototype.appendView = function() {
 
