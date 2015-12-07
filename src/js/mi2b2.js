@@ -17,6 +17,9 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
 
   mi2b2.App = function() {
 
+      // client ID from the Google's developer console
+      this.CLIENT_ID = '1050768372633-ap5v43nedv10gagid9l70a2vae8p9nah.apps.googleusercontent.com';
+
       // Viewer object array
       this.views = [];
       this.nviews = 0;
@@ -25,7 +28,7 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
 
       // Init jQuery UI tabs
 
-      this.tabs = $('#tabs').tabs({ beforeActivate: function() {
+      self.tabs = $('#tabs').tabs({ beforeActivate: function() {
 
         for (var i=0; i<self.views.length; i++) {
 
@@ -35,7 +38,7 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
         } }
       });
 
-      this.tabs = $('#tabs').tabs({ activate: function(event, ui) {
+      self.tabs = $('#tabs').tabs({ activate: function(event, ui) {
         var viewId = ui.newPanel.attr('id');
 
         if (viewId!=='tabload') {
@@ -50,7 +53,7 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       });
 
       // close icon: removing the tab on click
-      this.tabs.delegate( "span.ui-icon-close", "click", function() {
+      self.tabs.delegate( "span.ui-icon-close", "click", function() {
 
         var panelId = $( this ).closest( "li" ).remove().attr( "aria-controls" );
         var pStrL= panelId.length;
@@ -59,6 +62,7 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
         self.views[ix].destroy();
         self.views[ix] = null;
         self.nviews--;
+        
         $( "#" + panelId ).remove();
         self.tabs.tabs( "refresh" );
       });
@@ -78,9 +82,8 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
 
           self.init();
 
-          // create a collaborator object, client ID from the Google's developer console
-          var CLIENT_ID = '1050768372633-ap5v43nedv10gagid9l70a2vae8p9nah.apps.googleusercontent.com';
-          var collab = new cjs.GDriveCollab(CLIENT_ID);
+          // create a collaborator object,
+          var collab = new cjs.GDriveCollab(self.CLIENT_ID);
 
           // request GDrive authorization and load the realtime Api
           collab.authorizeAndLoadApi(true, function(granted) {
@@ -92,13 +95,10 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
               // realtime API ready.
               goButton.onclick = function() {
 
-                if (self.views.every(function(vw) { return vw.containerId !== view.containerId; })) {
+                var view = self.addView(collab);
 
-                  var view = self.addView(collab);
-
-                  // start the collaboration as an additional collaborator
-                  view.collab.joinRealtimeCollaboration(roomIdInput.value);
-                }
+                // start the collaboration as an additional collaborator
+                view.collab.joinRealtimeCollaboration(roomIdInput.value);
               };
 
             } else {
@@ -111,13 +111,10 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
                   if (granted && roomIdInput.value) {
 
                     // realtime API ready.
-                    if (self.views.every(function(vw) { return vw.containerId !== view.containerId; })) {
+                    var view = self.addView(collab);
 
-                      var view = self.addView(collab);
-
-                      // start the collaboration as an additional collaborator
-                      view.collab.joinRealtimeCollaboration(roomIdInput.value);
-                    }
+                    // start the collaboration as an additional collaborator
+                    view.collab.joinRealtimeCollaboration(roomIdInput.value);
                   }
                 });
               };
@@ -254,11 +251,16 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
           }
 
           function read(dirReader) {
+
             dirReader.readEntries(function(entries) {
+
               if (entries.length) {
+
                 dirEntries = dirEntries.concat(entries);
                 read(dirReader); //keep calling read recursively untill receiving an empty array
+
               } else {
+
                 var idx = dirEntries.length; //manage empty dir
                 while (idx--) { //recursively read last entry until all have been read
                   readFiles(dirEntries[idx]);
@@ -269,13 +271,18 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
           }
 
           if (entry.isFile) {
+
             entry.file(function(file){
+
               file.fullPath = entry.fullPath;
               files.push(file);
               readingDone();
             });
+
           } else if (entry.isDirectory) {
+
             var reader = entry.createReader();
+
             //read all entries within this directory
             read(reader);
           }
@@ -321,9 +328,8 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       if (this._numFiles === this._totalNumFiles) {
 
         // all files have been read, so add a new viewer
-        // create a collaborator object to enable realtime collaboration, client ID from the Google's developer console
-        var CLIENT_ID = '1050768372633-ap5v43nedv10gagid9l70a2vae8p9nah.apps.googleusercontent.com';
-        var collab = new cjs.GDriveCollab(CLIENT_ID);
+        // create a collaborator object to enable realtime collaboration
+        var collab = new cjs.GDriveCollab(this.CLIENT_ID);
 
         this.addView(collab);
       }
