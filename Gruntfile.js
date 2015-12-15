@@ -138,7 +138,25 @@ module.exports = function(grunt) {
         files: '<%= jshint.test.src %>',
         tasks: ['jshint:test', 'jasmine']
       }
-    }
+    },
+
+    browserSync: {
+        dev: {
+            bsFiles: {
+                src : [
+                    'src/**/*.js',
+                    'src/**/*.css',
+                    'src/**/*.html'
+                ]
+            },
+            options: {
+                watchTask: true,
+                // test to move bower_components out...
+                // bower_components not used yet...
+                server: ['src', 'bower_components']
+            }
+        }
+    },
 
   });
 
@@ -150,9 +168,24 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-browser-sync');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
 
-  grunt.registerTask('watch', ['watch']);
+  grunt.registerTask('serve', function (/*target*/) {
+    // grunt server:dist not implemented yet...
+
+    // if (target === 'dist') {
+    //   return grunt.task.run(['build', 'browserSync:dist',
+    //   'watch']);
+    // }
+
+    grunt.task.run([
+      'browserSync:dev',
+      'watch1'
+    ]);
+  });
+
+  grunt.registerTask('watch1', ['watch']);
   // Test task.
   grunt.registerTask('test', ['jshint', 'jasmine']);
   // Build task.

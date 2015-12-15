@@ -67,17 +67,30 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
         self.tabs.tabs( "refresh" );
       });
 
+      //directoryselection
+      $('#directoryselection').on('dragenter', function (e) {
+        $('.directory-btn').addClass('hovered');
+      });
+      $('#directoryselection').on('dragmonve', function (e) {
+        $('.directory-btn').addClass('hovered');
+      });
+      $('#directoryselection').on('dragleave', function (e) {
+        $('.directory-btn').removeClass('hovered');
+      });
+
       // Event handler for the collab button
       $('#collabbutton').click(function() {
 
-        $('.collab > .collab-input').slideToggle("fast");
+        
 
         if ($(this).text()==='Hide collab window') {
-          $(this).text('Enter existing collab room');
+          // $(this).text('Enter existing collab room');
 
         } else {
 
-          $(this).text('Hide collab window');
+          $(this).hide();
+          // show it
+          $('.collab > .collab-input').css("display","inline-block");
           $('#roomId').focus();
 
           self.init();
@@ -94,6 +107,9 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
 
               // realtime API ready.
               goButton.onclick = function() {
+                $('.collab > .collab-input').hide();
+                $(this).show();
+
 
                 var view = self.addView(collab);
 
@@ -393,7 +409,8 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
 
       } else if (stateStr === 'loaded') {
 
-        buttonUIJq.text('Drop files (or click)');
+        buttonUIJq.html('<i class="fa fa-download fa-2x"></i>');
+        $('.directory-btn').removeClass('hovered');
       }
     };
 
