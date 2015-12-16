@@ -68,75 +68,67 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       });
 
       //directoryselection
-      $('#directoryselection').on('dragenter', function (e) {
-        $('.directory-btn').addClass('hovered');
+      $('#directoryselection').on('dragenter', function () {
+        $('.directory-btn').addClass('dragged');
       });
-      $('#directoryselection').on('dragmonve', function (e) {
-        $('.directory-btn').addClass('hovered');
+      $('#directoryselection').on('dragmonve', function () {
+        $('.directory-btn').addClass('dragged');
       });
-      $('#directoryselection').on('dragleave', function (e) {
-        $('.directory-btn').removeClass('hovered');
+      $('#directoryselection').on('dragleave', function () {
+        $('.directory-btn').removeClass('dragged');
       });
 
       // Event handler for the collab button
       $('#collabbutton').click(function() {
 
-        
+        $(this).hide();
+        // show it
+        $('.collab > .collab-input').css("display","inline-block");
+        $('#roomId').focus();
 
-        if ($(this).text()==='Hide collab window') {
-          // $(this).text('Enter existing collab room');
+        self.init();
 
-        } else {
+        // create a collaborator object,
+        var collab = new cjs.GDriveCollab(self.CLIENT_ID);
 
-          $(this).hide();
-          // show it
-          $('.collab > .collab-input').css("display","inline-block");
-          $('#roomId').focus();
+        // request GDrive authorization and load the realtime Api
+        collab.authorizeAndLoadApi(true, function(granted) {
+          var goButton = document.getElementById('gobutton');
+          var roomIdInput = document.getElementById('roomId');
 
-          self.init();
+          if (granted && roomIdInput.value) {
 
-          // create a collaborator object,
-          var collab = new cjs.GDriveCollab(self.CLIENT_ID);
-
-          // request GDrive authorization and load the realtime Api
-          collab.authorizeAndLoadApi(true, function(granted) {
-            var goButton = document.getElementById('gobutton');
-            var roomIdInput = document.getElementById('roomId');
-
-            if (granted && roomIdInput.value) {
-
-              // realtime API ready.
-              goButton.onclick = function() {
-                $('.collab > .collab-input').hide();
-                $(this).show();
+            // realtime API ready.
+            goButton.onclick = function() {
+              $('.collab > .collab-input').hide();
+              $(this).show();
 
 
-                var view = self.addView(collab);
+              var view = self.addView(collab);
 
-                // start the collaboration as an additional collaborator
-                view.collab.joinRealtimeCollaboration(roomIdInput.value);
-              };
+              // start the collaboration as an additional collaborator
+              view.collab.joinRealtimeCollaboration(roomIdInput.value);
+            };
 
-            } else {
+          } else {
 
-              goButton.onclick = function() {
+            goButton.onclick = function() {
 
-                // start the authorization flow.
-                collab.authorizeAndLoadApi(false, function(granted) {
+              // start the authorization flow.
+              collab.authorizeAndLoadApi(false, function(granted) {
 
-                  if (granted && roomIdInput.value) {
+                if (granted && roomIdInput.value) {
 
-                    // realtime API ready.
-                    var view = self.addView(collab);
+                  // realtime API ready.
+                  var view = self.addView(collab);
 
-                    // start the collaboration as an additional collaborator
-                    view.collab.joinRealtimeCollaboration(roomIdInput.value);
-                  }
-                });
-              };
-            }
-          });
-        }
+                  // start the collaboration as an additional collaborator
+                  view.collab.joinRealtimeCollaboration(roomIdInput.value);
+                }
+              });
+            };
+          }
+        });
       });
 
       // Event handler for the README button
@@ -410,7 +402,7 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       } else if (stateStr === 'loaded') {
 
         buttonUIJq.html('<i class="fa fa-download fa-2x"></i>');
-        $('.directory-btn').removeClass('hovered');
+        $('.directory-btn').removeClass('dragged');
       }
     };
 

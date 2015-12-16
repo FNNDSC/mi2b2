@@ -1,241 +1,226 @@
-/*================================================== Rules ================================================== */
+/*================================================== Global Rules ================================================== */
 body{
   margin: 0;
   font-family: 'Droid Sans', sans-serif;
 }
-div {
-  font-family: 'Droid Sans', sans-serif;
+
+div, button {
+  font-family: 'Droid Sans', sans-serif !important;
 }
 
 *{
   outline: none !important;
 }
+
+.center{
+  text-align: center;
+  margin: auto;
+}
+
+.custom-button{
+  border: none!important;
+  padding: 10px!important;
+  cursor: pointer;
+}
+
 /*================================================== TABS ================================================== */
 /*tabs*/
 /*Widget background*/
-  .ui-widget-content{
-    padding: 0;
-  }
-  .ui-tabs .ui-tabs-panel{
-    padding: 0;
-    background-color: #FAFAFA;
-  }
+.ui-widget-content{
+  padding: 0;
+}
+.ui-tabs .ui-tabs-panel{
+  padding: 0;
+  background-color: #FAFAFA;
+}
 
-  /*close icon within tabs*/
-  div#tabs li .ui-icon-close{
-    float: left;
-    margin: 0.2em 0.2em 0 0;
-    cursor: pointer;
-  }
+/*close icon within tabs*/
+div#tabs li .ui-icon-close{
+  float: left;
+  margin: 0.2em 0.2em 0 0;
+  cursor: pointer;
+}
 
-  .ui-corner-all{
-     border-radius: 0px !important;
-  }
+.ui-corner-all{
+   border-radius: 0px !important;
+}
 
-  .ui-widget-header{
-    border:none !important;
-    background: none !important;
-    background-color: #F9F9F9 !important;
-    /*color: #F9F9F9;*/
-  }
+.ui-widget-header{
+  border:none !important;
+  background: none !important;
+  background-color: #F9F9F9 !important;
+}
 
-  .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active{
-    background: none !important;
-    background-color: #607D8B !important;
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active{
+  background: none !important;
+  background-color: #607D8B !important;
+}
 
-  }
-
-  .ui-state-active > a, .ui-widget-content .ui-state-active > a, .ui-widget-header .ui-state-active > a{
-    color: #F9F9F9 !important;
-  }
+.ui-state-active > a, .ui-widget-content .ui-state-active > a, .ui-widget-header .ui-state-active > a{
+  color: #F9F9F9 !important;
+}
 
 /*div containers within tabs*/
 /*=============================================== Main containers ============================================== */
 /*main page container*/
-  div#inputcontainer{
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    height: -webkit-calc(100vh - 100px);
-    height: -moz-calc(100vh - 100px);
-    height: calc(100vh - 100px);
-    overflow: auto;
-    margin: 0;
-  }
+div#inputcontainer{
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: -webkit-calc(100vh - 100px);
+  height: -moz-calc(100vh - 100px);
+  height: calc(100vh - 100px);
+  overflow: auto;
+  margin: 0;
+}
 
 /*viewer containers*/
-  div.viewer-container{
-    position: relative;
-    background-color: #607D8B;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    height: -webkit-calc(100vh - 3.2em);
-    height: -moz-calc(100vh - 3.2em);
-    height: calc(100vh - 3.2em);
-    overflow: hidden;
-    margin: 0;
-  }
+div.viewer-container{
+  position: relative;
+  background-color: #607D8B;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: -webkit-calc(100vh - 3.2em);
+  height: -moz-calc(100vh - 3.2em);
+  height: calc(100vh - 3.2em);
+  overflow: hidden;
+  margin: 0;
+}
 
-  .custom-button{
-    cursor: pointer;
-  }
+
 
 /*================================================== Collaboration ================================================== */
 /*collaboration section*/
-  .collab{
-    margin: auto;
-    text-align: center;
-    font-family: 'Droid Sans', sans-serif;
-  }
-  .collab-input{
-    display: none;
-    border: none!important;
-    padding: 10px!important;
-    background-color: #E91E63;
-    color: #F9F9F9;
-    font-size: 18px;
-    font-family: 'Droid Sans', sans-serif;
-  }
-  #gobutton{
-    border:none !important;
-    display: inline-block;
-    font-size: 18px;
-    background-color: #E91E63;
-    color:#F9F9F9;
-    font-family: 'Droid Sans', sans-serif;
-  }
+.collab{
+  margin: auto;
+  text-align: center;
+}
 
-  #roomId{
-    border:none !important;
-    padding: 0 !important;
-  }
+.collab-input{
+  display: none;
+  border: none!important;
+  padding: 10px!important;
+  background-color: #E91E63;
+  color: #F9F9F9;
+  font-size: 18px;
+}
 
-  #gobutton:hover{
-    color: #E91E63;
-    background-color:#F9F9F9;
-  }
+#gobutton{
+  display: inline-block;
+  font-size: 18px;
+  background-color: #E91E63;
+  color:#F9F9F9;
+}
 
-/*================================================== Title 1 ================================================== */
+#roomId{
+  border:none !important;
+  padding: 0 !important;
+}
+
+#gobutton:hover{
+  color: #E91E63;
+  background-color:#F9F9F9;
+}
+
+/*================================================== Titles ================================================== */
 /*Title goes here*/
-  .input-h1{
-    text-align: center;
-    color: #F9F9F9;
-    background-color: #607D8B;
-    /*text-align:left;*/
-    font-size: 30px;
-    padding: 40px;
-    /*text-shadow: 1px 1px rgba(221,232,187, 0.5);*/
-    font-family: 'Droid Sans', sans-serif;
-    font-weight: normal;
-    margin: auto;
-    vertical-align: middle;
-    line-height: 1em;
-  }
+.title{
+  color: #F9F9F9;
+  background-color: #607D8B;
+  font-size: 30px;
+  padding: 40px;
+  font-weight: normal;
+  vertical-align: middle;
+  line-height: 1em;
+}
 
-  .input-h1 b{
-    color: #1DE9B6;
-  }
+.title b{
+  color: #1DE9B6;
+}
 
-  .input-h11{
-    text-align: center;
-    color: #212121;
-    /*text-align:left;*/
-    font-size: 30px;
-    padding: 40px 0px 20px 0px;
-    /*text-shadow: 1px 1px rgba(221,232,187, 0.5);*/
-    font-family: 'Droid Sans', sans-serif;
-    font-weight: lighter;
-    margin: auto;
-    vertical-align: middle;
-    line-height: 1em;
-  }
+/*Second piece of text goes here*/
+.big{
+  color: #212121;
+  font-size: 30px;
+  padding: 40px 0px 20px 0px;
+  font-weight: lighter;
+  line-height: 1em;
+}
+
+/*Second piece of text goes here*/
+.small {
+  color: #757575;
+  font-size: 18px;
+  font-weight: normal;
+  padding-bottom:20px;
+}
 
 /*================================================== BUTTON ================================================== */
 /*div containing slicedrop image and upload button*/
-  div#directoryselection{
-    padding: 40px 40px 20px 40px;
-    width: 100%;
-    margin: 0 auto;
-    overflow: auto;
-    /*color:#F9F9F9;*/
-  }
+div#directoryselection{
+  padding: 20px 40px;
+  width: 100%;
+  margin: 0 auto;
+  overflow: auto;
+}
 
-  /*directory upload button*/
-  .directory-btn{
-    display: block;
-    height: 200px;
-    background-color: #1DE9B6;
-    border: 5px solid #1DE9B6;
-    color: #F9F9F9;
-    font-size: 30px;
-    text-align: center;
-    padding: 2.2em;
-    line-height: 1.5em;
-    margin-bottom: 3em;
-    margin-top: 10px;
-    margin-left: 2px;
-    width: 200px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 50%;
-    cursor: pointer;
-    margin:auto;
-  }
+/*directory upload button*/
+.directory-btn{
+  display: block;
+  padding: 60px;
+  width: 200px;
+  height: 200px;
+  background-color: #1DE9B6;
+  border: 5px solid #1DE9B6;
+  color: #F9F9F9;
+  font-size: 30px;
+  text-align: center;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  cursor: pointer;
+  margin:auto;
+}
 
-  .directory-btn:hover, .hovered{
-    background-color: #A7FFEB;
-    border: 5px dashed #1DE9B6;
-    color: #1DE9B6;
-  }
+.directory-btn:hover, .dragged{
+  background-color: #A7FFEB;
+  border: 5px dashed #1DE9B6;
+  color: #1DE9B6;
+}
 
 #collabbutton{
-    border: none!important;
-    padding: 10px!important;
-    background-color: #E91E63;
-    color: #F9F9F9;
-    font-size: 18px;
+  background-color: #E91E63;
+  color: #F9F9F9;
+  font-size: 18px;
 }
-/*================================================== Title 2 ================================================== */
-/*Second piece of text goes here*/
-  .input-h2 {
-    color: #757575;
-    text-align: center;
-    font-size: 18px;
-    font-weight: normal;
-    margin:auto;
-  }
-
 /*================================================== README ================================================== */
 /*Second piece of text goes here*/
 
-  #READMEbutton{
-    float: right;
-    font-family: 'Droid Sans', sans-serif;
-    border: none!important;
-    padding: 10px!important;
-    background-color: #757575;
-    color: #F9F9F9;
-    font-size: 18px;
-  }
+#READMEbutton{
+  float: right;
+  background-color: #757575;
+  color: #F9F9F9;
+  font-size: 18px;
+}
 
 /*================================================== Footbar ================================================== */
 /*footbar*/
-  .footbar {
-    position: fixed;
-    color: #212121;
-    background-color: #9E9E9E;
-    width: 100%;
-    padding: 5px 20px;
-    text-align:left;
-    vertical-align: middle;
-    line-height: 0.7em;
-    font-size: 14px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: 0;
-  }
+.footbar {
+  position: fixed;
+  color: #212121;
+  background-color: #9E9E9E;
+  width: 100%;
+  padding: 5px 20px;
+  text-align:left;
+  vertical-align: middle;
+  line-height: 0.7em;
+  font-size: 14px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+}
