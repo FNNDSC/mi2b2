@@ -181,11 +181,10 @@ module.exports = function(grunt) {
 
     grunt.task.run([
       'browserSync:dev',
-      'watch1'
+      'watch'
     ]);
   });
 
-  grunt.registerTask('watch1', ['watch']);
   // Test task.
   grunt.registerTask('test', ['jshint', 'jasmine']);
   // Build task.
