@@ -49,6 +49,7 @@ div#tabs li .ui-icon-close{
   border:none !important;
   background: none !important;
   background-color: #F9F9F9 !important;
+  font-weight:normal!important;
 }
 
 .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active{

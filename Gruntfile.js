@@ -171,6 +171,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-browser-sync');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
 
+  // Serve task.
   grunt.registerTask('serve', function (/*target*/) {
     // grunt server:dist not implemented yet...
 
@@ -184,7 +185,6 @@ module.exports = function(grunt) {
       'watch'
     ]);
   });
-
   // Test task.
   grunt.registerTask('test', ['jshint', 'jasmine']);
   // Build task.
