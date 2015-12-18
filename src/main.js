@@ -31,6 +31,9 @@ require.config({
 
 
 require(['mi2b2'], function(mi2b2) {
+
   // Entry point
-  mi2b2.app = new mi2b2.App();
+  var app = new mi2b2.App();
+
+  app.init();
 });
