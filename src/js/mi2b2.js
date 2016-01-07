@@ -79,13 +79,13 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
 
         $('.collab > .collab-input').slideToggle("fast");
 
-        if ($(this).text()==='Hide collab window') {
+        if ($(this).text()==='Hide room ID') {
 
-          $(this).text('Enter existing collab room');
+          $(this).text('Join collaboration');
 
         } else {
 
-          $(this).text('Hide collab window');
+          $(this).text('Hide room ID');
           $('#roomId').focus();
 
           // create a collaborator object,

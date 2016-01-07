@@ -31,7 +31,7 @@ div, button {
 }
 .ui-tabs .ui-tabs-panel{
   padding: 0;
-  background-color: #FAFAFA;
+  background-color: #CFD8DC;
 }
 
 /*close icon within tabs*/
@@ -102,7 +102,7 @@ div.viewer-container{
   display: none;
   border: none!important;
   padding: 10px!important;
-  background-color: #E91E63;
+  background-color: #0091EA;
   color: #F9F9F9;
   font-size: 18px;
 }
@@ -110,7 +110,7 @@ div.viewer-container{
 #gobutton{
   display: inline-block;
   font-size: 18px;
-  background-color: #E91E63;
+  background-color: #0091EA;
   color:#F9F9F9;
 }
 
@@ -120,7 +120,7 @@ div.viewer-container{
 }
 
 #gobutton:hover{
-  color: #E91E63;
+  color: #0091EA;
   background-color:#F9F9F9;
 }
 
@@ -137,7 +137,7 @@ div.viewer-container{
 }
 
 .title b{
-  color: #1DE9B6;
+  color: #40C4FF;
 }
 
 /*Second piece of text goes here*/
@@ -172,8 +172,8 @@ div#directoryselection{
   padding: 60px;
   width: 200px;
   height: 200px;
-  background-color: #1DE9B6;
-  border: 5px solid #1DE9B6;
+  background-color: #0091EA;
+  border: 5px solid #0091EA;
   color: #F9F9F9;
   font-size: 30px;
   text-align: center;
@@ -188,14 +188,14 @@ div#directoryselection{
 }
 
 .directory-btn:hover, .dragged{
-  background-color: #A7FFEB;
-  border: 5px dashed #1DE9B6;
-  color: #1DE9B6;
+  background-color: #F9F9F9;
+  border: 5px dashed #0091EA;
+  color: #0091EA;
 }
 
 #collabbutton{
-  background-color: #E91E63;
-  color: #F9F9F9;
+  background-color: #F9F9F9;
+  color: #0091EA;
   font-size: 18px;
 }
 /*================================================== README ================================================== */
@@ -213,7 +213,7 @@ div#directoryselection{
 .footbar {
   position: fixed;
   color: #212121;
-  background-color: #9E9E9E;
+  background-color: #B0BEC5;
   width: 100%;
   padding: 5px 20px;
   text-align:left;
