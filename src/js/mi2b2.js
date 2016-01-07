@@ -102,6 +102,9 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
               // realtime API ready.
               goButton.onclick = function() {
 
+                // data will be loaded remotely
+                self.localData = false;
+
                 var view = self.addView(collab);
 
                 // start the collaboration as an additional collaborator
@@ -118,6 +121,9 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
                   if (granted && roomIdInput.value) {
 
                     // realtime API ready.
+                    // data will be loaded remotely
+                    self.localData = false;
+
                     var view = self.addView(collab);
 
                     // start the collaboration as an additional collaborator
@@ -139,6 +145,9 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       var dirBtn = document.getElementById('dirbtn');
 
       dirBtn.onchange = function(e) {
+
+        // data is loaded locally
+        self.localData = true;
 
         var files = e.target.files;
         var fileObj;
@@ -164,23 +173,32 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
           });
         }
 
-        // create a collaborator object to enable realtime collaboration
-        var collab = new cjs.GDriveCollab(self.CLIENT_ID);
+        if (self._fObjArr.length) {
 
-        // add a new viewer
-        self.addView(collab);
+          // create a collaborator object to enable realtime collaboration
+          var collab = new cjs.GDriveCollab(self.CLIENT_ID);
+
+          // add a new viewer
+          self.addView(collab);
+        }
       };
 
       // Dropzone
       util.setDropzone('tabload', function(fObjArr) {
 
-        self._fObjArr = fObjArr;
+        // data is loaded locally
+        self.localData = true;
 
-        // create a collaborator object to enable realtime collaboration
-        var collab = new cjs.GDriveCollab(self.CLIENT_ID);
+        if (fObjArr.length) {
 
-        // add a new viewer
-        self.addView(collab);
+          self._fObjArr = fObjArr;
+
+          // create a collaborator object to enable realtime collaboration
+          var collab = new cjs.GDriveCollab(self.CLIENT_ID);
+
+          // add a new viewer
+          self.addView(collab);
+        }
       });
     };
 
@@ -192,12 +210,12 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
     mi2b2.App.prototype.addView = function(collaborator) {
       var self = this;
 
+      // disable tabs when adding a new view
+      $('#tabs').tabs("disable");
+
       var viewNum = self.views.length;
       var viewId = 'viewer' + viewNum;
       var tabContentId = 'tabviewer' + viewNum;
-
-      // disable tabs
-      $('#tabs').tabs("disable");
 
       // add a new tab with a close icon
       $('div#tabs ul').append('<li><a href="#' + tabContentId + '">' + 'Viewer' + (viewNum+1) +
@@ -220,10 +238,11 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
         $('#tabs').tabs("enable");
       };
 
-      if (self._fObjArr.length) {
+      if (self.localData) {
 
-        // start the viewer witth local data
+        // start the viewer with local data
         view.init();
+
         view.addData(self._fObjArr, function() {
 
           $('#tabs').tabs("enable");
