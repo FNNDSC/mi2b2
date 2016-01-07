@@ -15,19 +15,26 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
   // Provide a namespace
   var mi2b2 = mi2b2 || {};
 
-  mi2b2.App = function() {
+    mi2b2.App = function() {
 
       // client ID from the Google's developer console
       this.CLIENT_ID = '1050768372633-ap5v43nedv10gagid9l70a2vae8p9nah.apps.googleusercontent.com';
 
-      // Viewer object array
+      // array of file objects, each object has properties url: the file's url and file: HTML5 File obj
+      this._fObjArr = [];
+
+      // array of viewer objects (one viewer per tab)
       this.views = [];
       this.nviews = 0;
+    };
 
+    /**
+     * Init the mi2b2 app.
+     */
+    mi2b2.App.prototype.init = function() {
       var self = this;
 
-      // Init jQuery UI tabs
-
+      // init jQuery UI tabs
       self.tabs = $('#tabs').tabs({ beforeActivate: function() {
 
         for (var i=0; i<self.views.length; i++) {
@@ -62,73 +69,65 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
         self.views[ix].destroy();
         self.views[ix] = null;
         self.nviews--;
-        
+
         $( "#" + panelId ).remove();
         self.tabs.tabs( "refresh" );
-      });
-
-      //directoryselection
-      $('#directoryselection').on('dragenter', function () {
-        $('.directory-btn').addClass('dragged');
-      });
-      $('#directoryselection').on('dragmonve', function () {
-        $('.directory-btn').addClass('dragged');
-      });
-      $('#directoryselection').on('dragleave', function () {
-        $('.directory-btn').removeClass('dragged');
       });
 
       // Event handler for the collab button
       $('#collabbutton').click(function() {
 
-        $(this).hide();
-        // show it
-        $('.collab > .collab-input').css("display","inline-block");
-        $('#roomId').focus();
+        $('.collab > .collab-input').slideToggle("fast");
 
-        self.init();
+        if ($(this).text()==='Hide collab window') {
 
-        // create a collaborator object,
-        var collab = new cjs.GDriveCollab(self.CLIENT_ID);
+          $(this).text('Enter existing collab room');
 
-        // request GDrive authorization and load the realtime Api
-        collab.authorizeAndLoadApi(true, function(granted) {
-          var goButton = document.getElementById('gobutton');
-          var roomIdInput = document.getElementById('roomId');
+        } else {
 
-          if (granted && roomIdInput.value) {
+          $(this).text('Hide collab window');
+          $('#roomId').focus();
 
-            // realtime API ready.
-            goButton.onclick = function() {
-              $('.collab > .collab-input').hide();
-              $(this).show();
+          // create a collaborator object,
+          var collab = new cjs.GDriveCollab(self.CLIENT_ID);
 
+          // request GDrive authorization and load the realtime Api
+          collab.authorizeAndLoadApi(true, function(granted) {
 
-              var view = self.addView(collab);
+            var goButton = document.getElementById('gobutton');
+            var roomIdInput = document.getElementById('roomId');
 
-              // start the collaboration as an additional collaborator
-              view.collab.joinRealtimeCollaboration(roomIdInput.value);
-            };
+            if (granted && roomIdInput.value) {
 
-          } else {
+              // realtime API ready.
+              goButton.onclick = function() {
 
-            goButton.onclick = function() {
+                var view = self.addView(collab);
 
-              // start the authorization flow.
-              collab.authorizeAndLoadApi(false, function(granted) {
+                // start the collaboration as an additional collaborator
+                view.collab.joinRealtimeCollaboration(roomIdInput.value);
+              };
 
-                if (granted && roomIdInput.value) {
+            } else {
 
-                  // realtime API ready.
-                  var view = self.addView(collab);
+              goButton.onclick = function() {
 
-                  // start the collaboration as an additional collaborator
-                  view.collab.joinRealtimeCollaboration(roomIdInput.value);
-                }
-              });
-            };
-          }
-        });
+                // start the authorization flow.
+                collab.authorizeAndLoadApi(false, function(granted) {
+
+                  if (granted && roomIdInput.value) {
+
+                    // realtime API ready.
+                    var view = self.addView(collab);
+
+                    // start the collaboration as an additional collaborator
+                    view.collab.joinRealtimeCollaboration(roomIdInput.value);
+                  }
+                });
+              };
+            }
+          });
+        }
       });
 
       // Event handler for the README button
@@ -140,14 +139,15 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       var dirBtn = document.getElementById('dirbtn');
 
       dirBtn.onchange = function(e) {
+
+        $('#tabs').tabs("disable");
+
         var files = e.target.files;
         var fileObj;
 
-        self.changeUIonDataLoad('loading');
-        self.init();
-        self._totalNumFiles = files.length;
+        self._fObjArr = [];
 
-        for (var i=0; i<self._totalNumFiles; i++) {
+        for (var i=0; i<files.length; i++) {
 
           fileObj = files[i];
 
@@ -160,187 +160,32 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
             fileObj.fullPath = fileObj.name;
           }
 
-          self.addFile(fileObj);
-        }
-      };
-
-      // Event handlers for the dropzone
-      var dropzone = document.getElementById('tabload');
-
-      dropzone.ondragenter = function(e) {
-        e.preventDefault();
-      };
-
-      dropzone.ondragover = function(e) {
-        e.preventDefault();
-      };
-
-      dropzone.ondrop = function(e) {
-        var files = [];
-        var fileObj;
-        var i;
-
-        e.preventDefault();
-        self.changeUIonDataLoad('loading');
-        self.init();
-
-        if (!e.dataTransfer.items) {
-
-          // browser is not chrome
-
-          if (e.dataTransfer.files) {
-
-            files = e.dataTransfer.files;
-            self._totalNumFiles = files.length;
-
-            for (i=0; i<self._totalNumFiles; i++) {
-
-              fileObj = files[i];
-
-              if (!('fullPath' in fileObj)) {
-                fileObj.fullPath = fileObj.name;
-              }
-
-              if ((!fileObj.size) && (!fileObj.type)) {
-
-                alert('It seems that a folder has been dropped: "'+ fileObj.name +
-                '". Only the Chrome bowser supports dropping of folders. Files inside will be ignored!');
-              }
-              self.addFile(fileObj);
-            }
-
-          } else {
-
-            alert('Unsuported browser');
-          }
-
-          return;
+          self._fObjArr.push({
+            'url': files[i].fullPath,
+            'file': files[i]
+          });
         }
 
-        // chrome browser
-
-        // array to control when the entire directory tree has been read. This
-        // happens when all it's entries are different from zero
-        var hasBeenRead = [];
-
-        function readFiles(entry) {
-          var pos = hasBeenRead.length;
-          var dirEntries = [];
-
-          hasBeenRead[pos] = 0;
-
-          function readingDone() {
-            hasBeenRead[pos] = 1;
-
-            //check whether all files in the directory tree have already been added
-            for (var i=0; i<hasBeenRead.length; i++) {
-
-              if (hasBeenRead[i] === 0) {
-                break;
-              }
-            }
-
-            if (i >= hasBeenRead.length) {
-
-              // all files have been read
-              self._totalNumFiles = files.length;
-
-              if (self._totalNumFiles) {
-
-                for (var j=0; j<self._totalNumFiles; j++) {
-                  self.addFile(files[j]);
-                }
-
-              } else{
-
-                self.changeUIonDataLoad('loaded');
-              }
-            }
-          }
-
-          function read(dirReader) {
-
-            dirReader.readEntries(function(entries) {
-
-              if (entries.length) {
-
-                dirEntries = dirEntries.concat(entries);
-                read(dirReader); //keep calling read recursively untill receiving an empty array
-
-              } else {
-
-                var idx = dirEntries.length; //manage empty dir
-                while (idx--) { //recursively read last entry until all have been read
-                  readFiles(dirEntries[idx]);
-                }
-                readingDone();
-              }
-            });
-          }
-
-          if (entry.isFile) {
-
-            entry.file(function(file){
-
-              file.fullPath = entry.fullPath;
-              files.push(file);
-              readingDone();
-            });
-
-          } else if (entry.isDirectory) {
-
-            var reader = entry.createReader();
-
-            //read all entries within this directory
-            read(reader);
-          }
-        }
-
-        for (i = 0; i<e.dataTransfer.items.length; i++) {
-          readFiles(e.dataTransfer.items[i].webkitGetAsEntry());
-        }
-
-      };
-
-    };
-
-    /**
-     * Initilize the app internal data for a new Viewer object
-     */
-    mi2b2.App.prototype.init = function() {
-
-      // Source data array for the new Viewer object
-      this._imgFileArr = [];
-
-      // Current number of files already added
-      this._numFiles = 0;
-
-      // Total number of files to be added
-      this._totalNumFiles = 0;
-    };
-
-    /**
-     * Add file into internal data structures
-     *
-     * @param {Object} HTML5 File object.
-     */
-    mi2b2.App.prototype.addFile = function(fileObj) {
-
-      this._imgFileArr.push({
-        'url': fileObj.fullPath,
-        'file': fileObj
-      });
-
-      ++this._numFiles; // a new file was added
-
-      if (this._numFiles === this._totalNumFiles) {
-
-        // all files have been read, so add a new viewer
         // create a collaborator object to enable realtime collaboration
-        var collab = new cjs.GDriveCollab(this.CLIENT_ID);
+        var collab = new cjs.GDriveCollab(self.CLIENT_ID);
 
-        this.addView(collab);
-      }
+        // add a new viewer
+        self.addView(collab);
+      };
+
+      // Dropzone
+      util.setDropzone('tabload', function(fObjArr) {
+
+        $('#tabs').tabs("disable");
+
+        self._fObjArr = fObjArr;
+
+        // create a collaborator object to enable realtime collaboration
+        var collab = new cjs.GDriveCollab(self.CLIENT_ID);
+
+        // add a new viewer
+        self.addView(collab);
+      });
     };
 
     /**
@@ -349,8 +194,9 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
      * @param {Object} optional collaborator object to enable realtime collaboration.
      */
     mi2b2.App.prototype.addView = function(collaborator) {
+      var self = this;
 
-      var viewNum = this.views.length;
+      var viewNum = self.views.length;
       var viewId = 'viewer' + viewNum;
       var tabContentId = 'tabviewer' + viewNum;
 
@@ -369,42 +215,28 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       // a collaborator object is only required if we want to enable realtime collaboration.
       var view = new viewerjs.Viewer(viewId, collaborator);
 
-      if (this._imgFileArr.length) {
+      if (self._fObjArr.length) {
 
         // start the viewer
-        view.init(this._imgFileArr);
-        view.addThumbnailsBar();
-        view.addToolBar();
+        view.init();
+        view.addData(self._fObjArr, function() {
 
-        this.changeUIonDataLoad('loaded');
+          $('#tabs').tabs("enable");
+        });
+
+      } else {
+
+        $('#tabs').tabs("enable");
       }
 
-      this.views.push(view);
-      ++this.nviews;
+      self.views.push(view);
+      ++self.nviews;
 
-      $('#tabs').tabs("option", "active", this.nviews);
+      $('#tabs').tabs("option", "active", self.nviews);
 
       return view;
     };
 
-    /**
-     * Change UI elements to indicate a data loading state
-     *
-     * @param {String} state string ('loading', 'loaded').
-     */
-    mi2b2.App.prototype.changeUIonDataLoad = function(stateStr) {
-      var buttonUIJq = $('.directory-btn');
-
-      if (stateStr === 'loading') {
-
-        buttonUIJq.text('Loading...');
-
-      } else if (stateStr === 'loaded') {
-
-        buttonUIJq.html('<i class="fa fa-download fa-2x"></i>');
-        $('.directory-btn').removeClass('dragged');
-      }
-    };
 
   return mi2b2;
 });
