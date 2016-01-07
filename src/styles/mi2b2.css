@@ -1,198 +1,227 @@
-/*================================================== Rules ================================================== */
+/*================================================== Global Rules ================================================== */
 body{
   margin: 0;
   font-family: 'Droid Sans', sans-serif;
 }
-div {
-  font-family: 'Droid Sans', sans-serif;
+
+div, button {
+  font-family: 'Droid Sans', sans-serif !important;
+}
+
+*{
+  outline: none !important;
+}
+
+.center{
+  text-align: center;
+  margin: auto;
+}
+
+.custom-button{
+  border: none!important;
+  padding: 10px!important;
+  cursor: pointer;
 }
 
 /*================================================== TABS ================================================== */
 /*tabs*/
 /*Widget background*/
-  .ui-widget-content{
-    padding: 0;
-  }
-  .ui-tabs .ui-tabs-panel{
-    padding: 0;
-    background-color: rgba(63,63,63, 1);
-  }
-  li.ui-state-default{
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    font-size: 11px;
+.ui-widget-content{
+  padding: 0;
+}
+.ui-tabs .ui-tabs-panel{
+  padding: 0;
+  background-color: #CFD8DC;
+}
 
-  }
-  /*close icon within tabs*/
-  div#tabs li .ui-icon-close{
-    float: left;
-    margin: 0.2em 0.2em 0 0;
-    cursor: pointer;
-  }
+/*close icon within tabs*/
+div#tabs li .ui-icon-close{
+  float: left;
+  margin: 0.2em 0.2em 0 0;
+  cursor: pointer;
+}
+
+.ui-corner-all{
+   border-radius: 0px !important;
+}
+
+.ui-widget-header{
+  border:none !important;
+  background: none !important;
+  background-color: #F9F9F9 !important;
+  font-weight:normal!important;
+}
+
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active{
+  background: none !important;
+  background-color: #607D8B !important;
+}
+
+.ui-state-active > a, .ui-widget-content .ui-state-active > a, .ui-widget-header .ui-state-active > a{
+  color: #F9F9F9 !important;
+}
 
 /*div containers within tabs*/
 /*=============================================== Main containers ============================================== */
 /*main page container*/
-  div#inputcontainer{
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    height: -webkit-calc(100vh - 100px);
-    height: -moz-calc(100vh - 100px);
-    height: calc(100vh - 100px);
-    overflow: auto;
-    margin: 0;
-  }
+div#inputcontainer{
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: -webkit-calc(100vh - 100px);
+  height: -moz-calc(100vh - 100px);
+  height: calc(100vh - 100px);
+  overflow: auto;
+  margin: 0;
+}
 
 /*viewer containers*/
-  div.viewer-container{
-    position: relative;
-    border: 6px solid #353535;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    height: -webkit-calc(100vh - 3.2em);
-    height: -moz-calc(100vh - 3.2em);
-    height: calc(100vh - 3.2em);
-    overflow: hidden;
-    margin: 0;
-  }
+div.viewer-container{
+  position: relative;
+  background-color: #607D8B;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: -webkit-calc(100vh - 3.2em);
+  height: -moz-calc(100vh - 3.2em);
+  height: calc(100vh - 3.2em);
+  overflow: hidden;
+  margin: 0;
+}
 
-  .custom-button{
-    cursor: pointer;
-  }
+
 
 /*================================================== Collaboration ================================================== */
 /*collaboration section*/
-  .collab{
-    padding-left: 40px;
-    font-size: 11px;
-    font-family: 'Droid Sans', sans-serif;
-  }
-  .collab-input{
-    display: none;
-    border: 1px solid;
-    margin-top: 2px;
-    padding: 4px 0 4px 0;
-    background-color: #eaebda;
-    width: 220px;
-    text-align: center;
-    font-size: 11px;
-    font-family: 'Droid Sans', sans-serif;
-  }
-  #gobutton{
-    display: block;
-    margin: 3px auto 0;
-    font-size: 11px;
-    background-color: #95A090;
-    font-family: 'Droid Sans', sans-serif;
-  }
+.collab{
+  margin: auto;
+  text-align: center;
+}
 
-/*================================================== Title 1 ================================================== */
+.collab-input{
+  display: none;
+  border: none!important;
+  padding: 10px!important;
+  background-color: #0091EA;
+  color: #F9F9F9;
+  font-size: 18px;
+}
+
+#gobutton{
+  display: inline-block;
+  font-size: 18px;
+  background-color: #0091EA;
+  color:#F9F9F9;
+}
+
+#roomId{
+  border:none !important;
+  padding: 0 !important;
+}
+
+#gobutton:hover{
+  color: #0091EA;
+  background-color:#F9F9F9;
+}
+
+/*================================================== Titles ================================================== */
 /*Title goes here*/
-  .input-h1{
-    color: #eaebda;
-    text-align:left;
-    font-size: 50px;
-    padding-top: 40px;
-    /*text-shadow: 1px 1px rgba(221,232,187, 0.5);*/
-    padding-left: 40px;
-    padding-right: 40px;
-    font-family: 'Droid Sans', sans-serif;
-    font-weight: normal;
-    margin-bottom: 100px;
-    vertical-align: middle;
-    line-height: 1em;
-  }
+.title{
+  color: #F9F9F9;
+  background-color: #607D8B;
+  font-size: 30px;
+  padding: 40px;
+  font-weight: normal;
+  vertical-align: middle;
+  line-height: 1em;
+}
+
+.title b{
+  color: #40C4FF;
+}
+
+/*Second piece of text goes here*/
+.big{
+  color: #212121;
+  font-size: 30px;
+  padding: 40px 0px 20px 0px;
+  font-weight: lighter;
+  line-height: 1em;
+}
+
+/*Second piece of text goes here*/
+.small {
+  color: #757575;
+  font-size: 18px;
+  font-weight: normal;
+  padding-bottom:20px;
+}
 
 /*================================================== BUTTON ================================================== */
 /*div containing slicedrop image and upload button*/
-  div#directoryselection{
-    width: 400px;
-    margin: 0 auto;
-    overflow: auto;
-  }
-  div#directoryselection > img{
-    float: left;
-    display: block;
-    width: 86px;
-    height: 94px;
-    margin-right: 5px;
-    margin-top: 10px;
-  }
+div#directoryselection{
+  padding: 20px 40px;
+  width: 100%;
+  margin: 0 auto;
+  overflow: auto;
+}
 
-  /*directory upload button*/
-  .directory-btn{
-    float: left;
-    display: block;
-    height: 94px;
-    background-color: #95A090;
-    border: 3px solid #D9E2D4;
-    color: black;
-    font-size: 15px;
-    text-align: center;
-    padding: 2.2em;
-    line-height: 1.5em;
-    margin-bottom: 3em;
-    margin-top: 10px;
-    margin-left: 2px;
-    width: 300px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  .directory-btn:active{
-    -webkit-box-shadow: inset 3px 3px 2.5px #666;
-    -moz-box-shadow: inset 3px 3px 2.5px #666;
-    box-shadow: inset 3px 3px 2.5px #666;
-  }
-  .directory-btn:hover{
-    background-color: #E1EBDA;
-    border: 4px solid #95A090;
-  }
+/*directory upload button*/
+.directory-btn{
+  display: block;
+  padding: 60px;
+  width: 200px;
+  height: 200px;
+  background-color: #0091EA;
+  border: 5px solid #0091EA;
+  color: #F9F9F9;
+  font-size: 30px;
+  text-align: center;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  cursor: pointer;
+  margin:auto;
+}
 
-/*================================================== Title 2 ================================================== */
-/*Second piece of text goes here*/
-  .input-h2 {
-    color: #f6f7f0;
-    text-align: left;
-    font-size: 13px;
-    font-weight: normal;
-    padding-left: 40px;
-  }
+.directory-btn:hover, .dragged{
+  background-color: #F9F9F9;
+  border: 5px dashed #0091EA;
+  color: #0091EA;
+}
 
+#collabbutton{
+  background-color: #F9F9F9;
+  color: #0091EA;
+  font-size: 18px;
+}
 /*================================================== README ================================================== */
 /*Second piece of text goes here*/
 
-  .README{
-    font-size: 11px;
-    font-family: 'Droid Sans', sans-serif;
-    float: right;
-    padding-right: 80px;
-    background-color: #eaebda;
-  }
-  #READMEbutton{
-    font-size: 11px;
-    font-family: 'Droid Sans', sans-serif;
-  }
+#READMEbutton{
+  float: right;
+  background-color: #757575;
+  color: #F9F9F9;
+  font-size: 18px;
+}
 
 /*================================================== Footbar ================================================== */
 /*footbar*/
-  .footbar {
-    position: fixed;
-    background-color: #eaebda;
-    height: 6em;
-    width: 100%;
-    padding-left: 40px;
-    text-align:left;
-    vertical-align: middle;
-    line-height: 0.9em;
-    font-size: 11px;
-    /*padding: 0.2em 0;*/
-    bottom: 0;
-    margin: 0;
-  }
+.footbar {
+  position: fixed;
+  color: #212121;
+  background-color: #B0BEC5;
+  width: 100%;
+  padding: 5px 20px;
+  text-align:left;
+  vertical-align: middle;
+  line-height: 0.7em;
+  font-size: 14px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+}
