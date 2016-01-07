@@ -3,6 +3,8 @@
   <head>
   	<meta charset="utf-8" >
     <title>MRI data visualizer: mi2b2</title>
+    <!-- Include font awesome style -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <!--Include jquery ui styles -->
     <link rel="stylesheet"  href="js/components/jquery-ui/themes/smoothness/jquery-ui.min.css">
     <link rel="stylesheet" href="styles/mi2b2.css">
@@ -21,7 +23,6 @@
     })(window,document,'script','dataLayer','GTM-WTHP5Z');</script>
     <!-- End Google Tag Manager -->
 
-
     <div id="tabs">
 
       <ul>
@@ -31,41 +32,37 @@
       <div id="tabload">
 
         <div id="inputcontainer">
-          <h1 class="input-h1">Welcome to the <b>mi<sub>2</sub>b<sup>2</sup></b>
-          MRI Visualizer</h1>
+          <div class="title center">
+            Welcome to the mi<b>2</b>b<b>2</b>MRI Viewer
+          </div>
 
+          <div class="big center">Click or Drag'N'Drop a folder!</div>
+          <div class="small center">Your data stays on your computer. No upload required!</div>
+
+          <!-- Drop files (or click) -->
           <div id="directoryselection">
-            <img src=images/mi2b2Logo.png>
-            <label for="dirbtn" class="directory-btn">Drop files (or click)</label>
+            <label for="dirbtn" class="directory-btn">
+              <i class="fa fa-download fa-2x"></i>
+            </label>
             <input id="dirbtn" type="file" style="display: none;" webkitdirectory="" mozdirectory="" directory="" multiple>
           </div>
-          <table style="width:30%">
-            <tr>
-              <h2 class="input-h2">Your data stays on your computer. No upload required!</h2>
-            </tr>
-            <tr>
-             <!--  <td style="word-wrap: break-all"> -->
-              <h2 class="input-h2">You can activate the live collaboration mode by clicking on the button below and inputing the collaboration room #id.</h2>
-              <!--               </td> -->
-            </tr>
-            <tr>
-              <div class="collab">
-                <button id="collabbutton" type="button" class="custom-button">Enter existing collab room</button>
-                <div class="collab-input">
-                <label for="roomId">room id:</label>
-                <input id="roomId" type="text">
-                <button id="gobutton" type="button" class="custom-button">Go!</button>
-                </div>
-              </div>
-            </tr>
-          </table>
+
+          <div class="collab">
+            <button id="collabbutton" type="button" class="custom-button">Join collaboration</button>
+            <div class="collab-input">
+              <label for="roomId">Room #</label>
+              <input id="roomId" type="text">
+              <button id="gobutton" type="button" class="custom-button">Go!</button>
+            </div>
+          </div>
         </div>
+
         <div class="footbar">
           <br/>
           <b>Copyright &copy; 2015  </b><br><br>
           <a href="http://childrenshospital.org/FNNDSC" style="text-decoration: none">Boston Children's Hospital</a>
           <div class="README">
-          <button id="READMEbutton" type="button" class="custom-button"> Read more   &emsp;  <img src="https://assets-cdn.github.com/favicon.ico" width="15" height="15" ></button>
+          <button id="READMEbutton" type="button" class="custom-button"><i class="fa fa-github"></i> Read more</button>
           </div> <br><br>
           <a href="http://www.partners.org/" style="text-decoration: none">Partners Healthcare</a>
 
