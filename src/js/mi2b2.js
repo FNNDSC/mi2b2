@@ -140,8 +140,6 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
 
       dirBtn.onchange = function(e) {
 
-        $('#tabs').tabs("disable");
-
         var files = e.target.files;
         var fileObj;
 
@@ -176,8 +174,6 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       // Dropzone
       util.setDropzone('tabload', function(fObjArr) {
 
-        $('#tabs').tabs("disable");
-
         self._fObjArr = fObjArr;
 
         // create a collaborator object to enable realtime collaboration
@@ -200,6 +196,9 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       var viewId = 'viewer' + viewNum;
       var tabContentId = 'tabviewer' + viewNum;
 
+      // disable tabs
+      $('#tabs').tabs("disable");
+
       // add a new tab with a close icon
       $('div#tabs ul').append('<li><a href="#' + tabContentId + '">' + 'Viewer' + (viewNum+1) +
         '</a><span class="ui-icon ui-icon-close" role=presentation>Remove Tab</span></li>');
@@ -215,18 +214,20 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
       // a collaborator object is only required if we want to enable realtime collaboration.
       var view = new viewerjs.Viewer(viewId, collaborator);
 
+      // overwrite onViewerReady event that is fired when a collaborator's viewer is ready
+      view.onViewerReady = function() {
+
+        $('#tabs').tabs("enable");
+      };
+
       if (self._fObjArr.length) {
 
-        // start the viewer
+        // start the viewer witth local data
         view.init();
         view.addData(self._fObjArr, function() {
 
           $('#tabs').tabs("enable");
         });
-
-      } else {
-
-        $('#tabs').tabs("enable");
       }
 
       self.views.push(view);
