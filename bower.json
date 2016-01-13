@@ -22,6 +22,6 @@
     "tests"
   ],
   "dependencies": {
-    "viewerjs": "https://github.com/FNNDSC/viewerjs.git#master"
+    "viewerjs": "FNNDSC/viewerjs#thumbnailsbars"
   }
 }
