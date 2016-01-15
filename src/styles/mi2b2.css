@@ -98,14 +98,14 @@ div.view-renderer-titlebar{
   top: 0;
   left: calc(50% - 100px);
   width: 200px;
-  height: 72px;
+  height: 90px;
   opacity: 0.96;
   background-color: #0091EA;
   color: #f9f9f9;
   display: none;
   border: 4px solid #f9f9f9;
   text-align: center;
-  font-size: 48px;
+  font-size: 72px;
 }
 
 .view-trash.highlight{
@@ -113,3 +113,10 @@ div.view-renderer-titlebar{
   background-color: #D50000;
 }
 
+.view-trash-sortable{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
