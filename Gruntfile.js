@@ -108,6 +108,18 @@ module.exports = function(grunt) {
       }
     },
 
+    htmlmin: { // minify HTML
+      dist: {
+        options: {
+          removeComments: true,
+          collapseWhitespace: true
+        },
+        files: {
+          'dist/index.html': 'dist/index.html'
+        }
+      },
+    },
+
     copy: {
       images: { // copy requiered images and icons
         files: [{expand: true, cwd: 'src/', src: ['images/**'], dest: 'dist/'}]
@@ -163,6 +175,7 @@ module.exports = function(grunt) {
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-processhtml');
+  grunt.loadNpmTasks('grunt-contrib-htmlmin');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
@@ -188,7 +201,8 @@ module.exports = function(grunt) {
   // Test task.
   grunt.registerTask('test', ['jshint', 'jasmine']);
   // Build task.
-  grunt.registerTask('build', ['processhtml', 'cssmin', 'jshint', 'jasmine', 'requirejs', 'uglify', 'copy']);
+  grunt.registerTask('build', ['processhtml', 'htmlmin', 'cssmin', 'jshint', 'jasmine',
+    'requirejs', 'uglify', 'copy']);
   // Default task.
   grunt.registerTask('default', ['build']);
 
