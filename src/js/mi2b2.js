@@ -25,127 +25,89 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
     this.view = new viewerjs.Viewer('viewercontainer', this.collaborator);
   };
 
+  mi2b2.App.prototype.appendAll = function(array, baseUrl){
+    array.push({
+      'url': baseUrl + '.gz'
+    });
+    array.push({
+      'url': baseUrl + '.jpg'
+    });
+    array.push({
+      'url': baseUrl + '.json'
+    });
+  };
+
   mi2b2.App.prototype.init = function() {
     this.view.init();
     var imgFileArr = [];
     //
     // 0-1 weeks
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhd0xHX2h0NENsbEE/w0to1.nii.gz'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhd0xHX2h0NENsbEE/w0to1.nii.jpg'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhd0xHX2h0NENsbEE/w0to1.nii.json'
-    });
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhd0xHX2h0NENsbEE/w0to1.nii'
+    );
 
     //
     // quarter 0
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhU0hjTnRIaFZPWWM/q0.nii.gz'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhU0hjTnRIaFZPWWM/q0.nii.jpg'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhU0hjTnRIaFZPWWM/q0.nii.json'
-    });
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhU0hjTnRIaFZPWWM/q0.nii'
+    );
 
     //
     // quarter 1
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhWS1heHNxYmp1eTA/q1.nii.gz'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhWS1heHNxYmp1eTA/q1.nii.jpg'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhWS1heHNxYmp1eTA/q1.nii.json'
-    });
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhWS1heHNxYmp1eTA/q1.nii'
+    );
 
     //
     // quarter 2
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhQnlxVC04ZUo4R1U/q2.nii.gz'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhQnlxVC04ZUo4R1U/q2.nii.jpg'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhQnlxVC04ZUo4R1U/q2.nii.json'
-    });
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhQnlxVC04ZUo4R1U/q2.nii'
+    );
 
     // quarter 3
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhU0RpaTNCaXhDZWc/q3.nii.gz'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhU0RpaTNCaXhDZWc/q3.nii.jpg'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhU0RpaTNCaXhDZWc/q3.nii.json'
-    });
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhU0RpaTNCaXhDZWc/q3.nii'
+    );
 
     //
     // year 1 to 2
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydheWpyem90LVloR1U/y1to2.nii.gz'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydheWpyem90LVloR1U/y1to2.nii.jpg'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydheWpyem90LVloR1U/y1to2.nii.json'
-    });
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydheWpyem90LVloR1U/y1to2.nii'
+    );
 
     //
     // year 2 to 3
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhalFfU0FFejlwWTA/y2to3.nii.gz'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhalFfU0FFejlwWTA/y2to3.nii.jpg'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhalFfU0FFejlwWTA/y2to3.nii.json'
-    });
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhalFfU0FFejlwWTA/y2to3.nii'
+    );
     
     //
     // year 3 to 4
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhNDM1dTFYaUo3NjQ/y3to4.nii.gz'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhNDM1dTFYaUo3NjQ/y3to4.nii.jpg'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhNDM1dTFYaUo3NjQ/y3to4.nii.json'
-    });
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhNDM1dTFYaUo3NjQ/y3to4.nii'
+    );
 
     //
     // year 4 to 5
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhMmtBRThMUnV4Q2s/y4to5.nii.gz'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhMmtBRThMUnV4Q2s/y4to5.nii.jpg'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhMmtBRThMUnV4Q2s/y4to5.nii.json'
-    });
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhMmtBRThMUnV4Q2s/y4to5.nii'
+    );
 
     //
     // year 5 to 6
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhZ2NPelRlLWlVRk0/y5to6.nii.gz'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhZ2NPelRlLWlVRk0/y5to6.nii.jpg'
-    });
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhZ2NPelRlLWlVRk0/y5to6.nii.json'
-    });
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhZ2NPelRlLWlVRk0/y5to6.nii'
+    );
     
     // load atlases
     this.view.addData(imgFileArr);
