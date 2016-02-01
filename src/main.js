@@ -18,6 +18,7 @@ require.config({
     fmjs: 'fmjs/src/js/fmjs',
     gcjs: 'gcjs/src/js/gcjs',
     text: 'text/text',
+    rendererwin: 'rendererjs/src/templates/rendererwin.html',
     rendererjs: 'rendererjs/src/js/rendererjs',
     xtk: 'rendererjs/src/js/lib/xtk',
     jpegmin: 'rendererjs/src/js/lib/jpegmin',
@@ -31,6 +32,8 @@ require.config({
     preferenceswin: 'chatjs/src/templates/preferenceswin.html',
     chatjs: 'chatjs/src/js/chatjs',
     jqdlgext: 'chatjs/src/js/lib/jquery.dialogextend',
+    collabwin: 'viewerjs/src/templates/collabwin.html',
+    librarywin: 'viewerjs/src/templates/librarywin.html',
     viewerjs: 'viewerjs/src/js/viewerjs',
     mi2b2: '../mi2b2'
   }
