@@ -100,14 +100,14 @@ module.exports = function(grunt) {
     requirejs: { // concat and minimize AMD modules
       compile: {
         options: {
-          baseUrl: 'dist/<%= pkg.name %>/src/js',
+          baseUrl: 'tmp/<%= pkg.name %>/src/js',
           paths: {
             jquery: 'empty:', // does not include jquery in the output
             jquery_ui: 'empty:', // does not include jquery_ui in the output
           },
           name: 'mi2b2',
-          mainConfigFile: 'dist/<%= pkg.name %>/src/config.js',
-          out: 'dist/gh-pages/js/<%= pkg.name %>.min.js',
+          mainConfigFile: 'tmp/<%= pkg.name %>/src/config.js',
+          out: 'dist/js/<%= pkg.name %>.min.js',
           optimize: 'none',
           debug: true
         }
@@ -117,7 +117,7 @@ module.exports = function(grunt) {
     cssmin: { // concat and minimize css
       dist: {
         files: {
-          'dist/gh-pages/styles/<%= pkg.name %>.css': [
+          'dist/styles/<%= pkg.name %>.css': [
           '<%= componentsDir %>/rendererjs/src/styles/*.css',
           '<%= componentsDir %>/rboxjs/src/styles/*.css',
           '<%= componentsDir %>/thbarjs/src/styles/*.css',
@@ -139,7 +139,7 @@ module.exports = function(grunt) {
     processhtml: { // proccess index.html to remove <link> elements not required after building
       dist: {
         files: {
-          'dist/gh-pages/index.html': ['src/index.html']
+          'dist/index.html': ['src/index.html']
         }
       }
     },
@@ -151,7 +151,7 @@ module.exports = function(grunt) {
           collapseWhitespace: true
         },
         files: {
-          'dist/gh-pages/index.html': 'dist/gh-pages/index.html'
+          'dist/index.html': 'dist/index.html'
         }
       },
     },
@@ -191,12 +191,12 @@ module.exports = function(grunt) {
             expand: true,
             cwd: '<%= componentsDir %>',
             src: ['**/*'],
-            dest: 'dist/'
+            dest: 'tmp/'
           },
           {
             expand: true,
             src: 'src/**/*',
-            dest: 'dist/<%= pkg.name %>/'}]
+            dest: 'tmp/<%= pkg.name %>/'}]
       },
       config: {
         files: [
@@ -204,7 +204,7 @@ module.exports = function(grunt) {
             expand: true,
             cwd: 'src/',
             src: 'config.build.js',
-            dest: 'dist/gh-pages/',
+            dest: 'dist/',
             rename: function(dest) {
               return dest + 'main.js';
             }
@@ -220,7 +220,7 @@ module.exports = function(grunt) {
                   'jquery/dist/jquery.min.js',
                   'jquery-ui/jquery-ui.min.js',
                   'jquery-ui/themes/smoothness/**'],
-            dest: 'dist/gh-pages/libs'}]
+            dest: 'dist/libs'}]
       }
     },
 
@@ -259,7 +259,7 @@ module.exports = function(grunt) {
     },
 
     clean: {
-      build: ['dist']
+      all: ['dist', 'tmp']
     }
 
   });
@@ -299,7 +299,7 @@ module.exports = function(grunt) {
   grunt.registerTask('yo', ['copy:components', 'connect', 'requirejs']);
   // Build task.
   grunt.registerTask('build', [
-    'clean:build',
+    'clean:all',
     'jscs', 'jshint',
     //'connect', 'jasmine',
     'processhtml',//'htmlmin',
