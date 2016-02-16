@@ -22,7 +22,7 @@
     "tests"
   ],
   "dependencies": {
-    "viewerjs": "FNNDSC/viewerjs#refactor",
+    "viewerjs": "FNNDSC/viewerjs#master",
     "text": "~2.0.14"
   }
 }
