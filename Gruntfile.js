@@ -268,10 +268,11 @@ module.exports = function(grunt) {
     'clean:all',
     'jscs', 'jshint',
     'connect', 'jasmine',
-    'processhtml',//'htmlmin',
+    'processhtml','htmlmin',
     'cssmin',
     'copy:images', 'copy:components', 'copy:config', 'copy:jquery',
     'requirejs']);
+
   // Default task.
   grunt.registerTask('default', ['build']);
 
