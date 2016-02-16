@@ -10,7 +10,12 @@
  */
 
 // define a new module
-define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
+define([
+  // bower
+  '../../../utiljs/src/js/utiljs',
+  '../../../gcjs/src/js/gcjs',
+  '../../../viewerjs/src/js/viewerjs',
+], function(util, cjs, viewerjs) {
 
   // Provide a namespace
   var mi2b2 = mi2b2 || {};
@@ -25,24 +30,90 @@ define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
     this.view = new viewerjs.Viewer('viewercontainer', this.collaborator);
   };
 
+  mi2b2.App.prototype.appendAll = function(array, baseUrl) {
+    array.push({
+      'url': baseUrl + '.gz'
+    });
+    array.push({
+      'url': baseUrl + '.jpg'
+    });
+    array.push({
+      'url': baseUrl + '.json'
+    });
+  };
+
   mi2b2.App.prototype.init = function() {
     this.view.init();
     var imgFileArr = [];
-    // create fake file
-    // -id: Integer id
-    //  *  -baseUrl: String ‘directory/containing/the/files’
-    //  *  -imgType: String neuroimage type. Any of the possible values returned by rendererjs.Renderer.imgType
-    //  *  -files: Array of HTML5 File objects or custom file objects with properties:
-    //  *     -remote: a boolean indicating whether the file has not been read locally (with a filepicker)
-    //  *     -url the file's url
-    //  *     -cloudId: the id of the file in a cloud storage system if stored in the cloud
-    //  *     -name: file name
-    //  *  The files array contains a single file for imgType different from 'dicom' or 'dicomzip'
-    //  *  -thumbnail: Optional HTML5 File or custom file object (optional jpg file for a thumbnail image)
-    //  *  -json: Optional HTML5 or custom File object (optional json file with the mri info for imgType different from 'dicom')
-    imgFileArr.push({
-      'url': 'http://www.googledrive.com/host/0B8u7h0aKnydhVWNSVEtlUlY0Vzg/nico.nii.gz'
-    });
+    //
+    // 0-1 weeks
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhd0xHX2h0NENsbEE/w0to1.nii'
+    );
+
+    //
+    // quarter 0
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhU0hjTnRIaFZPWWM/q0.nii'
+    );
+
+    //
+    // quarter 1
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhWS1heHNxYmp1eTA/q1.nii'
+    );
+
+    //
+    // quarter 2
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhQnlxVC04ZUo4R1U/q2.nii'
+    );
+
+    // quarter 3
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhU0RpaTNCaXhDZWc/q3.nii'
+    );
+
+    //
+    // year 1 to 2
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydheWpyem90LVloR1U/y1to2.nii'
+    );
+
+    //
+    // year 2 to 3
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhalFfU0FFejlwWTA/y2to3.nii'
+    );
+
+    //
+    // year 3 to 4
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhNDM1dTFYaUo3NjQ/y3to4.nii'
+    );
+
+    //
+    // year 4 to 5
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhMmtBRThMUnV4Q2s/y4to5.nii'
+    );
+
+    //
+    // year 5 to 6
+    this.appendAll(
+      imgFileArr,
+      'http://www.googledrive.com/host/0B8u7h0aKnydhZ2NPelRlLWlVRk0/y5to6.nii'
+    );
+
     // load atlases
     this.view.addData(imgFileArr);
   };

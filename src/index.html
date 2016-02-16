@@ -5,37 +5,38 @@
     <title>Mi2b2</title>
 
     <!-- Include jquery ui styles -->
-    <link rel="stylesheet"  href="js/components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <!-- build:css libs/jquery-ui/themes/smoothness/jquery-ui.min.css -->
+    <link rel="stylesheet"  href="../../jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <!-- /build -->
 
-    <!-- Include component styles -->
-    <link rel="stylesheet"  href="js/components/rendererjs/src/styles/rendererjs.css">
-    <link rel="stylesheet"  href="js/components/rboxjs/src/styles/rboxjs.css">
-    <link rel="stylesheet"  href="js/components/thbarjs/src/styles/thbarjs.css">
-    <link rel="stylesheet"  href="js/components/toolbarjs/src/styles/toolbarjs.css">
-    <link rel="stylesheet"  href="js/components/chatjs/src/styles/chatjs.css">
-
+    <!-- and font awesome... -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+    <!-- build:css styles/mi2b2.css -->
+    <!-- Include component styles -->
+    <link rel="stylesheet"  href="../../rendererjs/src/styles/rendererjs.css">
+    <link rel="stylesheet"  href="../../rboxjs/src/styles/rboxjs.css">
+    <link rel="stylesheet"  href="../../thbarjs/src/styles/thbarjs.css">
+    <link rel="stylesheet"  href="../../toolbarjs/src/styles/toolbarjs.css">
+    <link rel="stylesheet"  href="../../chatjs/src/styles/chatjs.css">
     <link rel="stylesheet" href="styles/mi2b2.css">
+    <!-- /build -->
 
   </head>
 
   <body>
   
-    <div id="viewercontainer">
+   <div id="viewercontainer">
       <div class="view-trash">
-         <i class="fa fa-trash"></i> Delete element
-      </div>
-    </div>
-
-    <div id="collabModal" class="modal">
-      <div class="modalDialog">Start collaboration
-        <button id="collabGrant">GRANT</button>
-        <button id="collabDeny">DENY</button>
+         <i class="fa fa-trash"></i>
+         <div class="view-trash-sortable"></div>
       </div>
     </div>
 
     <!-- Load viewer scripts -->
-    <script data-main="main" src="js/components/requirejs/require.js"></script>
+    <!-- build:[src] libs/requirejs/require.js-->
+    <script data-main="main" src="../../requirejs/require.js"></script>
+    <!-- /build -->
 
   </body>
 </html>
