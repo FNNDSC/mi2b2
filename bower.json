@@ -22,7 +22,7 @@
     "tests"
   ],
   "dependencies": {
-    "viewerjs": "FNNDSC/viewerjs#thumbnailsbars",
+    "viewerjs": "FNNDSC/viewerjs#refactor",
     "text": "~2.0.14"
   }
 }

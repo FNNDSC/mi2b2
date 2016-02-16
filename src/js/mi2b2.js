@@ -9,8 +9,23 @@
  * remote viewerjs.Viewer instances.
  */
 
+ var dependencies = [
+/**
+//
+// NEEDS JQUERY AND JQUERY UI
+/// LOADED @ APP LEVEL
+//
+*/
+
+// bower
+'../../../utiljs/src/js/utiljs',
+'../../../gcjs/src/js/gcjs',
+'../../../viewerjs/src/js/viewerjs',
+
+];
+
 // define a new module
-define(['utiljs', 'gcjs', 'viewerjs'], function(util, cjs, viewerjs) {
+define(dependencies, function(util, cjs, viewerjs) {
 
   // Provide a namespace
   var mi2b2 = mi2b2 || {};
