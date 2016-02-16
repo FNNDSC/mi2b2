@@ -9,23 +9,13 @@
  * remote viewerjs.Viewer instances.
  */
 
- var dependencies = [
-/**
-//
-// NEEDS JQUERY AND JQUERY UI
-/// LOADED @ APP LEVEL
-//
-*/
-
-// bower
-'../../../utiljs/src/js/utiljs',
-'../../../gcjs/src/js/gcjs',
-'../../../viewerjs/src/js/viewerjs',
-
-];
-
 // define a new module
-define(dependencies, function(util, cjs, viewerjs) {
+define([
+  // bower
+  '../../../utiljs/src/js/utiljs',
+  '../../../gcjs/src/js/gcjs',
+  '../../../viewerjs/src/js/viewerjs',
+], function(util, cjs, viewerjs) {
 
   // Provide a namespace
   var mi2b2 = mi2b2 || {};
@@ -40,7 +30,7 @@ define(dependencies, function(util, cjs, viewerjs) {
     this.view = new viewerjs.Viewer('viewercontainer', this.collaborator);
   };
 
-  mi2b2.App.prototype.appendAll = function(array, baseUrl){
+  mi2b2.App.prototype.appendAll = function(array, baseUrl) {
     array.push({
       'url': baseUrl + '.gz'
     });
@@ -102,7 +92,7 @@ define(dependencies, function(util, cjs, viewerjs) {
       imgFileArr,
       'http://www.googledrive.com/host/0B8u7h0aKnydhalFfU0FFejlwWTA/y2to3.nii'
     );
-    
+
     //
     // year 3 to 4
     this.appendAll(
@@ -123,7 +113,7 @@ define(dependencies, function(util, cjs, viewerjs) {
       imgFileArr,
       'http://www.googledrive.com/host/0B8u7h0aKnydhZ2NPelRlLWlVRk0/y5to6.nii'
     );
-    
+
     // load atlases
     this.view.addData(imgFileArr);
   };

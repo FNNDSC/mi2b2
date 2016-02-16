@@ -82,28 +82,34 @@ module.exports = function(grunt) {
       }
     },
 
-   /* requirejs: { // concat and minimize AMD modules
+    /* requirejs: { // concat and minimize AMD modules
+       compile: {
+         options: {
+           baseUrl: '<%= componentsDir %>',
+           paths: {
+             jquery: 'empty:', // does not include jquery in the output
+             jquery_ui: 'empty:', // does not include jquery_ui in the output
+           },
+           name: '<%= pkg.name %>',
+           mainConfigFile: 'src/main.js',
+           out: 'dist/js/<%= pkg.name %>.js'
+         }
+       }
+     },
+     */
+    requirejs: { // concat and minimize AMD modules
       compile: {
         options: {
-          baseUrl: '<%= componentsDir %>',
+          baseUrl: 'dist/<%= pkg.name %>/src/js',
           paths: {
             jquery: 'empty:', // does not include jquery in the output
             jquery_ui: 'empty:', // does not include jquery_ui in the output
           },
-          name: '<%= pkg.name %>',
-          mainConfigFile: 'src/main.js',
-          out: 'dist/js/<%= pkg.name %>.js'
-        }
-      }
-    },
-    */
-    requirejs: { // concat and minimize AMD modules
-      compile: {
-        options: {
-          baseUrl: '.',
-          include: 'dist/<%= pkg.name %>/src/js/<%= pkg.name %>.js',
-          mainConfigFile: 'dist/<%= pkg.name %>/src/js/<%= pkg.name %>.js',
-          out: 'dist/<%= pkg.name %>.min.js'
+          name: 'mi2b2',
+          mainConfigFile: 'dist/<%= pkg.name %>/src/config.js',
+          out: 'dist/gh-pages/js/<%= pkg.name %>.min.js',
+          optimize: 'none',
+          debug: true
         }
       }
     },
@@ -111,11 +117,13 @@ module.exports = function(grunt) {
     cssmin: { // concat and minimize css
       dist: {
         files: {
-          'dist/styles/<%= pkg.name %>.css': ['<%= componentsDir %>/rendererjs/src/styles/*.css',
+          'dist/gh-pages/styles/<%= pkg.name %>.css': [
+          '<%= componentsDir %>/rendererjs/src/styles/*.css',
           '<%= componentsDir %>/rboxjs/src/styles/*.css',
           '<%= componentsDir %>/thbarjs/src/styles/*.css',
           '<%= componentsDir %>/toolbarjs/src/styles/*.css',
-          '<%= componentsDir %>/chatjs/src/styles/*.css', 'src/styles/**/*.css']
+          '<%= componentsDir %>/chatjs/src/styles/*.css',
+          'src/styles/**/*.css']
         }
       }
     },
@@ -131,7 +139,7 @@ module.exports = function(grunt) {
     processhtml: { // proccess index.html to remove <link> elements not required after building
       dist: {
         files: {
-          'dist/index.html': ['src/index.html']
+          'dist/gh-pages/index.html': ['src/index.html']
         }
       }
     },
@@ -143,30 +151,40 @@ module.exports = function(grunt) {
           collapseWhitespace: true
         },
         files: {
-          'dist/index.html': 'dist/index.html'
+          'dist/gh-pages/index.html': 'dist/gh-pages/index.html'
         }
       },
     },
 
-/*
+    /*
+        copy: {
+          images: { // copy requiered images and icons
+            files: [{expand: true, cwd: 'src/', src: ['images/**'], dest: 'dist/'}]
+          },
+          libs: { // copy requiered libs which were not concatenated
+
+          },
+          components: { // copy requiered bower components which were not concatenated
+            files: [
+              { expand: true,
+                cwd: '<%= componentsDir %>',
+                src: ['requirejs/require.js', 'jquery/dist/jquery.min.js',
+                  'jquery-ui/jquery-ui.min.js', 'jquery-ui/themes/smoothness/**'],
+                dest: 'dist/js/components' }]
+          },
+        },
+        */
     copy: {
       images: { // copy requiered images and icons
-        files: [{expand: true, cwd: 'src/', src: ['images/**'], dest: 'dist/'}]
-      },
-      libs: { // copy requiered libs which were not concatenated
-
-      },
-      components: { // copy requiered bower components which were not concatenated
         files: [
-          { expand: true,
-            cwd: '<%= componentsDir %>',
-            src: ['requirejs/require.js', 'jquery/dist/jquery.min.js',
-              'jquery-ui/jquery-ui.min.js', 'jquery-ui/themes/smoothness/**'],
-            dest: 'dist/js/components' }]
+          {
+            expand: true,
+            cwd: 'src/',
+            src: ['images/**'],
+            dest: 'dist/'
+          }
+        ]
       },
-    },
-    */
-    copy: {
       components: {
         files: [
           {
@@ -179,6 +197,30 @@ module.exports = function(grunt) {
             expand: true,
             src: 'src/**/*',
             dest: 'dist/<%= pkg.name %>/'}]
+      },
+      config: {
+        files: [
+          {
+            expand: true,
+            cwd: 'src/',
+            src: 'config.build.js',
+            dest: 'dist/gh-pages/',
+            rename: function(dest) {
+              return dest + 'main.js';
+            }
+
+          }
+        ]
+      },
+      jquery: {
+        files: [
+          {expand: true,
+            cwd: '<%= componentsDir %>',
+            src: ['requirejs/require.js',
+                  'jquery/dist/jquery.min.js',
+                  'jquery-ui/jquery-ui.min.js',
+                  'jquery-ui/themes/smoothness/**'],
+            dest: 'dist/gh-pages/libs'}]
       }
     },
 
@@ -198,23 +240,27 @@ module.exports = function(grunt) {
     },
 
     browserSync: {
-        dev: {
-            bsFiles: {
-                src : [
-                    'src/**/*.js',
-                    'src/**/*.css',
-                    'src/**/*.html'
-                ]
-            },
-            options: {
-                watchTask: true,
-                // test to move bower_components out...
-                // bower_components not used yet...
-                server: ['src', 'bower_components'],
-                startPath: ''
-            }
+      dev: {
+        bsFiles: {
+          src: [
+              'src/**/*.js',
+              'src/**/*.css',
+              'src/**/*.html'
+          ]
+        },
+        options: {
+          watchTask: true,
+          // test to move bower_components out...
+          // bower_components not used yet...
+          server: ['src', 'bower_components'],
+          startPath: ''
         }
+      }
     },
+
+    clean: {
+      build: ['dist']
+    }
 
   });
 
@@ -232,9 +278,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-browser-sync');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
-
+  grunt.loadNpmTasks('grunt-contrib-clean');
   // Serve task.
-  grunt.registerTask('serve', function (/*target*/) {
+  grunt.registerTask('serve', function(/*target*/) {
     // grunt server:dist not implemented yet...
 
     // if (target === 'dist') {
@@ -249,22 +295,30 @@ module.exports = function(grunt) {
   });
   // Test task.
   grunt.registerTask('test', ['jshint', 'jasmine']);
+
+  grunt.registerTask('yo', ['copy:components', 'connect', 'requirejs']);
   // Build task.
-  grunt.registerTask('build', ['processhtml', 'htmlmin', 'cssmin', 'jshint', 'jasmine',
-    'requirejs', 'uglify', 'copy']);
+  grunt.registerTask('build', [
+    'clean:build',
+    'jscs', 'jshint',
+    //'connect', 'jasmine',
+    'processhtml',//'htmlmin',
+    'cssmin',
+    'copy:images', 'copy:components', 'copy:config', 'copy:jquery',
+    'requirejs']);
   // Default task.
   grunt.registerTask('default', ['build']);
-/*
+  /*
+      // Build task.
+    grunt.registerTask('build',
+      ['cssmin', 'jscs', 'jshint', 'connect', 'jasmine', 'copy', 'requirejs']);
+
+    grunt.registerTask('test', ['connect', 'jscs', 'jshint', 'jasmine']);
     // Build task.
-  grunt.registerTask('build',
-    ['cssmin', 'jscs', 'jshint', 'connect', 'jasmine', 'copy', 'requirejs']);
+    //grunt.registerTask('build', ['cssmin', 'test', 'requirejs', 'copy']);
 
-  grunt.registerTask('test', ['connect', 'jscs', 'jshint', 'jasmine']);
-  // Build task.
-  //grunt.registerTask('build', ['cssmin', 'test', 'requirejs', 'copy']);
-
-  // Default task.
-  grunt.registerTask('default',
-    ['build']);*/
+    // Default task.
+    grunt.registerTask('default',
+      ['build']);*/
 
 };
