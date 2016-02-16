@@ -15,7 +15,7 @@ module.exports = function(grunt) {
     // Custome Paths
     srcFiles: ['src/js/*.js'], // source files
     componentsDir: 'bower_components', // bower components
-    testFiles: ['<%= componentsDir %>/viewerjs/spec/*.spec.js', 'spec/*.spec.js'], // test files (jasmine specs)
+    testFiles: ['spec/*.spec.js'], // test files (jasmine specs)
 
     // Task configuration.
     jscs: { // check javascript style
@@ -82,21 +82,6 @@ module.exports = function(grunt) {
       }
     },
 
-    /* requirejs: { // concat and minimize AMD modules
-       compile: {
-         options: {
-           baseUrl: '<%= componentsDir %>',
-           paths: {
-             jquery: 'empty:', // does not include jquery in the output
-             jquery_ui: 'empty:', // does not include jquery_ui in the output
-           },
-           name: '<%= pkg.name %>',
-           mainConfigFile: 'src/main.js',
-           out: 'dist/js/<%= pkg.name %>.js'
-         }
-       }
-     },
-     */
     requirejs: { // concat and minimize AMD modules
       compile: {
         options: {
@@ -156,24 +141,6 @@ module.exports = function(grunt) {
       },
     },
 
-    /*
-        copy: {
-          images: { // copy requiered images and icons
-            files: [{expand: true, cwd: 'src/', src: ['images/**'], dest: 'dist/'}]
-          },
-          libs: { // copy requiered libs which were not concatenated
-
-          },
-          components: { // copy requiered bower components which were not concatenated
-            files: [
-              { expand: true,
-                cwd: '<%= componentsDir %>',
-                src: ['requirejs/require.js', 'jquery/dist/jquery.min.js',
-                  'jquery-ui/jquery-ui.min.js', 'jquery-ui/themes/smoothness/**'],
-                dest: 'dist/js/components' }]
-          },
-        },
-        */
     copy: {
       images: { // copy requiered images and icons
         files: [
@@ -294,31 +261,18 @@ module.exports = function(grunt) {
     ]);
   });
   // Test task.
-  grunt.registerTask('test', ['jshint', 'jasmine']);
+  grunt.registerTask('test', ['connect', 'jscs', 'jshint', 'jasmine']);
 
-  grunt.registerTask('yo', ['copy:components', 'connect', 'requirejs']);
   // Build task.
   grunt.registerTask('build', [
     'clean:all',
     'jscs', 'jshint',
-    //'connect', 'jasmine',
+    'connect', 'jasmine',
     'processhtml',//'htmlmin',
     'cssmin',
     'copy:images', 'copy:components', 'copy:config', 'copy:jquery',
     'requirejs']);
   // Default task.
   grunt.registerTask('default', ['build']);
-  /*
-      // Build task.
-    grunt.registerTask('build',
-      ['cssmin', 'jscs', 'jshint', 'connect', 'jasmine', 'copy', 'requirejs']);
-
-    grunt.registerTask('test', ['connect', 'jscs', 'jshint', 'jasmine']);
-    // Build task.
-    //grunt.registerTask('build', ['cssmin', 'test', 'requirejs', 'copy']);
-
-    // Default task.
-    grunt.registerTask('default',
-      ['build']);*/
 
 };
