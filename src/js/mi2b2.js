@@ -10,113 +10,118 @@
  */
 
 // define a new module
-define([
-  // bower
-  '../../../utiljs/src/js/utiljs',
+define(
+  [
+  // bower components
   '../../../gcjs/src/js/gcjs',
-  '../../../viewerjs/src/js/viewerjs',
-], function(util, cjs, viewerjs) {
+  '../../../viewerjs/src/js/viewerjs'
 
-  // Provide a namespace
-  var mi2b2 = mi2b2 || {};
+  ], function(cjs, viewerjs) {
 
-  mi2b2.App = function() {
-    // Client ID from the Google's developer console
-    this.CLIENT_ID = '1050768372633-ap5v43nedv10gagid9l70a2vae8p9nah.apps.googleusercontent.com';
-    this.collaborator = new cjs.GDriveCollab(this.CLIENT_ID);
+    // Provide a namespace
+    var mi2b2 = mi2b2 || {};
 
-    // Create a new viewerjs.Viewer object
-    // A collaborator object is only required if we want to enable realtime collaboration.
-    this.view = new viewerjs.Viewer('viewercontainer', this.collaborator);
-  };
+    mi2b2.App = function() {
 
-  mi2b2.App.prototype.appendAll = function(array, baseUrl) {
-    array.push({
+      // Client ID from the Google's developer console
+      this.CLIENT_ID = '1050768372633-ap5v43nedv10gagid9l70a2vae8p9nah.apps.googleusercontent.com';
+
+      this.collaborator = new cjs.GDriveCollab(this.CLIENT_ID);
+
+      // Create a new viewerjs.Viewer object
+      // A collaborator object is only required if we want to enable realtime collaboration.
+      this.view = new viewerjs.Viewer('viewercontainer', this.collaborator);
+
+      this.imgFileArr = [];
+    };
+
+    mi2b2.App.prototype.appendAll = function(baseUrl) {
+
+      this.imgFileArr.push({
       'url': baseUrl + '.gz'
     });
-    array.push({
+
+      this.imgFileArr.push({
       'url': baseUrl + '.jpg'
     });
-    array.push({
+
+      this.imgFileArr.push({
       'url': baseUrl + '.json'
     });
-  };
+    };
 
-  mi2b2.App.prototype.init = function() {
-    this.view.init();
-    var imgFileArr = [];
-    //
-    // 0-1 weeks
-    this.appendAll(
-      imgFileArr,
-      'http://www.googledrive.com/host/0B8u7h0aKnydhd0xHX2h0NENsbEE/w0to1.nii'
-    );
+    mi2b2.App.prototype.init = function() {
 
-    //
-    // quarter 0
-    this.appendAll(
-      imgFileArr,
-      'http://www.googledrive.com/host/0B8u7h0aKnydhU0hjTnRIaFZPWWM/q0.nii'
-    );
+      this.view.init();
 
-    //
-    // quarter 1
-    this.appendAll(
-      imgFileArr,
-      'http://www.googledrive.com/host/0B8u7h0aKnydhWS1heHNxYmp1eTA/q1.nii'
-    );
+      //
+      // 0-1 weeks
+      this.appendAll(
+        'http://www.googledrive.com/host/0B8u7h0aKnydhd0xHX2h0NENsbEE/w0to1.nii'
+      );
 
-    //
-    // quarter 2
-    this.appendAll(
-      imgFileArr,
-      'http://www.googledrive.com/host/0B8u7h0aKnydhQnlxVC04ZUo4R1U/q2.nii'
-    );
+      //
+      // quarter 0
+      this.appendAll(
+        'http://www.googledrive.com/host/0B8u7h0aKnydhU0hjTnRIaFZPWWM/q0.nii'
+      );
 
-    // quarter 3
-    this.appendAll(
-      imgFileArr,
-      'http://www.googledrive.com/host/0B8u7h0aKnydhU0RpaTNCaXhDZWc/q3.nii'
-    );
+      //
+      // quarter 1
+      this.appendAll(
+        'http://www.googledrive.com/host/0B8u7h0aKnydhWS1heHNxYmp1eTA/q1.nii'
+      );
 
-    //
-    // year 1 to 2
-    this.appendAll(
-      imgFileArr,
-      'http://www.googledrive.com/host/0B8u7h0aKnydheWpyem90LVloR1U/y1to2.nii'
-    );
+      //
+      // quarter 2
+      this.appendAll(
+        'http://www.googledrive.com/host/0B8u7h0aKnydhQnlxVC04ZUo4R1U/q2.nii'
+      );
 
-    //
-    // year 2 to 3
-    this.appendAll(
-      imgFileArr,
-      'http://www.googledrive.com/host/0B8u7h0aKnydhalFfU0FFejlwWTA/y2to3.nii'
-    );
+      // quarter 3
+      this.appendAll(
+        'http://www.googledrive.com/host/0B8u7h0aKnydhU0RpaTNCaXhDZWc/q3.nii'
+      );
 
-    //
-    // year 3 to 4
-    this.appendAll(
-      imgFileArr,
-      'http://www.googledrive.com/host/0B8u7h0aKnydhNDM1dTFYaUo3NjQ/y3to4.nii'
-    );
+      //
+      // year 1 to 2
+      this.appendAll(
+        'http://www.googledrive.com/host/0B8u7h0aKnydheWpyem90LVloR1U/y1to2.nii'
+      );
 
-    //
-    // year 4 to 5
-    this.appendAll(
-      imgFileArr,
-      'http://www.googledrive.com/host/0B8u7h0aKnydhMmtBRThMUnV4Q2s/y4to5.nii'
-    );
+      //
+      // year 2 to 3
+      this.appendAll(
+        'http://www.googledrive.com/host/0B8u7h0aKnydhalFfU0FFejlwWTA/y2to3.nii'
+      );
 
-    //
-    // year 5 to 6
-    this.appendAll(
-      imgFileArr,
-      'http://www.googledrive.com/host/0B8u7h0aKnydhZ2NPelRlLWlVRk0/y5to6.nii'
-    );
+      //
+      // year 3 to 4
+      this.appendAll(
+        'http://www.googledrive.com/host/0B8u7h0aKnydhNDM1dTFYaUo3NjQ/y3to4.nii'
+      );
 
-    // load atlases
-    this.view.addData(imgFileArr);
-  };
+      //
+      // year 4 to 5
+      this.appendAll(
+        'http://www.googledrive.com/host/0B8u7h0aKnydhMmtBRThMUnV4Q2s/y4to5.nii'
+      );
 
-  return mi2b2;
-});
+      //
+      // year 5 to 6
+      this.appendAll(
+        'http://www.googledrive.com/host/0B8u7h0aKnydhZ2NPelRlLWlVRk0/y5to6.nii'
+      );
+
+      // load atlases
+      this.view.addData(this.imgFileArr);
+    };
+
+    mi2b2.App.prototype.destroy = function() {
+
+      this.view.destroy();
+      this.imgFileArr = [];
+    };
+
+    return mi2b2;
+  });

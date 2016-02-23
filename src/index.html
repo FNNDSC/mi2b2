@@ -6,7 +6,7 @@
 
     <!-- Include jquery ui styles -->
     <!-- build:css libs/jquery-ui/themes/smoothness/jquery-ui.min.css -->
-    <link rel="stylesheet"  href="../../jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <link rel="stylesheet"  href="../bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
     <!-- /build -->
 
     <!-- and font awesome... -->
@@ -14,28 +14,23 @@
 
     <!-- build:css styles/mi2b2.css -->
     <!-- Include component styles -->
-    <link rel="stylesheet"  href="../../rendererjs/src/styles/rendererjs.css">
-    <link rel="stylesheet"  href="../../rboxjs/src/styles/rboxjs.css">
-    <link rel="stylesheet"  href="../../thbarjs/src/styles/thbarjs.css">
-    <link rel="stylesheet"  href="../../toolbarjs/src/styles/toolbarjs.css">
-    <link rel="stylesheet"  href="../../chatjs/src/styles/chatjs.css">
-    <link rel="stylesheet" href="styles/mi2b2.css">
+    <link rel="stylesheet"  href="../bower_components/rendererjs/src/styles/rendererjs.css">
+    <link rel="stylesheet"  href="../bower_components/rboxjs/src/styles/rboxjs.css">
+    <link rel="stylesheet"  href="../bower_components/thbarjs/src/styles/thbarjs.css">
+    <link rel="stylesheet"  href="../bower_components/toolbarjs/src/styles/toolbarjs.css">
+    <link rel="stylesheet"  href="../bower_components/chatjs/src/styles/chatjs.css">
+    <link rel="stylesheet"  href="../bower_components/mi2b2/src/styles/mi2b2.css">
     <!-- /build -->
 
   </head>
 
   <body>
-  
-   <div id="viewercontainer">
-      <div class="view-trash">
-         <i class="fa fa-trash"></i>
-         <div class="view-trash-sortable"></div>
-      </div>
-    </div>
+
+   <div id="viewercontainer"></div>
 
     <!-- Load viewer scripts -->
     <!-- build:[src] libs/requirejs/require.js-->
-    <script data-main="main" src="../../requirejs/require.js"></script>
+    <script data-main="main" src="../bower_components/requirejs/require.js"></script>
     <!-- /build -->
 
   </body>
