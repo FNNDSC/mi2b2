@@ -1,12 +1,10 @@
 /**
  * mi2b2 app
  *
- * This app reads a directory tree from a directory picker/dropzone button (chrome)
- * or multiple neuroimage files in the same directory (other browsers) into an array
- * of objects and pass it to a viewerjs.Viewer object for visualization and collaboration.
- * The app can contain several viewerjs.Viewer objects which will be displayed in different tabs.
- * A new viewer tab can also be started by joining an existing realtime collaboration among
- * remote viewerjs.Viewer instances.
+ * This app can read a directory tree (chrome) or multiple neuroimage files in the same
+ * directory (other browsers) for their visualization and collaboration. Alternatively,
+ * users can directly drag in and drop files/folders onto the viewer. In addition the app
+ * provides a predefine library of neuroimage atlases.
  */
 
 // define a new module
