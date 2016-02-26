@@ -40,5 +40,29 @@ define(['mi2b2'], function(mi2b2) {
       }
     );
 
+    it('mi2b2.init starts a viewer with a renderers box',
+
+      function() {
+
+        expect(app.view.rBox).not.toBeNull();
+      }
+    );
+
+    it('mi2b2.init starts a viewer with a toolbar',
+
+      function() {
+
+        expect(app.view.toolBar).not.toBeNull();
+      }
+    );
+
+    it('mi2b2.init starts a viewer with a thumbnails bar',
+
+      function() {
+
+        expect(app.view.thBars.length).toBeGreaterThan(0);
+      }
+    );
+
   });
 });
