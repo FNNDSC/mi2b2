@@ -60,60 +60,60 @@ define(
       //
       // 0-1 weeks
       this.appendAll(
-        'http://www.googledrive.com/host/0B8u7h0aKnydhd0xHX2h0NENsbEE/w0to1.nii'
+        'http://173.48.120.248/mi2b2_data/week_0-1/w0to1.nii'
       );
 
       //
       // quarter 0
       this.appendAll(
-        'http://www.googledrive.com/host/0B8u7h0aKnydhU0hjTnRIaFZPWWM/q0.nii'
+        'http://173.48.120.248/mi2b2_data/quarter_0/q0.nii'
       );
 
       //
       // quarter 1
       this.appendAll(
-        'http://www.googledrive.com/host/0B8u7h0aKnydhWS1heHNxYmp1eTA/q1.nii'
+        'http://173.48.120.248/mi2b2_data/quarter_1/q1.nii'
       );
 
       //
       // quarter 2
       this.appendAll(
-        'http://www.googledrive.com/host/0B8u7h0aKnydhQnlxVC04ZUo4R1U/q2.nii'
+        'http://173.48.120.248/mi2b2_data/quarter_2/q2.nii'
       );
 
       // quarter 3
       this.appendAll(
-        'http://www.googledrive.com/host/0B8u7h0aKnydhU0RpaTNCaXhDZWc/q3.nii'
+        'http://173.48.120.248/mi2b2_data/quarter_3/q3.nii'
       );
 
       //
       // year 1 to 2
       this.appendAll(
-        'http://www.googledrive.com/host/0B8u7h0aKnydheWpyem90LVloR1U/y1to2.nii'
+        'http://173.48.120.248/mi2b2_data/year_1-2/y1to2.nii'
       );
 
       //
       // year 2 to 3
       this.appendAll(
-        'http://www.googledrive.com/host/0B8u7h0aKnydhalFfU0FFejlwWTA/y2to3.nii'
+        'http://173.48.120.248/mi2b2_data/year_2-3/y2to3.nii'
       );
 
       //
       // year 3 to 4
       this.appendAll(
-        'http://www.googledrive.com/host/0B8u7h0aKnydhNDM1dTFYaUo3NjQ/y3to4.nii'
+        'http://173.48.120.248/mi2b2_data/year_3-4/y3to4.nii'
       );
 
       //
       // year 4 to 5
       this.appendAll(
-        'http://www.googledrive.com/host/0B8u7h0aKnydhMmtBRThMUnV4Q2s/y4to5.nii'
+        'http://173.48.120.248/mi2b2_data/year_4-5/y4to5.nii'
       );
 
       //
       // year 5 to 6
       this.appendAll(
-        'http://www.googledrive.com/host/0B8u7h0aKnydhZ2NPelRlLWlVRk0/y5to6.nii'
+        'http://173.48.120.248/mi2b2_data/year_5-6/y5to6.nii'
       );
 
       // load atlases

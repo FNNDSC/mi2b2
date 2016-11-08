@@ -31,11 +31,11 @@ define(['mi2b2'], function(mi2b2) {
       function() {
 
         app.appendAll(
-          'http://www.googledrive.com/host/0B8u7h0aKnydhd0xHX2h0NENsbEE/w0to1.nii'
+          'http://173.48.120.248/mi2b2_data/week_0-1/w0to1.nii'
         );
 
         expect(app.imgFileArr[0]).toEqual({
-            url: 'http://www.googledrive.com/host/0B8u7h0aKnydhd0xHX2h0NENsbEE/w0to1.nii.gz'
+            url: 'http://173.48.120.248/mi2b2_data/week_0-1/w0to1.nii.gz'
           });
       }
     );
